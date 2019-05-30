@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 	"net/http"
 )
 
@@ -27,6 +28,24 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&c)
 	w.Write([]byte("Adding contacts"))
 	fmt.Println(c)
+
+
+	connStr := "user=postgres dbname=mail sslmode=disable password=1234"
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Connection success")
+
+	sqlStatement := `
+	INSERT INTO contacts (name,email,age,address)
+VALUES ($1, $2, $3, $4);`
+
+	_, err1 := db.Exec(sqlStatement,c.Name,c.Email,c.Age,c.Address)
+	if err1 != nil{
+		fmt.Println(err1)
+	}
+	fmt.Print("Contact inserted into DB")
 }
 
 func DeleteContact(w http.ResponseWriter, r *http.Request) {
@@ -43,16 +62,17 @@ func EditContact(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(c)
 }
 
-//func SaveContactToDb(db *sql.DB,c Contact) {
-//
-//}
-
-func main() {
-	connStr := "user=postgres dbname=email sslmode=dissable password=1234"
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
+func SaveContactToDb(db *sql.DB,c Contact) {
+	err := db.QueryRow(`INSERT INTO contacts(name, email, age, address)
+	VALUES(c.Name, c.Email, c.Age, 'c.Address)`)
+	if err!=nil{
 		panic(err)
 	}
+	fmt.Print("Contact inserted into DB")
+}
+
+func main() {
+
 
 	r := mux.NewRouter()
 	r.HandleFunc("/contacts", GetContact).Methods("GET")
@@ -61,3 +81,5 @@ func main() {
 	r.HandleFunc("/contacts", DeleteContact).Methods("DELETE")
 	http.ListenAndServe(":8080", r)
 }
+
+
