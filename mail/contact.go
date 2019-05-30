@@ -1,9 +1,11 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -42,7 +44,17 @@ func EditContact(w http.ResponseWriter,r *http.Request){
 	fmt.Println(c)
 }
 
+//func SaveContactToDb(db *sql.DB,c Contact) {
+//
+//}
+
 func main(){
+	connStr := "user=postgres dbname=email sslmode=dissable password=1234"
+	db,err := sql.Open("postgres", connStr)
+	if err != nil {
+		panic(err)
+	}
+
 	r := mux.NewRouter()
 	r.HandleFunc("/contacts",GetContact).Methods("GET")
 	r.HandleFunc("/contacts",EditContact).Methods("PUT")
