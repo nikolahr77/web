@@ -62,18 +62,7 @@ func EditContact(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(c)
 }
 
-func SaveContactToDb(db *sql.DB,c Contact) {
-	err := db.QueryRow(`INSERT INTO contacts(name, email, age, address)
-	VALUES(c.Name, c.Email, c.Age, 'c.Address)`)
-	if err!=nil{
-		panic(err)
-	}
-	fmt.Print("Contact inserted into DB")
-}
-
 func main() {
-
-
 	r := mux.NewRouter()
 	r.HandleFunc("/contacts", GetContact).Methods("GET")
 	r.HandleFunc("/contacts", EditContact).Methods("PUT")
