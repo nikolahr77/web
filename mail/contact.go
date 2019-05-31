@@ -48,7 +48,7 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Connection success")
+	fmt.Println("Connection to DB success")
 
 	sqlStatement := `
 	INSERT INTO contacts (name,email,age,address)
@@ -66,6 +66,22 @@ func DeleteContact(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&c)
 	w.Write([]byte("Deleting contacts"))
 	fmt.Println(c)
+
+	connStr := "user=postgres dbname=mail sslmode=disable password=1234"
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Connection to DB success")
+
+	sqlStatement := `
+	DELETE FROM contacts WHERE name=$1;`
+
+	_, err1 := db.Exec(sqlStatement,c.Name)
+	if err1 != nil{
+		panic(err1)
+	}
+	fmt.Println("Contact Deleted from DB")
 }
 
 func EditContact(w http.ResponseWriter, r *http.Request) {
