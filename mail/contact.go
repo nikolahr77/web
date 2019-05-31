@@ -1,5 +1,6 @@
 package main
 
+import "C"
 import (
 	"database/sql"
 	"encoding/json"
@@ -18,17 +19,29 @@ type Contact struct {
 
 func GetContact(w http.ResponseWriter, r *http.Request) {
 	var c Contact
-	json.NewDecoder(r.Body).Decode(&c)
 	w.Write([]byte("Getting contacts"))
-	fmt.Println(c)
-}
 
+	connStr := "user=postgres dbname=mail sslmode=disable password=1234"
+	db, err := sql.Open("postgres", connStr)
+
+	rows, err := db.Query(`SELECT name, email, age, address FROM contacts;`)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&c.Name, &c.Email, &c.Age, &c.Address)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Fprintf(w, c.Name, c.Email, c.Age, c.Address)
+	}
+}
 func CreateContact(w http.ResponseWriter, r *http.Request) {
 	var c Contact
 	json.NewDecoder(r.Body).Decode(&c)
 	w.Write([]byte("Adding contacts"))
 	fmt.Println(c)
-
 
 	connStr := "user=postgres dbname=mail sslmode=disable password=1234"
 	db, err := sql.Open("postgres", connStr)
@@ -41,8 +54,8 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 	INSERT INTO contacts (name,email,age,address)
 VALUES ($1, $2, $3, $4);`
 
-	_, err1 := db.Exec(sqlStatement,c.Name,c.Email,c.Age,c.Address)
-	if err1 != nil{
+	_, err1 := db.Exec(sqlStatement, c.Name, c.Email, c.Age, c.Address)
+	if err1 != nil {
 		fmt.Println(err1)
 	}
 	fmt.Print("Contact inserted into DB")
@@ -70,5 +83,3 @@ func main() {
 	r.HandleFunc("/contacts", DeleteContact).Methods("DELETE")
 	http.ListenAndServe(":8080", r)
 }
-
-
