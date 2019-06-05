@@ -1,27 +1,21 @@
 package api
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/web"
 	"net/http"
+	"strconv"
 )
 
 
-
-func GetContact(cr web.ContactRepository) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		id := mux.Vars(r)["contact_id"]
-		c, err := cr.Get(id)
-
-		dto := adaptToDTO(c)
-
-
-	}
-
+type ContactDTO struct {
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Age     int    `json:"age"`
+	Address string `json:"address"`
 }
 
 func adaptToDTO(c web.Contact) ContactDTO {
@@ -33,29 +27,70 @@ func adaptToDTO(c web.Contact) ContactDTO {
 	}
 }
 
-func CreateContact(w http.ResponseWriter, r *http.Request) {
-	var c ContactDTO
-	json.NewDecoder(r.Body).Decode(&c)
-	w.Write([]byte("Adding contacts"))
-	fmt.Println(c)
 
-	connStr := "user=postgres dbname=api sslmode=disable password=1234"
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		panic(err)
+func GetContact(cr web.ContactRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := mux.Vars(r)["id"]
+		idInt, err := strconv.ParseInt(id,10,64)
+		if err != nil {
+			panic(err)
+		}
+		c, err := cr.Get(idInt)
+		dto := adaptToDTO(c)
+		json.NewEncoder(w).Encode(dto)
+
+		for c.Next() {
+			err := rows.Scan(&e.Name, &e.Email, &e.Age, &e.Address)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Fprintf(w, e.Name, e.Email, e.Age, e.Address)
+		}
 	}
-	fmt.Println("Connection to DB success")
-
-	sqlStatement := `
-	INSERT INTO contacts (name,email,age,address)
-VALUES ($1, $2, $3, $4);`
-
-	_, err1 := db.Exec(sqlStatement, c.Name, c.Email, c.Age, c.Address)
-	if err1 != nil {
-		fmt.Println(err1)
 	}
-	fmt.Print("Contact inserted into DB")
+
 }
+
+//func DeleteContact (cr web.ContactRepository) http.HandlerFunc {
+//	return func(w http.ResponseWriter, r *http.Request) {
+//		id := mux.Vars(r)["contact_id"]
+//		web.ContactRepository(DeleteContact(id))
+//	}
+//}
+//
+
+//func DTOToAdapt(c web.Contact) ContactDTO {
+//	return ContactDTO{
+//		c.Name: Name,
+//		Email: c.Email,
+//		Age: c.Age,
+//		Address: c.Address,
+//	}
+//}
+//
+//func CreateContact(w http.ResponseWriter, r *http.Request) {
+//	var c ContactDTO
+//	json.NewDecoder(r.Body).Decode(&c)
+//	w.Write([]byte("Adding contacts"))
+//	fmt.Println(c)
+//
+//	connStr := "user=postgres dbname=api sslmode=disable password=1234"
+//	db, err := sql.Open("postgres", connStr)
+//	if err != nil {
+//		panic(err)
+//	}
+//	fmt.Println("Connection to DB success")
+//
+//	sqlStatement := `
+//	INSERT INTO contacts (name,email,age,address)
+//VALUES ($1, $2, $3, $4);`
+//
+//	_, err1 := db.Exec(sqlStatement, c.Name, c.Email, c.Age, c.Address)
+//	if err1 != nil {
+//		fmt.Println(err1)
+//	}
+//	fmt.Print("Contact inserted into DB")
+//}
 
 //func DeleteContact(w http.ResponseWriter, r *http.Request) {
 //	var c Contact
@@ -106,9 +141,3 @@ VALUES ($1, $2, $3, $4);`
 //	}
 //	fmt.Println("Contact Updated")
 //}
-type ContactDTO struct {
-	Name    string `json:"name"`
-	Email   string `json:"email"`
-	Age     int    `json:"age"`
-	Address string `json:"address"`
-}

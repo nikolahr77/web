@@ -1,5 +1,7 @@
 package web
 
+import "database/sql"
+
 type Contact struct {
 	Name    string
 	Email   string
@@ -8,7 +10,8 @@ type Contact struct {
 }
 
 type ContactRepository interface {
-	Get(id int64) (Contact,error)
-	Post(id int64) (Contact,error)
-	Delete(id int64) (Contact,error)
+	Get(id int64) (*sql.Rows,error)
+	//Create(contact Contact) (Contact,error)
+	//Delete(id int64) (error)
+	//Update(contact Contact) (Contact,error)
 }
