@@ -83,6 +83,51 @@ func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 	}
 }
 
+func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var c ContactDTO
+		json.NewDecoder(r.Body).Decode(&c)
+		con := DTOToContact(c)
+		id := mux.Vars(r)["id"]
+		idInt, err := strconv.ParseInt(id,10,64)
+		if err != nil {
+			panic(err)
+			}
+		_,err1 := cr.Update(idInt,con)
+		if err1 != nil {
+			panic(err1)
+		}
+	}
+}
+
+//func EditContact(w http.ResponseWriter, r *http.Request) {
+//	id := mux.Vars(r)["contact_id"]
+//	var c ContactDTO
+//	json.NewDecoder(r.Body).Decode(&c)
+//	w.Write([]byte("Editing contacts"))
+//	fmt.Println(c)
+//
+//	connStr := "user=postgres dbname=api sslmode=disable password=1234"
+//	db, err := sql.Open("postgres", connStr)
+//	if err != nil {
+//		panic(err)
+//	}
+//	fmt.Println("Connection to DB success")
+//
+//
+//	sqlStatement := `
+//	UPDATE contacts
+//	SET name=$1,email=$2,age=$3,address=$4
+//	WHERE id=$5;`
+//
+//	_, err1 := db.Exec(sqlStatement,c.Name,c.Email,c.Age,c.Address,id)
+//	if err1 != nil{
+//		panic(err1)
+//	}
+//	fmt.Println("Contact Updated")
+//}
+
+
 //func CreateContact(w http.ResponseWriter, r *http.Request) {
 //	var c ContactDTO
 //	json.NewDecoder(r.Body).Decode(&c)
@@ -130,29 +175,3 @@ func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 //	fmt.Println("Contact Deleted from DB")
 //}
 //
-//func EditContact(w http.ResponseWriter, r *http.Request) {
-//	id := mux.Vars(r)["contact_id"]
-//	var c ContactDTO
-//	json.NewDecoder(r.Body).Decode(&c)
-//	w.Write([]byte("Editing contacts"))
-//	fmt.Println(c)
-//
-//	connStr := "user=postgres dbname=api sslmode=disable password=1234"
-//	db, err := sql.Open("postgres", connStr)
-//	if err != nil {
-//		panic(err)
-//	}
-//	fmt.Println("Connection to DB success")
-//
-//
-//	sqlStatement := `
-//	UPDATE contacts
-//	SET name=$1,email=$2,age=$3,address=$4
-//	WHERE id=$5;`
-//
-//	_, err1 := db.Exec(sqlStatement,c.Name,c.Email,c.Age,c.Address,id)
-//	if err1 != nil{
-//		panic(err1)
-//	}
-//	fmt.Println("Contact Updated")
-//}

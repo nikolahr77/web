@@ -56,11 +56,11 @@ func (c contactRepository) Delete(id int64) error {
 	return err
 }
 
-//func (c contactRepository)  Update(id int64) (web.Contact,error){
-//	query := `
-//	UPDATE contacts
-//	SET name=$1,email=$2,age=$3,address=$4
-//	WHERE id=$5;`
-//	var e contactEntity
-//	c.db.Exec(query,e)
-//}
+func (c contactRepository)  Update(id int64,con web.Contact) (web.Contact,error){
+	query := `
+	UPDATE contacts
+	SET name=$1,email=$2,age=$3,address=$4
+	WHERE id=$5;`
+	_, err := c.db.Exec(query,con.Name,con.Email,con.Age,con.Address,id)
+	return con,err
+}
