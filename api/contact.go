@@ -1,8 +1,6 @@
 package api
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/web"
@@ -28,36 +26,43 @@ func adaptToDTO(c web.Contact) ContactDTO {
 }
 
 
-func GetContact(cr web.ContactRepository) http.HandlerFunc {
+//func GetContact(cr web.ContactRepository) http.HandlerFunc {
+//	return func(w http.ResponseWriter, r *http.Request) {
+//		id := mux.Vars(r)["id"]
+//		idInt, err := strconv.ParseInt(id,10,64)
+//		if err != nil {
+//			panic(err)
+//		}
+//		c, err := cr.Get(idInt)
+//		dto := adaptToDTO(c)
+//		json.NewEncoder(w).Encode(dto)
+//
+//		for c.Next() {
+//			err := rows.Scan(&e.Name, &e.Email, &e.Age, &e.Address)
+//			if err != nil {
+//				panic(err)
+//			}
+//			fmt.Fprintf(w, e.Name, e.Email, e.Age, e.Address)
+//		}
+//	}
+//	}
+//
+//}
+
+func DeleteContact (cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
 		idInt, err := strconv.ParseInt(id,10,64)
 		if err != nil {
 			panic(err)
 		}
-		c, err := cr.Get(idInt)
-		dto := adaptToDTO(c)
-		json.NewEncoder(w).Encode(dto)
-
-		for c.Next() {
-			err := rows.Scan(&e.Name, &e.Email, &e.Age, &e.Address)
-			if err != nil {
-				panic(err)
-			}
-			fmt.Fprintf(w, e.Name, e.Email, e.Age, e.Address)
+		err1 := cr.Delete(idInt)
+		if err1 != nil {
+			panic(err1)
 		}
 	}
-	}
-
 }
 
-//func DeleteContact (cr web.ContactRepository) http.HandlerFunc {
-//	return func(w http.ResponseWriter, r *http.Request) {
-//		id := mux.Vars(r)["contact_id"]
-//		web.ContactRepository(DeleteContact(id))
-//	}
-//}
-//
 
 //func DTOToAdapt(c web.Contact) ContactDTO {
 //	return ContactDTO{

@@ -21,15 +21,15 @@ func NewContactRepository(db *sql.DB) web.ContactRepository  {
 	return contactRepository{db:db}
 }
 
-func (c contactRepository) Get(id int64) (*sql.Rows,error) {
-	query := `SELECT name, email, age, address FROM contacts;`
-	var e contactEntity
-	rows,err := c.db.Query(query)
-	if err!= nil {
-		panic(err)
-	}
-	return rows,err
-}
+//func (c contactRepository) Get(id int64) (*sql.Rows,error) {
+//	query := `SELECT name, email, age, address FROM contacts;`
+//	var e contactEntity
+//	rows,err := c.db.Query(query)
+//	if err!= nil {
+//		panic(err)
+//	}
+//	return rows,err
+//}
 
 func adaptToContact(entity contactEntity)  web.Contact{
 	return web.Contact{
@@ -48,13 +48,14 @@ func adaptToContact(entity contactEntity)  web.Contact{
 //	c.db.Exec(query,)
 //}
 //
-//func (c contactRepository) Delete(id int64) (error)  {
-//	query := `
-//	DELETE FROM contacts WHERE name=$1;`
-//	var e contactEntity
-//	c.db.Exec(query,e)
-//}
-//
+func (c contactRepository) Delete(id int64) (error)  {
+	query := `
+	DELETE FROM contacts WHERE id=$1;`
+	//var e contactEntity
+	_,err := c.db.Exec(query,id)
+	return err
+}
+
 //func (c contactRepository)  Update(id int64) (web.Contact,error){
 //	query := `
 //	UPDATE contacts
