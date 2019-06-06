@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/web"
@@ -25,7 +26,7 @@ func adaptToDTO(c web.Contact) ContactDTO {
 	}
 }
 
-func DTOToContact(c ContactDTO) web.Contact {
+func adaptDTOToContact(c ContactDTO) web.Contact {
 	return web.Contact{
 		Name:    c.Name,
 		Email:   c.Email,
@@ -34,28 +35,21 @@ func DTOToContact(c ContactDTO) web.Contact {
 	}
 }
 
-//func GetContact(cr web.ContactRepository) http.HandlerFunc {
-//	return func(w http.ResponseWriter, r *http.Request) {
-//		id := mux.Vars(r)["id"]
-//		idInt, err := strconv.ParseInt(id,10,64)
-//		if err != nil {
-//			panic(err)
-//		}
-//		c, err := cr.Get(idInt)
-//		dto := adaptToDTO(c)
-//		json.NewEncoder(w).Encode(dto)
-//
-//		for c.Next() {
-//			err := rows.Scan(&e.Name, &e.Email, &e.Age, &e.Address)
-//			if err != nil {
-//				panic(err)
-//			}
-//			fmt.Fprintf(w, e.Name, e.Email, e.Age, e.Address)
-//		}
-//	}
-//	}
-//
-//}
+func GetContact(cr web.ContactRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := mux.Vars(r)["id"]
+		idInt, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			http.Error(w, "Bad request", 400)
+		}
+		c, err := cr.Get(idInt)
+		if err != nil {
+			http.Error(w, "Internal error", 500)
+		}
+		fmt.Fprint(w, c)
+	}
+
+}
 
 func DeleteContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +69,7 @@ func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var c ContactDTO
 		json.NewDecoder(r.Body).Decode(&c)
-		con := DTOToContact(c)
+		con := adaptDTOToContact(c)
 		_, err := cr.Create(con)
 		if err != nil {
 			panic(err)
@@ -87,13 +81,13 @@ func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var c ContactDTO
 		json.NewDecoder(r.Body).Decode(&c)
-		con := DTOToContact(c)
+		con := adaptDTOToContact(c)
 		id := mux.Vars(r)["id"]
-		idInt, err := strconv.ParseInt(id,10,64)
+		idInt, err := strconv.ParseInt(id, 10, 64)
 		if err != nil {
 			panic(err)
-			}
-		_,err1 := cr.Update(idInt,con)
+		}
+		_, err1 := cr.Update(idInt, con)
 		if err1 != nil {
 			panic(err1)
 		}
@@ -126,7 +120,6 @@ func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 //	}
 //	fmt.Println("Contact Updated")
 //}
-
 
 //func CreateContact(w http.ResponseWriter, r *http.Request) {
 //	var c ContactDTO

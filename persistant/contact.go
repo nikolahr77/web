@@ -21,18 +21,27 @@ func NewContactRepository(db *sql.DB) web.ContactRepository {
 	return contactRepository{db: db}
 }
 
-//func (c contactRepository) Get(id int64) (*sql.Rows,error) {
-//	query := `SELECT name, email, age, address FROM contacts;`
-//	var e contactEntity
-//	rows,err := c.db.Query(query)
-//	if err!= nil {
-//		panic(err)
-//	}
-//	return rows,err
-//}
+func (c contactRepository) Get(id int64) (web.Contact, error) {
+	query := `SELECT * FROM contacts WHERE id=$1;`
+	var e contactEntity
+	rows, err := c.db.Query(query, id)
+	if err != nil {
+		return web.Contact{}, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&e.ID, &e.Name, &e.Email, &e.Age, &e.Address)
+		if err != nil {
+			return web.Contact{}, err
+		}
+	}
+	result := adaptToContact(e)
+	return result, err
+}
 
 func adaptToContact(entity contactEntity) web.Contact {
 	return web.Contact{
+		ID: entity.ID,
 		Name:    entity.Name,
 		Email:   entity.Email,
 		Age:     entity.Age,
@@ -56,11 +65,11 @@ func (c contactRepository) Delete(id int64) error {
 	return err
 }
 
-func (c contactRepository)  Update(id int64,con web.Contact) (web.Contact,error){
+func (c contactRepository) Update(id int64, con web.Contact) (web.Contact, error) {
 	query := `
 	UPDATE contacts
 	SET name=$1,email=$2,age=$3,address=$4
 	WHERE id=$5;`
-	_, err := c.db.Exec(query,con.Name,con.Email,con.Age,con.Address,id)
-	return con,err
+	_, err := c.db.Exec(query, con.Name, con.Email, con.Age, con.Address, id)
+	return con, err
 }
