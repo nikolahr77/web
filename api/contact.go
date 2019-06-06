@@ -1,13 +1,13 @@
 package api
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/web"
 	"net/http"
 	"strconv"
 )
-
 
 type ContactDTO struct {
 	Name    string `json:"name"`
@@ -18,13 +18,21 @@ type ContactDTO struct {
 
 func adaptToDTO(c web.Contact) ContactDTO {
 	return ContactDTO{
-		Name: c.Name,
-		Email: c.Email,
-		Age: c.Age,
+		Name:    c.Name,
+		Email:   c.Email,
+		Age:     c.Age,
 		Address: c.Address,
 	}
 }
 
+func DTOToContact(c ContactDTO) web.Contact {
+	return web.Contact{
+		Name:    c.Name,
+		Email:   c.Email,
+		Age:     c.Age,
+		Address: c.Address,
+	}
+}
 
 //func GetContact(cr web.ContactRepository) http.HandlerFunc {
 //	return func(w http.ResponseWriter, r *http.Request) {
@@ -49,10 +57,10 @@ func adaptToDTO(c web.Contact) ContactDTO {
 //
 //}
 
-func DeleteContact (cr web.ContactRepository) http.HandlerFunc {
+func DeleteContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		idInt, err := strconv.ParseInt(id,10,64)
+		idInt, err := strconv.ParseInt(id, 10, 64)
 		if err != nil {
 			panic(err)
 		}
@@ -63,16 +71,18 @@ func DeleteContact (cr web.ContactRepository) http.HandlerFunc {
 	}
 }
 
+func CreateContact(cr web.ContactRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var c ContactDTO
+		json.NewDecoder(r.Body).Decode(&c)
+		con := DTOToContact(c)
+		_, err := cr.Create(con)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
 
-//func DTOToAdapt(c web.Contact) ContactDTO {
-//	return ContactDTO{
-//		c.Name: Name,
-//		Email: c.Email,
-//		Age: c.Age,
-//		Address: c.Address,
-//	}
-//}
-//
 //func CreateContact(w http.ResponseWriter, r *http.Request) {
 //	var c ContactDTO
 //	json.NewDecoder(r.Body).Decode(&c)
