@@ -11,29 +11,29 @@ import (
 
 type MessageDTO struct {
 	Name    string `json:"name"`
-	Content   string `json:"content"`
+	Content string `json:"content"`
 }
 
-func adaptDTOToMessage(m MessageDTO) web.Message{
+func adaptDTOToMessage(m MessageDTO) web.Message {
 	return web.Message{
-		Name: m.Name,
+		Name:    m.Name,
 		Content: m.Content,
 	}
 }
 
-func CreateMessage(msg web.MessageRepository) http.HandlerFunc{
+func CreateMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var m MessageDTO
 		json.NewDecoder(r.Body).Decode(&m)
 		result := adaptDTOToMessage(m)
-		_,err := msg.Create(result)
+		_, err := msg.Create(result)
 		if err != nil {
 			panic(err)
 		}
 	}
 }
 
-func DeleteMessage(msg web.MessageRepository) http.HandlerFunc{
+func DeleteMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
 		idInt, err := strconv.ParseInt(id, 10, 64)
@@ -41,6 +41,23 @@ func DeleteMessage(msg web.MessageRepository) http.HandlerFunc{
 			panic(err)
 		}
 		err1 := msg.Delete(idInt)
+		if err1 != nil {
+			panic(err1)
+		}
+	}
+}
+
+func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := mux.Vars(r)["id"]
+		idInt, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		var m MessageDTO
+		json.NewDecoder(r.Body).Decode(&m)
+		result := adaptDTOToMessage(m)
+		_, err1 := msg.Update(idInt, result)
 		if err1 != nil {
 			panic(err1)
 		}

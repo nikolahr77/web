@@ -41,7 +41,7 @@ func (c contactRepository) Get(id int64) (web.Contact, error) {
 
 func adaptToContact(entity contactEntity) web.Contact {
 	return web.Contact{
-		ID: entity.ID,
+		ID:      entity.ID,
 		Name:    entity.Name,
 		Email:   entity.Email,
 		Age:     entity.Age,
