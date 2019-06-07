@@ -26,3 +26,13 @@ func (m messageRepository) Create(msg web.Message) (web.Message, error){
 	_, err := m.db.Exec(query,msg.Name,msg.Content)
 	return msg,err
 }
+
+func (m messageRepository) Delete(id int64) error{
+	query := `
+	DELETE FROM messages WHERE id=$1`
+	_, err := m.db.Exec(query,id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
