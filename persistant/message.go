@@ -19,6 +19,14 @@ func NewMessageRepository(db *sql.DB) web.MessageRepository {
 	return messageRepository{db: db}
 }
 
+func adaptToMessage(m messageEntity) web.Message {
+	return web.Message{
+		ID:      m.ID,
+		Name:    m.Name,
+		Content: m.Content,
+	}
+}
+
 func (m messageRepository) Create(msg web.Message) (web.Message, error) {
 	query := `
 	INSERT INTO messages (name, content)
@@ -44,4 +52,25 @@ func (m messageRepository) Update(id int64, msg web.Message) (web.Message, error
 	WHERE id=$3`
 	_, err := m.db.Exec(query, msg.Name, msg.Content, id)
 	return msg, err
+}
+
+func (m messageRepository) Get(id int64) (web.Message, error) {
+	query := `
+	SELECT * FROM messages WHERE id=$1`
+
+	var e messageEntity
+
+	rows, err := m.db.Query(query, id)
+	if err != nil {
+		return web.Message{}, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&e.ID, &e.Name, &e.Content)
+		if err != nil {
+			return web.Message{}, err
+		}
+	}
+	result := adaptToMessage(e)
+	return result, err
 }

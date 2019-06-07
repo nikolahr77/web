@@ -7,7 +7,7 @@ type Message struct {
 }
 
 type MessageRepository interface {
-	//Get(id int64) (Message, error)
+	Get(id int64) (Message, error)
 	Create(m Message) (Message, error)
 	Delete(id int64) error
 	Update(id int64, m Message) (Message, error)

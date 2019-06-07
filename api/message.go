@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/web"
@@ -61,5 +62,20 @@ func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 		if err1 != nil {
 			panic(err1)
 		}
+	}
+}
+
+func GetMessage(msg web.MessageRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := mux.Vars(r)["id"]
+		idInt, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		f, err1 := msg.Get(idInt)
+		if err1 != nil {
+			panic(err1)
+		}
+		fmt.Fprint(w, f)
 	}
 }
