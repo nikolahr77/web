@@ -2,6 +2,7 @@ package persistant
 
 import (
 	"database/sql"
+	"github.com/google/uuid"
 	"github.com/web"
 )
 
@@ -22,7 +23,7 @@ func NewContactRepository(db *sql.DB) web.ContactRepository {
 }
 
 func (c contactRepository) Get(id int64) (web.Contact, error) {
-	query := `SELECT * FROM contacts WHERE id=$1;`
+	query := `SELECT * FROM contacts WHERE id=$1 and user_id = 2;`
 	var e contactEntity
 	rows, err := c.db.Query(query, id)
 	if err != nil {
@@ -51,10 +52,18 @@ func adaptToContact(entity contactEntity) web.Contact {
 
 func (c contactRepository) Create(con web.Contact) (web.Contact, error) {
 	query := `
-	INSERT INTO contacts (name,email,age,address)
-	VALUES ($1, $2, $3, $4);`
-	_, err := c.db.Exec(query, con.Name, con.Email, con.Age, con.Address)
-	return con, err
+	INSERT INTO contacts (id, name,email,age,address)
+	VALUES ($1, $2, $3, $4, $5);`
+
+	_, err := c.db.Exec(query, uuid.New(), con.Name, con.Email, con.Age, con.Address)
+
+
+
+	return web.Contact{
+		Id: uuid,
+		Name:,
+		Address,
+	}, err
 }
 
 func (c contactRepository) Delete(id int64) error {

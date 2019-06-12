@@ -8,9 +8,24 @@ import (
 	"github.com/web"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type ContactDTO struct {
+	GUID    string
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Age     int    `json:"age"`
+	Address string `json:"address"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// RequestContactDTO, ContactDTO, |RequestContact, Contact,| ContactEntity (messages and campaign the same)
+//         API/http               |  domain                |  DB, persistent
+
+
+type RequestContactDTO struct {
 	Name    string `json:"name"`
 	Email   string `json:"email"`
 	Age     int    `json:"age"`
@@ -37,11 +52,11 @@ func adaptDTOToContact(c ContactDTO) web.Contact {
 
 func GetContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := mux.Vars(r)["id"]
-		idInt, err := strconv.ParseInt(id, 10, 64)
-		if err != nil {
-			http.Error(w, "Bad request", 400)
-		}
+		guid := mux.Vars(r)["id"]
+		//idInt, err := strconv.ParseInt(id, 10, 64)
+		//if err != nil {
+		//	http.Error(w, "Bad request", 400)
+		//}
 		c, err := cr.Get(idInt)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
@@ -68,12 +83,14 @@ func DeleteContact(cr web.ContactRepository) http.HandlerFunc {
 func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var c ContactDTO
+		fmt.Println("HELLO")
 		json.NewDecoder(r.Body).Decode(&c)
 		con := adaptDTOToContact(c)
-		_, err := cr.Create(con)
+		contact , err := cr.Create(con)
 		if err != nil {
-			panic(err)
+			http.Error(w,"Internal error",500)
 		}
+		json.NewEncoder(w).Encode(contact)
 	}
 }
 
@@ -83,10 +100,10 @@ func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 		json.NewDecoder(r.Body).Decode(&c)
 		con := adaptDTOToContact(c)
 		id := mux.Vars(r)["id"]
-		idInt, err := strconv.ParseInt(id, 10, 64)
-		if err != nil {
-			panic(err)
-		}
+		//idInt, err := strconv.ParseInt(id, 10, 64)
+		//if err != nil {
+		//	panic(err)
+		//}
 		_, err1 := cr.Update(idInt, con)
 		if err1 != nil {
 			panic(err1)
