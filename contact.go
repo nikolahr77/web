@@ -1,16 +1,20 @@
 package web
 
+import "time"
+
 type Contact struct {
-	ID      int64
+	GUID    string
 	Name    string
 	Email   string
 	Age     int
 	Address string
+	CreatedOn time.Time
+	UpdatedOn time.Time
 }
 
 type ContactRepository interface {
-	Get(id int64) (Contact, error)
+	//Get(id string) (Contact, error)
 	Create(con Contact) (Contact, error)
-	Delete(id int64) error
-	Update(id int64, con Contact) (Contact, error)
+	//Delete(id string) error
+	//Update(id string, con Contact) (Contact, error)
 }
