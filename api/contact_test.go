@@ -2,6 +2,7 @@ package api_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -40,18 +41,17 @@ func TestCreateContact(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	cr := web.RequestContact {
-		Name: ,
-		Address,
-		Age,
-		Email,
+		Name: "Ivan",
+		Address: "Sofia 1612",
+		Age: 11,
+		Email: "ivan@abv.bg",
 	}
 
 	c := web.Contact{
-		GUID,
-		Name,
-		Address,
-		Age,
-		Email,
+		Name: "Ivan",
+		Address: "Sofia 1612",
+		Age: 11,
+		Email: "ivan@abv.bg",
 	}
 
 	testObj := new(MockContactRepository)
@@ -62,12 +62,13 @@ func TestCreateContact(t *testing.T) {
 	r.Handle("/contacts",api.CreateContact(testObj))
 	r.ServeHTTP(w,req)
 	actual := web.Contact{}
-	//fmt.Printf("%#v\n", w.Body.String())
-	json.NewDecoder(w.Body).Decode(&c)
-	assert.Equal(t,expected,actual)
 	expected := api.ContactDTO{
 		ID:,
 
 	}
+	fmt.Printf("%#v\n", w.Body.String())
+	json.NewDecoder(w.Body).Decode(&c)
+	assert.Equal(t,cr,c)
+
 	testObj.AssertExpectations(t)
 }

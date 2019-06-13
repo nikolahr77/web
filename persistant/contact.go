@@ -13,11 +13,11 @@ type contactRepository struct {
 }
 
 type contactEntity struct {
-	ID      string  `db:"id"`
-	Name    string `db:"name"`
-	Email   string `db:"email"`
-	Age     int    `db:"age"`
-	Address string `db:"address"`
+	ID        string    `db:"id"`
+	Name      string    `db:"name"`
+	Email     string    `db:"email"`
+	Age       int       `db:"age"`
+	Address   string    `db:"address"`
 	CreatedOn time.Time `db:"created_on"`
 	UpdatedOn time.Time `db: "updated_on"`
 }
@@ -25,6 +25,7 @@ type contactEntity struct {
 func NewContactRepository(db *sql.DB) web.ContactRepository {
 	return contactRepository{db: db}
 }
+
 //
 //func (c contactRepository) Get(id string) (web.Contact, error) {
 //	query := `SELECT * FROM contacts WHERE id=$1 and user_id = 2;`
@@ -59,33 +60,39 @@ func (c contactRepository) Create(con web.Contact) (web.Contact, error) {
 	query := `
 	INSERT INTO contacts (id, name,email,age,address,created_on,updated_on)
 	VALUES ($1, $2, $3, $4, $5, $6, $7);`
-	createTime := time.Now
-	_, err := c.db.Exec(query, uuid, con.Name, con.Email, con.Age, con.Address,createTime(),createTime())
+	_, err := c.db.Exec(query, uuid, con.Name, con.Email, con.Age, con.Address, time.Now, time.Now)
 	fmt.Println(err)
 	return web.Contact{
 		//GUID: uuid,
-		Name: con.Name,
-		Address: con. Address,
-		Age: con.Age,
-		Email: con.Email,
+		Name:      con.Name,
+		Address:   con.Address,
+		Age:       con.Age,
+		Email:     con.Email,
 		CreatedOn: con.CreatedOn,
 		UpdatedOn: con.UpdatedOn,
 	}, err
 }
 
-//func (c contactRepository) Delete(id string) error {
-//	query := `
-//	DELETE FROM contacts WHERE id=$1;`
-//	//var e contactEntity
-//	_, err := c.db.Exec(query, id)
-//	return err
-//}
-//
-//func (c contactRepository) Update(id string, con web.Contact) (web.Contact, error) {
-//	query := `
-//	UPDATE contacts
-//	SET name=$1,email=$2,age=$3,address=$4
-//	WHERE id=$5;`
-//	_, err := c.db.Exec(query, con.Name, con.Email, con.Age, con.Address, id)
-//	return con, err
-//}
+func (c contactRepository) Delete(id string) error {
+	query := `
+	DELETE FROM contacts WHERE id=$1;`
+	_, err := c.db.Exec(query, id)
+	return err
+}
+
+func (c contactRepository) Update(id string, con web.Contact) (web.Contact, error) {
+	query := `
+	UPDATE contacts
+	SET name=$1,email=$2,age=$3,address=$4,updated_on=$5
+	WHERE id=$6;`
+	_, err := c.db.Exec(query, con.Name, con.Email, con.Age, con.Address, time.Now(), id)
+	return web.Contact{
+		//GUID: uuid,
+		Name:      con.Name,
+		Address:   con.Address,
+		Age:       con.Age,
+		Email:     con.Email,
+		CreatedOn: con.CreatedOn,
+		UpdatedOn: con.UpdatedOn,
+	}, err
+}
