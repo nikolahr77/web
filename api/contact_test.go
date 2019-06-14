@@ -29,11 +29,13 @@ func (m *MockContactRepository) Create(con web.RequestContact) (web.Contact, err
 }
 
 func (m *MockContactRepository) Delete(id string) error {
-	return nil
+	args := m.Called(id)
+	return args.Error(0)
 }
 
 func (m *MockContactRepository) Update(id string, con web.RequestContact) (web.Contact, error) {
-	return web.Contact{}, nil
+	args := m.Called(id,con)
+	return args.Get(0).(web.Contact), args.Error(1)
 }
 
 func TestCreateContact(t *testing.T) {
