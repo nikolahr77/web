@@ -68,23 +68,22 @@ func (m messageRepository) Update(id string, msg web.RequestMessage) (web.Messag
 	}, err
 }
 
-//func (m messageRepository) Get(id string) (web.Message, error) {
-//	query := `
-//	SELECT * FROM messages WHERE id=$1`
-//
-//	var e messageEntity
-//
-//	rows, err := m.db.Query(query, id)
-//	if err != nil {
-//		return web.Message{}, err
-//	}
-//	defer rows.Close()
-//	for rows.Next() {
-//		err := rows.Scan(&e.ID, &e.Name, &e.Content)
-//		if err != nil {
-//			return web.Message{}, err
-//		}
-//	}
-//	result := adaptToMessage(e)
-//	return result, err
-//}
+func (m messageRepository) Get(id string) (web.Message, error) {
+	query := `
+	SELECT * FROM messages WHERE guid=$1`
+
+	var e messageEntity
+	rows, err := m.db.Query(query, id)
+	if err != nil {
+		return web.Message{}, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&e.GUID, &e.Name, &e.Content, &e.CreatedOn, &e.UpdatedOn)
+		if err != nil {
+			return web.Message{}, err
+		}
+	}
+	result := adaptToMessage(e)
+	return result, err
+}

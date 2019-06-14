@@ -25,18 +25,6 @@ func (c contactRepository) Get(id string) (web.Contact, error) {
 	return result, err
 }
 
-func adaptToContact(entity contactEntity) web.Contact {
-	return web.Contact{
-		GUID:      entity.ID,
-		Name:      entity.Name,
-		Email:     entity.Email,
-		Age:       entity.Age,
-		Address:   entity.Address,
-		CreatedOn: entity.CreatedOn,
-		UpdatedOn: entity.UpdatedOn,
-	}
-}
-
 func (c contactRepository) Create(con web.RequestContact) (web.Contact, error) {
 	uuid := uuid.New()
 	query := `
@@ -90,6 +78,19 @@ type contactEntity struct {
 	CreatedOn time.Time `db:"created_on"`
 	UpdatedOn time.Time `db: "updated_on"`
 }
+
+func adaptToContact(entity contactEntity) web.Contact {
+	return web.Contact{
+		GUID:      entity.ID,
+		Name:      entity.Name,
+		Email:     entity.Email,
+		Age:       entity.Age,
+		Address:   entity.Address,
+		CreatedOn: entity.CreatedOn,
+		UpdatedOn: entity.UpdatedOn,
+	}
+}
+
 
 func NewContactRepository(db *sql.DB) web.ContactRepository {
 	return contactRepository{db: db}

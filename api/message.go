@@ -68,17 +68,14 @@ func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 	}
 }
 
-//func GetMessage(msg web.MessageRepository) http.HandlerFunc {
-//	return func(w http.ResponseWriter, r *http.Request) {
-//		id := mux.Vars(r)["id"]
-//		idInt, err := strconv.ParseInt(id, 10, 64)
-//		if err != nil {
-//			panic(err)
-//		}
-//		f, err1 := msg.Get(idInt)
-//		if err1 != nil {
-//			panic(err1)
-//		}
-//		fmt.Fprint(w, f)
-//	}
-//}
+func GetMessage(msg web.MessageRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := mux.Vars(r)["id"]
+		f, err := msg.Get(id)
+		if err != nil {
+			fmt.Println(err)
+			http.Error(w, "Internal Error", 500)
+		}
+		fmt.Fprint(w, f)
+	}
+}
