@@ -13,18 +13,15 @@ type Contact struct {
 }
 
 type RequestContact struct {
-	GUID      string
 	Name      string
 	Email     string
 	Age       int
 	Address   string
-	CreatedOn time.Time
-	UpdatedOn time.Time
 }
 
 type ContactRepository interface {
-	//Get(id string) (Contact, error)
-	Create(con Contact) (Contact, error)
+	Get(id string) (Contact, error)
+	Create(con RequestContact) (Contact, error)
 	Delete(id string) error
-	Update(id string, con Contact) (Contact, error)
+	Update(id string, con RequestContact) (Contact, error)
 }

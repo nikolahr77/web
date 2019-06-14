@@ -3,6 +3,7 @@ package persistant
 import (
 	"database/sql"
 	"github.com/web"
+	"time"
 )
 
 type messageRepository struct {
@@ -10,9 +11,11 @@ type messageRepository struct {
 }
 
 type messageEntity struct {
-	ID      int64  `db:"id"`
+	GUID    string  `db:"guid"`
 	Name    string `db:"name"`
 	Content string `db:"content"`
+	CreatedOn time.Time `db:"created_on"`
+	UpdatedOn time.Time `db:"updated_on"`
 }
 
 func NewMessageRepository(db *sql.DB) web.MessageRepository {
@@ -21,7 +24,7 @@ func NewMessageRepository(db *sql.DB) web.MessageRepository {
 
 func adaptToMessage(m messageEntity) web.Message {
 	return web.Message{
-		ID:      m.ID,
+		GUID:    m.GUID,
 		Name:    m.Name,
 		Content: m.Content,
 	}
@@ -35,7 +38,7 @@ func (m messageRepository) Create(msg web.Message) (web.Message, error) {
 	return msg, err
 }
 
-func (m messageRepository) Delete(id int64) error {
+func (m messageRepository) Delete(id string) error {
 	query := `
 	DELETE FROM messages WHERE id=$1`
 	_, err := m.db.Exec(query, id)
@@ -45,7 +48,7 @@ func (m messageRepository) Delete(id int64) error {
 	return nil
 }
 
-func (m messageRepository) Update(id int64, msg web.Message) (web.Message, error) {
+func (m messageRepository) Update(id string, msg web.Message) (web.Message, error) {
 	query := `
 	UPDATE messages 
 	SET name=$1, content=$2
@@ -54,7 +57,7 @@ func (m messageRepository) Update(id int64, msg web.Message) (web.Message, error
 	return msg, err
 }
 
-func (m messageRepository) Get(id int64) (web.Message, error) {
+func (m messageRepository) Get(id string) (web.Message, error) {
 	query := `
 	SELECT * FROM messages WHERE id=$1`
 
