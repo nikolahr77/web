@@ -68,7 +68,6 @@ func TestCreateContact(t *testing.T) {
 	r.Handle("/contacts", api.CreateContact(testObj))
 	r.ServeHTTP(w, req)
 	actual := api.ContactDTO{}
-	fmt.Printf("%#v\n", w.Body.String())
 	json.NewDecoder(w.Body).Decode(&actual)
 	expected := api.ContactDTO{
 		GUID:      "512341",
