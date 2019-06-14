@@ -27,11 +27,11 @@ func (c contactRepository) Get(id string) (web.Contact, error) {
 
 func adaptToContact(entity contactEntity) web.Contact {
 	return web.Contact{
-		GUID:    entity.ID,
-		Name:    entity.Name,
-		Email:   entity.Email,
-		Age:     entity.Age,
-		Address: entity.Address,
+		GUID:      entity.ID,
+		Name:      entity.Name,
+		Email:     entity.Email,
+		Age:       entity.Age,
+		Address:   entity.Address,
 		CreatedOn: entity.CreatedOn,
 		UpdatedOn: entity.UpdatedOn,
 	}
@@ -48,7 +48,7 @@ func (c contactRepository) Create(con web.RequestContact) (web.Contact, error) {
 		return web.Contact{}, err
 	}
 	return web.Contact{
-		GUID: uuid.String(),
+		GUID:      uuid.String(),
 		Name:      con.Name,
 		Address:   con.Address,
 		Age:       con.Age,
@@ -81,7 +81,6 @@ func (c contactRepository) Update(id string, con web.RequestContact) (web.Contac
 	}, err
 }
 
-
 type contactEntity struct {
 	ID        string    `db:"id"`
 	Name      string    `db:"name"`
@@ -96,8 +95,6 @@ func NewContactRepository(db *sql.DB) web.ContactRepository {
 	return contactRepository{db: db}
 }
 
-
 type contactRepository struct {
 	db *sql.DB
 }
-

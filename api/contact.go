@@ -12,10 +12,10 @@ import (
 
 type ContactDTO struct {
 	GUID      string
-	Name      string `json:"name"`
-	Email     string `json:"email"`
-	Age       int    `json:"age"`
-	Address   string `json:"address"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Age       int       `json:"age"`
+	Address   string    `json:"address"`
 	CreatedOn time.Time `json:"created_on"`
 	UpdatedOn time.Time `json:"updated_on"`
 }
@@ -24,15 +24,15 @@ type ContactDTO struct {
 //         API/http               |  domain                |  DB, persistent
 
 type RequestContactDTO struct {
-	Name      string `json:"name"`
-	Email     string `json:"email"`
-	Age       int    `json:"age"`
-	Address   string `json:"address"`
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Age     int    `json:"age"`
+	Address string `json:"address"`
 }
 
 func adaptToDTO(c web.Contact) ContactDTO {
 	return ContactDTO{
-		GUID: 	   c.GUID,
+		GUID:      c.GUID,
 		Name:      c.Name,
 		Email:     c.Email,
 		Age:       c.Age,
@@ -42,22 +42,13 @@ func adaptToDTO(c web.Contact) ContactDTO {
 	}
 }
 
-func adaptDTOToContact(c ContactDTO) web.Contact {
-	return web.Contact{
+func adaptToRequestContact(c RequestContactDTO) web.RequestContact {
+	return web.RequestContact{
 		Name:    c.Name,
-		Email:   c.Email,
 		Age:     c.Age,
 		Address: c.Address,
+		Email:   c.Email,
 	}
-}
-
-func adaptToRequestContact(c RequestContactDTO) web.RequestContact{
-     return web.RequestContact{
-     	Name: c.Name,
-     	Age: c.Age,
-     	Address: c.Address,
-     	Email: c.Email,
-	 }
 }
 
 func GetContact(cr web.ContactRepository) http.HandlerFunc {

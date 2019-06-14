@@ -13,10 +13,10 @@ type Contact struct {
 }
 
 type RequestContact struct {
-	Name      string
-	Email     string
-	Age       int
-	Address   string
+	Name    string
+	Email   string
+	Age     int
+	Address string
 }
 
 type ContactRepository interface {
