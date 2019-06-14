@@ -16,8 +16,8 @@ type RequestMessage struct {
 } 
 
 type MessageRepository interface {
-	Get(id string) (Message, error)
+	//Get(id string) (Message, error)
 	Create(m Message) (Message, error)
 	Delete(id string) error
-	Update(id string, m Message) (Message, error)
+	//Update(id string, m Message) (Message, error)
 }
