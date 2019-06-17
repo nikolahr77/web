@@ -1,5 +1,7 @@
 package web
 
+import "time"
+
 type Segmentation struct {
 	Address string
 	Age     int
@@ -10,6 +12,8 @@ type Campaign struct {
 	Name         string
 	Segmentation Segmentation
 	Status       string
+	CreatedOn time.Time
+	UpdatedOn time.Time
 }
 
 type RequestCampaign struct {

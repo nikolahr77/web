@@ -147,18 +147,13 @@ func TestCreateContactError(t *testing.T) {
 
 func TestGetContact(t *testing.T) {
 	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
-	req := httptest.NewRequest("POST", "/contacts", strings.NewReader(contact))
+	req := httptest.NewRequest("POST", "/contacts/1", strings.NewReader(contact))
 	w := httptest.NewRecorder()
 
-	cr := web.RequestContact{
-		Name:    "Ivan",
-		Address: "Sofia 1612",
-		Age:     23,
-		Email:   "test@test.com",
-	}
+	id := 1
 
 	c := web.Contact{
-		GUID:      "512341",
+		GUID:      "1",
 		Name:      "Ivan",
 		Address:   "Sofia 1612",
 		Age:       23,
@@ -169,13 +164,22 @@ func TestGetContact(t *testing.T) {
 
 	testObj := new(MockContactRepository)
 
-	testObj.On("Create", cr).Return(c, errors.New("test error"))
+	testObj.On("Get", id).Return(c, nil)
 
 	r := mux.NewRouter()
-	r.Handle("/contacts", api.GetContact(testObj))
+	r.Handle("/contacts/", api.GetContact(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
+	actual := api.ContactDTO{}
+	json.NewDecoder(w.Body).Decode(&actual)
+	expected := api.ContactDTO{
+		GUID:      "1",
+		Name:      "Ivan",
+		Age:       23,
+		Address:   "Sofia 1612",
+		Email:     "test@test.com",
+		CreatedOn: time.Unix(10, 0),
+		UpdatedOn: time.Unix(20, 0),
+	}
 	assert.Equal(t, expected, actual)
 
 	testObj.AssertExpectations(t)
