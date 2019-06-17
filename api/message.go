@@ -73,7 +73,7 @@ func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 		if err != nil {
 			http.Error(w, "Internal Error", 500)
 		}
-		json.NewEncoder(w).Encode(message)
+		json.NewEncoder(w).Encode(adaptMessageToDTO(message))
 	}
 }
 

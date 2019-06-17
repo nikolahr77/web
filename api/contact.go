@@ -94,9 +94,10 @@ func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 		json.NewDecoder(r.Body).Decode(&c)
 		con := adaptToRequestContact(c)
 		id := mux.Vars(r)["id"]
-		_, err1 := cr.Update(id, con)
+		contact, err1 := cr.Update(id, con)
 		if err1 != nil {
 			http.Error(w, "Internal error", 500)
 		}
+		json.NewEncoder(w).Encode(adaptToDTO(contact))
 	}
 }

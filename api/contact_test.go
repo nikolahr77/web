@@ -2,7 +2,7 @@ package api_test
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -107,23 +107,13 @@ func TestCreateContactError(t *testing.T) {
 
 	testObj := new(MockContactRepository)
 
-	testObj.On("Create", cr).Return(c, nil)
+	testObj.On("Create", cr).Return(c, errors.New("test error"))
 
 	r := mux.NewRouter()
 	r.Handle("/contacts", api.CreateContact(testObj))
 	r.ServeHTTP(w, req)
-	actual := api.ContactDTO{}
-	fmt.Printf("%#v\n", w.Body.String())
-	json.NewDecoder(w.Body).Decode(&actual)
-	expected := api.ContactDTO{
-		GUID:      "512341",
-		Name:      "Ivan",
-		Age:       23,
-		Address:   "Sofia 1612",
-		Email:     "test@test.com",
-		CreatedOn: time.Unix(10, 0),
-		UpdatedOn: time.Unix(20, 0),
-	}
+	actual := w.Code
+	expected := 500
 	assert.Equal(t, expected, actual)
 
 	testObj.AssertExpectations(t)
