@@ -76,7 +76,7 @@ type contactEntity struct {
 	Age       int       `db:"age"`
 	Address   string    `db:"address"`
 	CreatedOn time.Time `db:"created_on"`
-	UpdatedOn time.Time `db: "updated_on"`
+	UpdatedOn time.Time `db:"updated_on"`
 }
 
 func adaptToContact(entity contactEntity) web.Contact {

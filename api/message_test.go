@@ -78,7 +78,6 @@ func TestCreateMessage(t *testing.T) {
 	testObj.AssertExpectations(t)
 }
 
-
 func TestCreateMessageError(t *testing.T) {
 	message := `{"name":"Hello", "content":"This is a hello message"}`
 	req := httptest.NewRequest("POST", "/messages", strings.NewReader(message))
@@ -89,17 +88,9 @@ func TestCreateMessageError(t *testing.T) {
 		Content: "This is a hello message",
 	}
 
-	m := web.Message{
-		GUID:      "33123",
-		Name:      "Hello",
-		Content:   "This is a hello message",
-		CreatedOn: time.Unix(15, 0).UTC(),
-		UpdatedOn: time.Unix(25, 0).UTC(),
-	}
-
 	testObj := new(MockMessageRepository)
 
-	testObj.On("Create", mr).Return(m, errors.New("test error"))
+	testObj.On("Create", mr).Return(web.Message{}, errors.New("test error"))
 
 	r := mux.NewRouter()
 	r.Handle("/messages", api.CreateMessage(testObj))

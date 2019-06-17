@@ -10,36 +10,6 @@ import (
 	"time"
 )
 
-type MessageDTO struct {
-	GUID      string
-	Name      string    `json:"name"`
-	Content   string    `json:"content"`
-	CreatedOn time.Time `json:"created_on"`
-	UpdatedOn time.Time `json:"updated_on"`
-}
-
-type RequestMessageDTO struct {
-	Name    string `json:"name"`
-	Content string `json:"content"`
-}
-
-func adaptToRequestMessage(m RequestMessageDTO) web.RequestMessage {
-	return web.RequestMessage{
-		Name:    m.Name,
-		Content: m.Content,
-	}
-}
-
-func adaptMessageToDTO(c web.Message) MessageDTO {
-	return MessageDTO{
-		GUID:      c.GUID,
-		Name:      c.Name,
-		Content:   c.Content,
-		CreatedOn: c.CreatedOn,
-		UpdatedOn: c.UpdatedOn,
-	}
-}
-
 func CreateMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var m RequestMessageDTO
@@ -85,5 +55,35 @@ func GetMessage(msg web.MessageRepository) http.HandlerFunc {
 			http.Error(w, "Internal Error", 500)
 		}
 		fmt.Fprint(w, f)
+	}
+}
+
+type MessageDTO struct {
+	GUID      string
+	Name      string    `json:"name"`
+	Content   string    `json:"content"`
+	CreatedOn time.Time `json:"created_on"`
+	UpdatedOn time.Time `json:"updated_on"`
+}
+
+type RequestMessageDTO struct {
+	Name    string `json:"name"`
+	Content string `json:"content"`
+}
+
+func adaptToRequestMessage(m RequestMessageDTO) web.RequestMessage {
+	return web.RequestMessage{
+		Name:    m.Name,
+		Content: m.Content,
+	}
+}
+
+func adaptMessageToDTO(c web.Message) MessageDTO {
+	return MessageDTO{
+		GUID:      c.GUID,
+		Name:      c.Name,
+		Content:   c.Content,
+		CreatedOn: c.CreatedOn,
+		UpdatedOn: c.UpdatedOn,
 	}
 }

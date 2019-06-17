@@ -118,3 +118,43 @@ func TestCreateContactError(t *testing.T) {
 
 	testObj.AssertExpectations(t)
 }
+
+//func TestCreateContactErrorJson(t *testing.T) {
+//	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
+//	req := httptest.NewRequest("POST", "/contacts", strings.NewReader(contact))
+//	w := httptest.NewRecorder()
+//
+//	cr := web.RequestContact{
+//		Name:    "Ivan",
+//		Address: "Sofia 1612",
+//		Age:     23,
+//		Email:   "test@test.com",
+//	}
+//
+//	c := web.Contact{
+//		GUID:      "512341",
+//		Name:      "Ivan",
+//		Address:   "Sofia 1612",
+//		Age:       23,
+//		Email:     "test@test.com",
+//		CreatedOn: time.Unix(10, 0),
+//		UpdatedOn: time.Unix(20, 0),
+//	}
+//
+//	testObj := new(MockContactRepository)
+//
+//	testObj.On("json.NewDecoder", ).Return(c, errors.New("test error"))
+//
+//	r := mux.NewRouter()
+//	r.Handle("/contacts", api.CreateContact(testObj))
+//	r.ServeHTTP(w, req)
+//	actual := w.Code
+//	expected := 500
+//	assert.Equal(t, expected, actual)
+//
+//	testObj.AssertExpectations(t)
+//}
+
+func TestGetContact(t *testing.T) {
+
+}
