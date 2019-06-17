@@ -34,7 +34,7 @@ func (m *MockContactRepository) Delete(id string) error {
 }
 
 func (m *MockContactRepository) Update(id string, con web.RequestContact) (web.Contact, error) {
-	args := m.Called(id,con)
+	args := m.Called(id, con)
 	return args.Get(0).(web.Contact), args.Error(1)
 }
 

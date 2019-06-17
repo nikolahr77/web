@@ -91,7 +91,6 @@ func adaptToContact(entity contactEntity) web.Contact {
 	}
 }
 
-
 func NewContactRepository(db *sql.DB) web.ContactRepository {
 	return contactRepository{db: db}
 }

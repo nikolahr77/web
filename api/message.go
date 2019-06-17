@@ -30,6 +30,16 @@ func adaptToRequestMessage(m RequestMessageDTO) web.RequestMessage {
 	}
 }
 
+func adaptMessageToDTO(c web.Message) MessageDTO {
+	return MessageDTO{
+		GUID:      c.GUID,
+		Name:      c.Name,
+		Content:   c.Content,
+		CreatedOn: c.CreatedOn,
+		UpdatedOn: c.UpdatedOn,
+	}
+}
+
 func CreateMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var m RequestMessageDTO
@@ -37,17 +47,17 @@ func CreateMessage(msg web.MessageRepository) http.HandlerFunc {
 		result := adaptToRequestMessage(m)
 		message, err := msg.Create(result)
 		if err != nil {
-			panic(err)
+			http.Error(w, "Internal error", 500)
 		}
-		json.NewEncoder(w).Encode(message)
+		json.NewEncoder(w).Encode(adaptMessageToDTO(message))
 	}
 }
 
 func DeleteMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		err1 := msg.Delete(id)
-		if err1 != nil {
+		err := msg.Delete(id)
+		if err != nil {
 			http.Error(w, "Internal error", 500)
 		}
 	}
@@ -61,7 +71,6 @@ func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 		result := adaptToRequestMessage(m)
 		message, err := msg.Update(id, result)
 		if err != nil {
-			fmt.Println(err)
 			http.Error(w, "Internal Error", 500)
 		}
 		json.NewEncoder(w).Encode(message)
@@ -73,7 +82,6 @@ func GetMessage(msg web.MessageRepository) http.HandlerFunc {
 		id := mux.Vars(r)["id"]
 		f, err := msg.Get(id)
 		if err != nil {
-			fmt.Println(err)
 			http.Error(w, "Internal Error", 500)
 		}
 		fmt.Fprint(w, f)
