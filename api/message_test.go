@@ -2,6 +2,7 @@ package api_test
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -71,6 +72,40 @@ func TestCreateMessage(t *testing.T) {
 		CreatedOn: time.Unix(15, 0).UTC(),
 		UpdatedOn: time.Unix(25, 0).UTC(),
 	}
+
+	assert.Equal(t, expected, actual)
+
+	testObj.AssertExpectations(t)
+}
+
+
+func TestCreateMessageError(t *testing.T) {
+	message := `{"name":"Hello", "content":"This is a hello message"}`
+	req := httptest.NewRequest("POST", "/messages", strings.NewReader(message))
+	w := httptest.NewRecorder()
+
+	mr := web.RequestMessage{
+		Name:    "Hello",
+		Content: "This is a hello message",
+	}
+
+	m := web.Message{
+		GUID:      "33123",
+		Name:      "Hello",
+		Content:   "This is a hello message",
+		CreatedOn: time.Unix(15, 0).UTC(),
+		UpdatedOn: time.Unix(25, 0).UTC(),
+	}
+
+	testObj := new(MockMessageRepository)
+
+	testObj.On("Create", mr).Return(m, errors.New("test error"))
+
+	r := mux.NewRouter()
+	r.Handle("/messages", api.CreateMessage(testObj))
+	r.ServeHTTP(w, req)
+	actual := w.Code
+	expected := 500
 
 	assert.Equal(t, expected, actual)
 
