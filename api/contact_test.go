@@ -184,3 +184,48 @@ func TestGetContact(t *testing.T) {
 
 	testObj.AssertExpectations(t)
 }
+
+func TestUpdateContact(t *testing.T) {
+	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
+	req := httptest.NewRequest("POST", "/contacts", strings.NewReader(contact))
+	w := httptest.NewRecorder()
+
+	cr := web.RequestContact{
+		Name:    "Stefan",
+		Address: "Plovdiv",
+		Age:     34,
+		Email:   "stef@test.com",
+	}
+
+	c := web.Contact{
+		GUID:      "512341",
+		Name:      "Ivan",
+		Address:   "Sofia 1612",
+		Age:       23,
+		Email:     "test@test.com",
+		CreatedOn: time.Unix(10, 0),
+		UpdatedOn: time.Unix(20, 0),
+	}
+
+	testObj := new(MockContactRepository)
+
+	testObj.On("Update", cr).Return(c, nil)
+
+	r := mux.NewRouter()
+	r.Handle("/contacts", api.UpdateContact(testObj))
+	r.ServeHTTP(w, req)
+	actual := api.ContactDTO{}
+	json.NewDecoder(w.Body).Decode(&actual)
+	expected := api.ContactDTO{
+		GUID:      "512341",
+		Name:      "Ivan",
+		Age:       23,
+		Address:   "Sofia 1612",
+		Email:     "test@test.com",
+		CreatedOn: time.Unix(10, 0),
+		UpdatedOn: time.Unix(20, 0),
+	}
+	assert.Equal(t, expected, actual)
+
+	testObj.AssertExpectations(t)
+}
