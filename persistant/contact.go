@@ -16,7 +16,7 @@ func (c contactRepository) Get(id string) (web.Contact, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err := rows.Scan(&e.ID, &e.Name, &e.Email, &e.Age, &e.Address, &e.CreatedOn, &e.UpdatedOn)
+		err := rows.Scan(&e.GUID, &e.Name, &e.Email, &e.Age, &e.Address, &e.CreatedOn, &e.UpdatedOn)
 		if err != nil {
 			return web.Contact{}, err
 		}
@@ -70,7 +70,7 @@ func (c contactRepository) Update(id string, con web.RequestContact) (web.Contac
 }
 
 type contactEntity struct {
-	ID        string    `db:"id"`
+	GUID      string    `db:"uuid"`
 	Name      string    `db:"name"`
 	Email     string    `db:"email"`
 	Age       int       `db:"age"`
@@ -81,7 +81,7 @@ type contactEntity struct {
 
 func adaptToContact(entity contactEntity) web.Contact {
 	return web.Contact{
-		GUID:      entity.ID,
+		GUID:      entity.GUID,
 		Name:      entity.Name,
 		Email:     entity.Email,
 		Age:       entity.Age,
