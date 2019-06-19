@@ -39,7 +39,8 @@ func (c campaignRepository) Get(id string) (web.Campaign, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err := rows.Scan(&cam.GUID, &cam.Name, &cam.Status, &cam.CreatedOn, &cam.UpdatedOn, &cam.Segmentation.Address, &cam.Segmentation.Age, &cam.Segmentation.CampaignID, &cam.Segmentation.GUID)
+		err := rows.Scan(&cam.GUID, &cam.Name, &cam.Status, &cam.CreatedOn, &cam.UpdatedOn,
+			&cam.Segmentation.Address, &cam.Segmentation.Age, &cam.Segmentation.CampaignID, &cam.Segmentation.GUID)
 		if err != nil {
 			return web.Campaign{}, err
 		}

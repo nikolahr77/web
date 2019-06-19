@@ -15,6 +15,7 @@ func GetCampaign(cr web.CampaignRepository) http.HandlerFunc {
 		campaign, err := cr.Get(id)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
+			return
 		}
 		json.NewEncoder(w).Encode(adaptCamToDTO(campaign))
 	}
@@ -37,12 +38,14 @@ func CreateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 		err := json.NewDecoder(r.Body).Decode(&c)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
+			return
 		}
 		cam := adaptToRequestCampaign(c)
 
 		campaign, err := cr.Create(cam)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
+			return
 		}
 		json.NewEncoder(w).Encode(adaptCamToDTO(campaign))
 	}
@@ -54,12 +57,14 @@ func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 		err := json.NewDecoder(r.Body).Decode(&c)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
+			return
 		}
 		cam := adaptToRequestCampaign(c)
 		id := mux.Vars(r)["id"]
 		campaign, err := cr.Update(id, cam)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
+			return
 		}
 		json.NewEncoder(w).Encode(adaptCamToDTO(campaign))
 	}
