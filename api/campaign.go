@@ -3,24 +3,62 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/web"
 	"net/http"
 	"time"
 )
+
+func GetCampaign(cr web.CampaignRepository) http.HandlerFunc{
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := mux.Vars(r)["id"]
+		campaign, err := cr.Get(id)
+		if err != nil {
+			http.Error(w, "Internal error", 500)
+		}
+		json.NewEncoder(w).Encode(adaptCamToDTO(campaign))
+	}
+}
+
+func DeleteCampaign(cr web.CampaignRepository) http.HandlerFunc{
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := mux.Vars(r)["id"]
+		err := cr.Delete(id)
+		if err != nil {
+			fmt.Println(err)
+			http.Error(w, "Internal error", 500)
+		}
+	}
+}
 
 func CreateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var c RequestCampaignDTO
 		err := json.NewDecoder(r.Body).Decode(&c)
 		if err != nil {
-			fmt.Printf("Error  %e", err)
 			http.Error(w, "Internal error", 500)
 		}
 		cam := adaptToRequestCampaign(c)
 
-		campaign, err2 := cr.Create(cam)
-		if err2 != nil {
-			fmt.Printf("Error 2 %e", err2)
+		campaign, err := cr.Create(cam)
+		if err != nil {
+			http.Error(w, "Internal error", 500)
+		}
+		json.NewEncoder(w).Encode(adaptCamToDTO(campaign))
+	}
+}
+
+func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc{
+	return func(w http.ResponseWriter, r *http.Request) {
+		var c RequestCampaignDTO
+		err := json.NewDecoder(r.Body).Decode(&c)
+		if err != nil {
+			http.Error(w, "Internal error", 500)
+		}
+		cam := adaptToRequestCampaign(c)
+		id := mux.Vars(r)["id"]
+		campaign, err := cr.Update(id,cam)
+		if err != nil {
 			http.Error(w, "Internal error", 500)
 		}
 		json.NewEncoder(w).Encode(adaptCamToDTO(campaign))

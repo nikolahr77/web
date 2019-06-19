@@ -1,0 +1,36 @@
+package main
+
+import (
+	"database/sql"
+	"github.com/gorilla/mux"
+	"github.com/web/api"
+	"github.com/web/persistant"
+	"net/http"
+)
+
+func main() {
+	connStr := "user=postgres dbname=mail sslmode=disable password=1234"
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		panic(err)
+	}
+	cr := persistant.NewContactRepository(db)
+	msg := persistant.NewMessageRepository(db)
+	cam := persistant.NewCampaignRepository(db)
+	r := mux.NewRouter()
+	r.HandleFunc("/contacts/{id}", api.GetContact(cr)).Methods("GET")
+	r.HandleFunc("/contacts/{id}", api.UpdateContact(cr)).Methods("PUT")
+	r.HandleFunc("/contacts", api.CreateContact(cr)).Methods("POST")
+	r.HandleFunc("/contacts/{id}", api.DeleteContact(cr)).Methods("DELETE")
+
+	r.HandleFunc("/messages/{id}", api.GetMessage(msg)).Methods("GET")
+	r.HandleFunc("/messages/{id}", api.UpdateMessage(msg)).Methods("PUT")
+	r.HandleFunc("/messages", api.CreateMessage(msg)).Methods("POST")
+	r.HandleFunc("/messages/{id}", api.DeleteMessage(msg)).Methods("DELETE")
+
+	r.HandleFunc("/campaign/{id}", api.GetCampaign(cam)).Methods("GET")
+	r.HandleFunc("/campaign/{id}", api.UpdateCampaign(cam)).Methods("PUT")
+	r.HandleFunc("/campaign", api.CreateCampaign(cam)).Methods("POST")
+	r.HandleFunc("/campaign/{id}", api.DeleteCampaign(cam)).Methods("DELETE")
+	http.ListenAndServe(":8080", r)
+}

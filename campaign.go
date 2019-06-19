@@ -30,8 +30,8 @@ type RequestSegmentation struct {
 }
 
 type CampaignRepository interface {
-	//Get(id string) (Campaign, error)
+	Get(id string) (Campaign, error)
 	Create(m RequestCampaign) (Campaign, error)
-	//Delete(id string) error
-	//Update(id string, m RequestCampaign) (Campaign, Segmentation, error)
+	Delete(id string) error
+	Update(id string, m RequestCampaign) (Campaign, error)
 }
