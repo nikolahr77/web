@@ -7,8 +7,48 @@ import (
 	"time"
 )
 
+func adaptToSegmentation(c segmentationEntity) web.Segmentation {
+	return web.Segmentation{
+		Address: c.Address,
+		Age:     c.Age,
+	}
+}
 
-func (c campaignRepository) Delete(id string) error{
+func adaptToCampaign(c campaignEntity) web.Campaign {
+	return web.Campaign{
+		GUID:         c.GUID,
+		Name:         c.Name,
+		Status:       c.Status,
+		Segmentation: adaptToSegmentation(c.Segmentation),
+		CreatedOn:    c.CreatedOn,
+		UpdatedOn:    c.UpdatedOn,
+	}
+}
+
+func (c campaignRepository) Get(id string) (web.Campaign, error) {
+	var cam campaignEntity
+	getCampaign := `
+	SELECT * FROM campaign 
+	CROSS JOIN segmentation 
+	WHERE guid = $1
+     `
+
+	rows, err := c.db.Query(getCampaign, id)
+	if err != nil {
+		return web.Campaign{}, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&cam.GUID, &cam.Name, &cam.Status, &cam.CreatedOn, &cam.UpdatedOn, &cam.Segmentation.Address, &cam.Segmentation.Age, &cam.Segmentation.CampaignID, &cam.Segmentation.GUID)
+		if err != nil {
+			return web.Campaign{}, err
+		}
+	}
+	result := adaptToCampaign(cam)
+	return result, err
+}
+
+func (c campaignRepository) Delete(id string) error {
 	deleteCampaign := `
 	DELETE FROM campaign WHERE guid=$1`
 
@@ -16,13 +56,13 @@ func (c campaignRepository) Delete(id string) error{
 	DELETE FROM segmentation where campaign_id=$1`
 
 	tx, _ := c.db.Begin()
-	_, err := c.db.Exec(deleteSegmentation,id)
-	if err != nil{
+	_, err := c.db.Exec(deleteSegmentation, id)
+	if err != nil {
 		tx.Rollback()
 		return err
 	}
-	_, err = c.db.Exec(deleteCampaign,id)
-	if err != nil{
+	_, err = c.db.Exec(deleteCampaign, id)
+	if err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -30,7 +70,7 @@ func (c campaignRepository) Delete(id string) error{
 	return err
 }
 
-func (c campaignRepository) Update(id string, m web.RequestCampaign) (web.Campaign,error) {
+func (c campaignRepository) Update(id string, m web.RequestCampaign) (web.Campaign, error) {
 	updateCampaign := `
 	UPDATE campaign 
 	SET name=$1, status=$2, updated_on=$3
@@ -44,7 +84,7 @@ func (c campaignRepository) Update(id string, m web.RequestCampaign) (web.Campai
 	updatedOn := time.Now().UTC()
 
 	tx, _ := c.db.Begin()
-	_, err := c.db.Exec(updateCampaign,m.Name,"draft", updatedOn, id)
+	_, err := c.db.Exec(updateCampaign, m.Name, "draft", updatedOn, id)
 	if err != nil {
 		tx.Rollback()
 		return web.Campaign{}, err

@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func GetCampaign(cr web.CampaignRepository) http.HandlerFunc{
+func GetCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
 		campaign, err := cr.Get(id)
@@ -20,7 +20,7 @@ func GetCampaign(cr web.CampaignRepository) http.HandlerFunc{
 	}
 }
 
-func DeleteCampaign(cr web.CampaignRepository) http.HandlerFunc{
+func DeleteCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
 		err := cr.Delete(id)
@@ -48,7 +48,7 @@ func CreateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	}
 }
 
-func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc{
+func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var c RequestCampaignDTO
 		err := json.NewDecoder(r.Body).Decode(&c)
@@ -57,7 +57,7 @@ func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc{
 		}
 		cam := adaptToRequestCampaign(c)
 		id := mux.Vars(r)["id"]
-		campaign, err := cr.Update(id,cam)
+		campaign, err := cr.Update(id, cam)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 		}
