@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/web"
 	"net/http"
@@ -26,7 +25,6 @@ func DeleteCampaign(cr web.CampaignRepository) http.HandlerFunc {
 		id := mux.Vars(r)["id"]
 		err := cr.Delete(id)
 		if err != nil {
-			fmt.Println(err)
 			http.Error(w, "Internal error", 500)
 		}
 	}
@@ -41,7 +39,6 @@ func CreateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 			return
 		}
 		cam := adaptToRequestCampaign(c)
-
 		campaign, err := cr.Create(cam)
 		if err != nil {
 			http.Error(w, "Internal error", 500)

@@ -40,11 +40,13 @@ func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 		err := json.NewDecoder(r.Body).Decode(&c)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
+			return
 		}
 		con := adaptToRequestContact(c)
 		contact, err1 := cr.Create(con)
 		if err1 != nil {
 			http.Error(w, "Internal error", 500)
+			return
 		}
 		json.NewEncoder(w).Encode(adaptToDTO(contact))
 	}
@@ -59,6 +61,7 @@ func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 		contact, err1 := cr.Update(id, con)
 		if err1 != nil {
 			http.Error(w, "Internal error", 500)
+			return
 		}
 		json.NewEncoder(w).Encode(adaptToDTO(contact))
 	}

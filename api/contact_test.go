@@ -110,7 +110,7 @@ func TestCreateContactError(t *testing.T) {
 }
 
 func TestCreateContactErrorJson(t *testing.T) {
-	contact := `{"name":4132, "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
+	contact := `{fffsgffa}`
 	req := httptest.NewRequest("POST", "/contacts", strings.NewReader(contact))
 	w := httptest.NewRecorder()
 
@@ -144,6 +144,26 @@ func TestCreateContactErrorJson(t *testing.T) {
 
 	testObj.AssertExpectations(t)
 }
+
+func TestGetContactError(t *testing.T) {
+	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
+	req := httptest.NewRequest("GET", "/contacts/1", strings.NewReader(contact))
+	w := httptest.NewRecorder()
+
+	testObj := new(MockContactRepository)
+
+	testObj.On("Get", 1).Return(web.Contact{}, errors.New("Test error"))
+
+	r := mux.NewRouter()
+	r.Handle("/contacts/", api.GetContact(testObj))
+	r.ServeHTTP(w, req)
+	actual := w.Code
+	expected := 500
+	assert.Equal(t, expected, actual)
+
+	testObj.AssertExpectations(t)
+}
+
 
 func TestGetContact(t *testing.T) {
 	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
@@ -225,6 +245,43 @@ func TestUpdateContact(t *testing.T) {
 		CreatedOn: time.Unix(10, 0),
 		UpdatedOn: time.Unix(20, 0),
 	}
+	assert.Equal(t, expected, actual)
+
+	testObj.AssertExpectations(t)
+}
+
+
+func TestDeleteContact(t *testing.T) {
+	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
+	req := httptest.NewRequest("DELETE", "/contacts/512341", strings.NewReader(contact))
+	w := httptest.NewRecorder()
+
+	cr := web.RequestContact{
+		Name:    "Stefan",
+		Address: "Plovdiv",
+		Age:     34,
+		Email:   "stef@test.com",
+	}
+
+	//c := web.Contact{
+	//	GUID:      "512341",
+	//	Name:      "Ivan",
+	//	Address:   "Sofia 1612",
+	//	Age:       23,
+	//	Email:     "test@test.com",
+	//	CreatedOn: time.Unix(10, 0),
+	//	UpdatedOn: time.Unix(20, 0),
+	//}
+
+	testObj := new(MockContactRepository)
+
+	testObj.On("Delete", cr).Return(nil)
+
+	r := mux.NewRouter()
+	r.Handle("/contacts", api.DeleteContact(testObj))
+	r.ServeHTTP(w, req)
+	actual := w.Code
+	expected := 204
 	assert.Equal(t, expected, actual)
 
 	testObj.AssertExpectations(t)
