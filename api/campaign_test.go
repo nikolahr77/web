@@ -2,6 +2,7 @@ package api_test
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -89,6 +90,32 @@ func TestCreateCampaign(t *testing.T) {
 			Age:     12,
 		},
 	}
+	assert.Equal(t, expected, actual)
+
+	testObj.AssertExpectations(t)
+}
+func TestCreateCampaignError(t *testing.T) {
+	campaign := `{"name":"Test Campaign","segmentation":{"address":"Sofia 1512","age":12}}`
+	req := httptest.NewRequest("POST", "/campaign", strings.NewReader(campaign))
+	w := httptest.NewRecorder()
+
+	cr := web.RequestCampaign{
+		Name: "Test Campaign",
+		Segmentation: web.Segmentation{
+			Address: "Sofia 1512",
+			Age:     12,
+		},
+	}
+
+	testObj := new(MockCampaignRepository)
+
+	testObj.On("Create", cr).Return(web.Campaign{}, errors.New("Test error"))
+
+	r := mux.NewRouter()
+	r.Handle("/campaign", api.CreateCampaign(testObj))
+	r.ServeHTTP(w, req)
+	actual := w.Code
+	expected := 500
 	assert.Equal(t, expected, actual)
 
 	testObj.AssertExpectations(t)
