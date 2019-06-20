@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/web"
 	"github.com/web/api"
+	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -109,40 +110,17 @@ func TestCreateContactError(t *testing.T) {
 	testObj.AssertExpectations(t)
 }
 
-func TestCreateContactErrorJson(t *testing.T) {
+func TestCreateContactMalfornedJson(t *testing.T) {
 	contact := `{fffsgffa}`
 	req := httptest.NewRequest("POST", "/contacts", strings.NewReader(contact))
+
 	w := httptest.NewRecorder()
-
-	cr := web.RequestContact{
-		Name:    "Ivan",
-		Address: "Sofia 1612",
-		Age:     23,
-		Email:   "test@test.com",
-	}
-
-	c := web.Contact{
-		GUID:      "512341",
-		Name:      "Ivan",
-		Address:   "Sofia 1612",
-		Age:       23,
-		Email:     "test@test.com",
-		CreatedOn: time.Unix(10, 0),
-		UpdatedOn: time.Unix(20, 0),
-	}
-
-	testObj := new(MockContactRepository)
-
-	testObj.On("Create", cr).Return(c, nil)
-
 	r := mux.NewRouter()
-	r.Handle("/contacts", api.CreateContact(testObj))
+	r.Handle("/contacts", api.CreateContact(nil))
 	r.ServeHTTP(w, req)
 	actual := w.Code
-	expected := 500
+	expected := 400
 	assert.Equal(t, expected, actual)
-
-	testObj.AssertExpectations(t)
 }
 
 func TestGetContactError(t *testing.T) {
@@ -170,7 +148,7 @@ func TestGetContact(t *testing.T) {
 	req := httptest.NewRequest("GET", "/contacts/1", strings.NewReader(contact))
 	w := httptest.NewRecorder()
 
-	id := 1
+	id := "1"
 
 	c := web.Contact{
 		GUID:      "1",
@@ -187,9 +165,10 @@ func TestGetContact(t *testing.T) {
 	testObj.On("Get", id).Return(c, nil)
 
 	r := mux.NewRouter()
-	r.Handle("/contacts/", api.GetContact(testObj))
+	r.Handle("/contacts/{id}", api.GetContact(testObj))
 	r.ServeHTTP(w, req)
 	actual := api.ContactDTO{}
+
 	json.NewDecoder(w.Body).Decode(&actual)
 	expected := api.ContactDTO{
 		GUID:      "1",
@@ -201,14 +180,16 @@ func TestGetContact(t *testing.T) {
 		UpdatedOn: time.Unix(20, 0),
 	}
 	assert.Equal(t, expected, actual)
-
+	assert.Equal(t,http.StatusOK,w.Code)
 	testObj.AssertExpectations(t)
 }
 
 func TestUpdateContact(t *testing.T) {
-	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
-	req := httptest.NewRequest("POST", "/contacts", strings.NewReader(contact))
+	contact := `{"name":"Stefan", "address":"Plovdiv", "age":34, "email":"stef@test.com"}`
+	req := httptest.NewRequest("POST", "/contacts/1", strings.NewReader(contact))
 	w := httptest.NewRecorder()
+
+	id := "1"
 
 	cr := web.RequestContact{
 		Name:    "Stefan",
@@ -229,10 +210,10 @@ func TestUpdateContact(t *testing.T) {
 
 	testObj := new(MockContactRepository)
 
-	testObj.On("Update", cr).Return(c, nil)
+	testObj.On("Update", id, cr).Return(c, nil)
 
 	r := mux.NewRouter()
-	r.Handle("/contacts", api.UpdateContact(testObj))
+	r.Handle("/contacts/{id}", api.UpdateContact(testObj))
 	r.ServeHTTP(w, req)
 	actual := api.ContactDTO{}
 	json.NewDecoder(w.Body).Decode(&actual)
@@ -246,7 +227,7 @@ func TestUpdateContact(t *testing.T) {
 		UpdatedOn: time.Unix(20, 0),
 	}
 	assert.Equal(t, expected, actual)
-
+	assert.Equal(t, http.StatusOK, w.Code)
 	testObj.AssertExpectations(t)
 }
 
@@ -256,32 +237,15 @@ func TestDeleteContact(t *testing.T) {
 	req := httptest.NewRequest("DELETE", "/contacts/512341", strings.NewReader(contact))
 	w := httptest.NewRecorder()
 
-	cr := web.RequestContact{
-		Name:    "Stefan",
-		Address: "Plovdiv",
-		Age:     34,
-		Email:   "stef@test.com",
-	}
-
-	//c := web.Contact{
-	//	GUID:      "512341",
-	//	Name:      "Ivan",
-	//	Address:   "Sofia 1612",
-	//	Age:       23,
-	//	Email:     "test@test.com",
-	//	CreatedOn: time.Unix(10, 0),
-	//	UpdatedOn: time.Unix(20, 0),
-	//}
-
 	testObj := new(MockContactRepository)
 
-	testObj.On("Delete", cr).Return(nil)
+	testObj.On("Delete", "512341").Return(nil)
 
 	r := mux.NewRouter()
-	r.Handle("/contacts", api.DeleteContact(testObj))
+	r.Handle("/contacts/{id}", api.DeleteContact(testObj))
 	r.ServeHTTP(w, req)
 	actual := w.Code
-	expected := 204
+	expected := 200
 	assert.Equal(t, expected, actual)
 
 	testObj.AssertExpectations(t)

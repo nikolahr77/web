@@ -39,7 +39,7 @@ func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 		var c RequestContactDTO
 		err := json.NewDecoder(r.Body).Decode(&c)
 		if err != nil {
-			http.Error(w, "Internal error", 500)
+			http.Error(w, "Bad request", 400)
 			return
 		}
 		con := adaptToRequestContact(c)
