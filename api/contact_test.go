@@ -110,7 +110,7 @@ func TestCreateContactError(t *testing.T) {
 }
 
 func TestCreateContactErrorJson(t *testing.T) {
-	contact := `{"name":2341, "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
+	contact := `{"name":4132, "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
 	req := httptest.NewRequest("POST", "/contacts", strings.NewReader(contact))
 	w := httptest.NewRecorder()
 
@@ -147,7 +147,7 @@ func TestCreateContactErrorJson(t *testing.T) {
 
 func TestGetContact(t *testing.T) {
 	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
-	req := httptest.NewRequest("POST", "/contacts/1", strings.NewReader(contact))
+	req := httptest.NewRequest("GET", "/contacts/1", strings.NewReader(contact))
 	w := httptest.NewRecorder()
 
 	id := 1
