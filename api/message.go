@@ -14,7 +14,7 @@ func CreateMessage(msg web.MessageRepository) http.HandlerFunc {
 		var m RequestMessageDTO
 		err := json.NewDecoder(r.Body).Decode(&m)
 		if err != nil {
-			http.Error(w, "Internal error", 500)
+			http.Error(w, "Bad request", 400)
 			return
 		}
 		result := adaptToRequestMessage(m)
@@ -44,7 +44,7 @@ func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 		var m RequestMessageDTO
 		err := json.NewDecoder(r.Body).Decode(&m)
 		if err != nil {
-			http.Error(w, "Internal error", 500)
+			http.Error(w, "Bad request", 400)
 			return
 		}
 		result := adaptToRequestMessage(m)

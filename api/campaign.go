@@ -35,7 +35,7 @@ func CreateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 		var c RequestCampaignDTO
 		err := json.NewDecoder(r.Body).Decode(&c)
 		if err != nil {
-			http.Error(w, "Internal error", 500)
+			http.Error(w, "Bad request", 400)
 			return
 		}
 		cam := adaptToRequestCampaign(c)
@@ -53,7 +53,7 @@ func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 		var c RequestCampaignDTO
 		err := json.NewDecoder(r.Body).Decode(&c)
 		if err != nil {
-			http.Error(w, "Internal error", 500)
+			http.Error(w, "Bad request", 400)
 			return
 		}
 		cam := adaptToRequestCampaign(c)
