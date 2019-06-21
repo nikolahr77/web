@@ -39,13 +39,6 @@ func (m *MockCampaignRepository) Update(id string, cam web.RequestCampaign) (web
 	return args.Get(0).(web.Campaign), args.Error(1)
 }
 
-func adaptToSegmentation(s web.RequestSegmentation) web.Segmentation {
-	return web.Segmentation{
-		Address: s.Address,
-		Age:     s.Age,
-	}
-}
-
 func TestCreateCampaign(t *testing.T) {
 	campaign := `{"name":"Test Campaign","segmentation":{"address":"Sofia 1512","age":12}}`
 	req := httptest.NewRequest("POST", "/campaign", strings.NewReader(campaign))
