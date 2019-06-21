@@ -7,30 +7,6 @@ import (
 	"time"
 )
 
-type messageRepository struct {
-	db *sql.DB
-}
-
-type messageEntity struct {
-	GUID      string    `db:"guid"`
-	Name      string    `db:"name"`
-	Content   string    `db:"content"`
-	CreatedOn time.Time `db:"created_on"`
-	UpdatedOn time.Time `db:"updated_on"`
-}
-
-func NewMessageRepository(db *sql.DB) web.MessageRepository {
-	return messageRepository{db: db}
-}
-
-func adaptToMessage(m messageEntity) web.Message {
-	return web.Message{
-		GUID:    m.GUID,
-		Name:    m.Name,
-		Content: m.Content,
-	}
-}
-
 func (m messageRepository) Create(msg web.RequestMessage) (web.Message, error) {
 	query := `
 	INSERT INTO messages (guid, name, content, created_on, updated_on)
@@ -86,4 +62,28 @@ func (m messageRepository) Get(id string) (web.Message, error) {
 	}
 	result := adaptToMessage(e)
 	return result, err
+}
+
+type messageRepository struct {
+	db *sql.DB
+}
+
+type messageEntity struct {
+	GUID      string    `db:"guid"`
+	Name      string    `db:"name"`
+	Content   string    `db:"content"`
+	CreatedOn time.Time `db:"created_on"`
+	UpdatedOn time.Time `db:"updated_on"`
+}
+
+func NewMessageRepository(db *sql.DB) web.MessageRepository {
+	return messageRepository{db: db}
+}
+
+func adaptToMessage(m messageEntity) web.Message {
+	return web.Message{
+		GUID:    m.GUID,
+		Name:    m.Name,
+		Content: m.Content,
+	}
 }

@@ -7,24 +7,6 @@ import (
 	"time"
 )
 
-func adaptToSegmentation(c segmentationEntity) web.Segmentation {
-	return web.Segmentation{
-		Address: c.Address,
-		Age:     c.Age,
-	}
-}
-
-func adaptToCampaign(c campaignEntity) web.Campaign {
-	return web.Campaign{
-		GUID:         c.GUID,
-		Name:         c.Name,
-		Status:       c.Status,
-		Segmentation: adaptToSegmentation(c.Segmentation),
-		CreatedOn:    c.CreatedOn,
-		UpdatedOn:    c.UpdatedOn,
-	}
-}
-
 func (c campaignRepository) Get(id string) (web.Campaign, error) {
 	var cam campaignEntity
 	getCampaign := `
@@ -161,6 +143,24 @@ type segmentationEntity struct {
 	Address    string `db:"address"`
 	Age        int    `db:"age"`
 	CampaignID string `db:"campaign_id"`
+}
+
+func adaptToSegmentation(c segmentationEntity) web.Segmentation {
+	return web.Segmentation{
+		Address: c.Address,
+		Age:     c.Age,
+	}
+}
+
+func adaptToCampaign(c campaignEntity) web.Campaign {
+	return web.Campaign{
+		GUID:         c.GUID,
+		Name:         c.Name,
+		Status:       c.Status,
+		Segmentation: adaptToSegmentation(c.Segmentation),
+		CreatedOn:    c.CreatedOn,
+		UpdatedOn:    c.UpdatedOn,
+	}
 }
 
 func NewCampaignRepository(db *sql.DB) web.CampaignRepository {
