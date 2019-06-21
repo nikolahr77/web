@@ -57,8 +57,8 @@ func TestCreateContact(t *testing.T) {
 		Address:   "Sofia 1612",
 		Age:       23,
 		Email:     "test@test.com",
-		CreatedOn: time.Unix(10, 0),
-		UpdatedOn: time.Unix(20, 0),
+		CreatedOn: time.Unix(10, 0).UTC(),
+		UpdatedOn: time.Unix(20, 0).UTC(),
 	}
 
 	testObj := new(MockContactRepository)
@@ -76,11 +76,11 @@ func TestCreateContact(t *testing.T) {
 		Age:       23,
 		Address:   "Sofia 1612",
 		Email:     "test@test.com",
-		CreatedOn: time.Unix(10, 0),
-		UpdatedOn: time.Unix(20, 0),
+		CreatedOn: time.Unix(10, 0).UTC(),
+		UpdatedOn: time.Unix(20, 0).UTC(),
 	}
 	assert.Equal(t, expected, actual)
-
+	assert.Equal(t, http.StatusOK, w.Code)
 	testObj.AssertExpectations(t)
 }
 
@@ -128,21 +128,19 @@ func TestGetContact(t *testing.T) {
 	req := httptest.NewRequest("GET", "/contacts/1", strings.NewReader(contact))
 	w := httptest.NewRecorder()
 
-	id := "1"
-
 	c := web.Contact{
 		GUID:      "1",
 		Name:      "Ivan",
 		Address:   "Sofia 1612",
 		Age:       23,
 		Email:     "test@test.com",
-		CreatedOn: time.Unix(10, 0),
-		UpdatedOn: time.Unix(20, 0),
+		CreatedOn: time.Unix(10, 0).UTC(),
+		UpdatedOn: time.Unix(20, 0).UTC(),
 	}
 
 	testObj := new(MockContactRepository)
 
-	testObj.On("Get", id).Return(c, nil)
+	testObj.On("Get", "1").Return(c, nil)
 
 	r := mux.NewRouter()
 	r.Handle("/contacts/{id}", api.GetContact(testObj))
@@ -156,8 +154,8 @@ func TestGetContact(t *testing.T) {
 		Age:       23,
 		Address:   "Sofia 1612",
 		Email:     "test@test.com",
-		CreatedOn: time.Unix(10, 0),
-		UpdatedOn: time.Unix(20, 0),
+		CreatedOn: time.Unix(10, 0).UTC(),
+		UpdatedOn: time.Unix(20, 0).UTC(),
 	}
 	assert.Equal(t, expected, actual)
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -169,11 +167,9 @@ func TestGetContactReturnError(t *testing.T) {
 	req := httptest.NewRequest("GET", "/contacts/1", strings.NewReader(contact))
 	w := httptest.NewRecorder()
 
-	id := "1"
-
 	testObj := new(MockContactRepository)
 
-	testObj.On("Get", id).Return(web.Contact{}, errors.New("Test Error"))
+	testObj.On("Get", "1").Return(web.Contact{}, errors.New("Test Error"))
 
 	r := mux.NewRouter()
 	r.Handle("/contacts/{id}", api.GetContact(testObj))
@@ -189,8 +185,6 @@ func TestUpdateContact(t *testing.T) {
 	req := httptest.NewRequest("POST", "/contacts/1", strings.NewReader(contact))
 	w := httptest.NewRecorder()
 
-	id := "1"
-
 	cr := web.RequestContact{
 		Name:    "Stefan",
 		Address: "Plovdiv",
@@ -204,13 +198,13 @@ func TestUpdateContact(t *testing.T) {
 		Address:   "Sofia 1612",
 		Age:       23,
 		Email:     "test@test.com",
-		CreatedOn: time.Unix(10, 0),
-		UpdatedOn: time.Unix(20, 0),
+		CreatedOn: time.Unix(10, 0).UTC(),
+		UpdatedOn: time.Unix(20, 0).UTC(),
 	}
 
 	testObj := new(MockContactRepository)
 
-	testObj.On("Update", id, cr).Return(c, nil)
+	testObj.On("Update", "1", cr).Return(c, nil)
 
 	r := mux.NewRouter()
 	r.Handle("/contacts/{id}", api.UpdateContact(testObj))
@@ -223,8 +217,8 @@ func TestUpdateContact(t *testing.T) {
 		Age:       23,
 		Address:   "Sofia 1612",
 		Email:     "test@test.com",
-		CreatedOn: time.Unix(10, 0),
-		UpdatedOn: time.Unix(20, 0),
+		CreatedOn: time.Unix(10, 0).UTC(),
+		UpdatedOn: time.Unix(20, 0).UTC(),
 	}
 	assert.Equal(t, expected, actual)
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -236,8 +230,6 @@ func TestUpdateContactReturnError(t *testing.T) {
 	req := httptest.NewRequest("POST", "/contacts/1", strings.NewReader(contact))
 	w := httptest.NewRecorder()
 
-	id := "1"
-
 	cr := web.RequestContact{
 		Name:    "Stefan",
 		Address: "Plovdiv",
@@ -247,7 +239,7 @@ func TestUpdateContactReturnError(t *testing.T) {
 
 	testObj := new(MockContactRepository)
 
-	testObj.On("Update", id, cr).Return(web.Contact{}, errors.New("Test Error"))
+	testObj.On("Update", "1", cr).Return(web.Contact{}, errors.New("Test Error"))
 
 	r := mux.NewRouter()
 	r.Handle("/contacts/{id}", api.UpdateContact(testObj))

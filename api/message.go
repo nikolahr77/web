@@ -60,12 +60,12 @@ func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 func GetMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		f, err := msg.Get(id)
+		message, err := msg.Get(id)
 		if err != nil {
 			http.Error(w, "Internal Error", 500)
 			return
 		}
-		json.NewEncoder(w).Encode(adaptMessageToDTO(f))
+		json.NewEncoder(w).Encode(adaptMessageToDTO(message))
 	}
 }
 
