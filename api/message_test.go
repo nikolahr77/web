@@ -186,11 +186,11 @@ func TestUpdateMessageReturnError(t *testing.T) {
 
 func TestUpdateMessageMalformedJson(t *testing.T) {
 	message := `{"name":41215}`
-	req := httptest.NewRequest("POST", "/messages/1", strings.NewReader(message))
+	req := httptest.NewRequest("PUT", "/messages/1", strings.NewReader(message))
 	w := httptest.NewRecorder()
 
 	r := mux.NewRouter()
-	r.Handle("/messages/1", api.CreateMessage(nil))
+	r.Handle("/messages/1", api.UpdateMessage(nil))
 	r.ServeHTTP(w, req)
 	actual := w.Code
 	expected := 400
@@ -253,9 +253,9 @@ func TestGetMessage(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/messages/{id}", api.GetMessage(testObj))
 	r.ServeHTTP(w, req)
-	actual := web.Message{}
+	actual := api.MessageDTO{}
 	json.NewDecoder(w.Body).Decode(&actual)
-	expected := web.Message{
+	expected := api.MessageDTO{
 		GUID:      "ab33",
 		Name:      "Test",
 		Content:   "Getting test message",
