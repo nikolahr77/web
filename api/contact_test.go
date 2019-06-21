@@ -110,7 +110,7 @@ func TestCreateContactError(t *testing.T) {
 	testObj.AssertExpectations(t)
 }
 
-func TestCreateContactMalfornedJson(t *testing.T) {
+func TestCreateContactMalformedJson(t *testing.T) {
 	contact := `{fffsgffa}`
 	req := httptest.NewRequest("POST", "/contacts", strings.NewReader(contact))
 
@@ -122,26 +122,6 @@ func TestCreateContactMalfornedJson(t *testing.T) {
 	expected := 400
 	assert.Equal(t, expected, actual)
 }
-
-func TestGetContactError(t *testing.T) {
-	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
-	req := httptest.NewRequest("GET", "/contacts/1", strings.NewReader(contact))
-	w := httptest.NewRecorder()
-
-	testObj := new(MockContactRepository)
-
-	testObj.On("Get", 1).Return(web.Contact{}, errors.New("Test error"))
-
-	r := mux.NewRouter()
-	r.Handle("/contacts/", api.GetContact(testObj))
-	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
-
-	testObj.AssertExpectations(t)
-}
-
 
 func TestGetContact(t *testing.T) {
 	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
@@ -180,7 +160,27 @@ func TestGetContact(t *testing.T) {
 		UpdatedOn: time.Unix(20, 0),
 	}
 	assert.Equal(t, expected, actual)
-	assert.Equal(t,http.StatusOK,w.Code)
+	assert.Equal(t, http.StatusOK, w.Code)
+	testObj.AssertExpectations(t)
+}
+
+func TestGetContactReturnError(t *testing.T) {
+	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
+	req := httptest.NewRequest("GET", "/contacts/1", strings.NewReader(contact))
+	w := httptest.NewRecorder()
+
+	id := "1"
+
+	testObj := new(MockContactRepository)
+
+	testObj.On("Get", id).Return(web.Contact{}, errors.New("Test Error"))
+
+	r := mux.NewRouter()
+	r.Handle("/contacts/{id}", api.GetContact(testObj))
+	r.ServeHTTP(w, req)
+	actual := w.Code
+	expected := 500
+	assert.Equal(t, expected, actual)
 	testObj.AssertExpectations(t)
 }
 
@@ -231,6 +231,44 @@ func TestUpdateContact(t *testing.T) {
 	testObj.AssertExpectations(t)
 }
 
+func TestUpdateContactReturnError(t *testing.T) {
+	contact := `{"name":"Stefan", "address":"Plovdiv", "age":34, "email":"stef@test.com"}`
+	req := httptest.NewRequest("POST", "/contacts/1", strings.NewReader(contact))
+	w := httptest.NewRecorder()
+
+	id := "1"
+
+	cr := web.RequestContact{
+		Name:    "Stefan",
+		Address: "Plovdiv",
+		Age:     34,
+		Email:   "stef@test.com",
+	}
+
+	testObj := new(MockContactRepository)
+
+	testObj.On("Update", id, cr).Return(web.Contact{}, errors.New("Test Error"))
+
+	r := mux.NewRouter()
+	r.Handle("/contacts/{id}", api.UpdateContact(testObj))
+	r.ServeHTTP(w, req)
+	actual := w.Code
+	expected := 500
+	assert.Equal(t, expected, actual)
+	testObj.AssertExpectations(t)
+}
+
+func TestUpdateContactMalformedJson(t *testing.T) {
+	contact := `{"name":33931}`
+	req := httptest.NewRequest("PUT", "/contacts/1", strings.NewReader(contact))
+	w := httptest.NewRecorder()
+	r := mux.NewRouter()
+	r.Handle("/contacts/1", api.UpdateContact(nil))
+	r.ServeHTTP(w, req)
+	actual := w.Code
+	expected := 400
+	assert.Equal(t, expected, actual)
+}
 
 func TestDeleteContact(t *testing.T) {
 	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
@@ -246,6 +284,25 @@ func TestDeleteContact(t *testing.T) {
 	r.ServeHTTP(w, req)
 	actual := w.Code
 	expected := 200
+	assert.Equal(t, expected, actual)
+
+	testObj.AssertExpectations(t)
+}
+
+func TestDeleteContactReturnError(t *testing.T) {
+	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
+	req := httptest.NewRequest("DELETE", "/contacts/512341", strings.NewReader(contact))
+	w := httptest.NewRecorder()
+
+	testObj := new(MockContactRepository)
+
+	testObj.On("Delete", "512341").Return(errors.New("Test Error"))
+
+	r := mux.NewRouter()
+	r.Handle("/contacts/{id}", api.DeleteContact(testObj))
+	r.ServeHTTP(w, req)
+	actual := w.Code
+	expected := 500
 	assert.Equal(t, expected, actual)
 
 	testObj.AssertExpectations(t)

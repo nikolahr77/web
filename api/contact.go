@@ -55,11 +55,15 @@ func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var c RequestContactDTO
-		json.NewDecoder(r.Body).Decode(&c)
+		err := json.NewDecoder(r.Body).Decode(&c)
+		if err != nil {
+			http.Error(w, "Bad request", 400)
+			return
+		}
 		con := adaptToRequestContact(c)
 		id := mux.Vars(r)["id"]
-		contact, err1 := cr.Update(id, con)
-		if err1 != nil {
+		contact, err := cr.Update(id, con)
+		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return
 		}
