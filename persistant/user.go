@@ -32,11 +32,24 @@ func (u userRepository) Create(usr web.RequestUser) (web.User, error) {
 }
 
 func (u userRepository) Update(guid string, usr web.RequestUser) (web.User, error) {
-	return web.User{}, nil
+	updateUser := `
+	UPDATE users
+	SET name=$1, password=$2, email=$3, age=$4`
+	_, err := u.db.Exec(updateUser, usr.Name, usr.Password, usr.Email, usr.Age)
+	return web.User{
+		Name:     usr.Name,
+		Password: usr.Password,
+		Email:    usr.Email,
+		Age:      usr.Age,
+	}, err
 }
 
 func (u userRepository) Delete(guid string) error {
-	return nil
+	deleteUser := `
+	DELETE FROM users WHERE guid = $1`
+
+	_, err := u.db.Exec(deleteUser, guid)
+	return err
 }
 
 type userEntity struct {

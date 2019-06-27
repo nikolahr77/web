@@ -35,8 +35,8 @@ func main() {
 	r.HandleFunc("/campaign/{id}", api.DeleteCampaign(cam)).Methods("DELETE")
 
 	//r.HandleFunc("/users/{id}", api.GetUser(usr)).Methods("GET")
-	//r.HandleFunc("/users/{id}", api.UpdateUser(usr)).Methods("PUT")
+	r.HandleFunc("/users/{id}", api.UpdateUser(usr)).Methods("PUT")
 	r.HandleFunc("/users", api.CreateUser(usr)).Methods("POST")
-	//r.HandleFunc("/users/{id}", api.DeleteUser(usr)).Methods("DELETE")
+	r.HandleFunc("/users/{id}", api.DeleteUser(usr)).Methods("DELETE")
 	http.ListenAndServe(":8080", r)
 }
