@@ -2,11 +2,13 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/web"
 	"net/http"
+	"time"
 )
 
-func CreateUser(cr web.UserRepository) http.HandlerFunc{
+func CreateUser(cr web.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var u RequestUserDTO
 		err := json.NewDecoder(r.Body).Decode(&u)
@@ -17,6 +19,7 @@ func CreateUser(cr web.UserRepository) http.HandlerFunc{
 		usr := adaptToRequestUser(u)
 		user, err := cr.Create(usr)
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, "Internal error", 500)
 			return
 		}
@@ -24,39 +27,38 @@ func CreateUser(cr web.UserRepository) http.HandlerFunc{
 	}
 }
 
-
 type UserDTO struct {
-	GUID string `json:"guid"`
-	Name string `json:"name"`
-	Password string `json:"password"`
-	Age int `json:"age"`
-	Email string `json:"email"`
-	CreatedOn string `json:"created_on"`
+	GUID      string    `json:"guid"`
+	Name      string    `json:"name"`
+	Password  string    `json:"password"`
+	Age       int       `json:"age"`
+	Email     string    `json:"email"`
+	CreatedOn time.Time `json:"created_on"`
 }
 
 type RequestUserDTO struct {
-	Name string `json:"name"`
-	Email string `json:"email"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
-	Age int `json:"age"`
+	Age      int    `json:"age"`
 }
 
-func adaptToRequestUser(u RequestUserDTO) web.RequestUser{
+func adaptToRequestUser(u RequestUserDTO) web.RequestUser {
 	return web.RequestUser{
-		Name: u.Name,
-		Age: u.Age,
-		Email: u.Email,
+		Name:     u.Name,
+		Age:      u.Age,
+		Email:    u.Email,
 		Password: u.Password,
 	}
 }
 
-func userToDTO(u web.User) UserDTO{
+func userToDTO(u web.User) UserDTO {
 	return UserDTO{
-		GUID: u.GUID,
-		Password: u.Password,
-		Name: u.Name,
-		Age: u.Age,
-		Email: u.Email,
+		GUID:      u.GUID,
+		Password:  u.Password,
+		Name:      u.Name,
+		Age:       u.Age,
+		Email:     u.Email,
 		CreatedOn: u.CreatedOn,
 	}
 }

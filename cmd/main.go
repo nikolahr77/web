@@ -17,6 +17,7 @@ func main() {
 	cr := persistant.NewContactRepository(db)
 	msg := persistant.NewMessageRepository(db)
 	cam := persistant.NewCampaignRepository(db)
+	usr := persistant.NewUserRepository(db)
 	r := mux.NewRouter()
 	r.HandleFunc("/contacts/{id}", api.GetContact(cr)).Methods("GET")
 	r.HandleFunc("/contacts/{id}", api.UpdateContact(cr)).Methods("PUT")
@@ -32,5 +33,10 @@ func main() {
 	r.HandleFunc("/campaign/{id}", api.UpdateCampaign(cam)).Methods("PUT")
 	r.HandleFunc("/campaign", api.CreateCampaign(cam)).Methods("POST")
 	r.HandleFunc("/campaign/{id}", api.DeleteCampaign(cam)).Methods("DELETE")
+
+	//r.HandleFunc("/users/{id}", api.GetUser(usr)).Methods("GET")
+	//r.HandleFunc("/users/{id}", api.UpdateUser(usr)).Methods("PUT")
+	r.HandleFunc("/users", api.CreateUser(usr)).Methods("POST")
+	//r.HandleFunc("/users/{id}", api.DeleteUser(usr)).Methods("DELETE")
 	http.ListenAndServe(":8080", r)
 }
