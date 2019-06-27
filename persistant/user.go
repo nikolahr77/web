@@ -8,10 +8,25 @@ import (
 )
 
 func (u userRepository) Get(guid string) (web.User, error) {
-	//getUser := `
-	//SELECT * FROM users WHERE guid = $1`
-	//
-	return web.User{}, nil
+	getUser := `
+	SELECT * FROM users WHERE guid = $1`
+
+	var ue userEntity
+	rows, err := u.db.Query(getUser, guid)
+	if err != nil {
+		return web.User{}, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&ue.GUID, &ue.Name, &ue.Password, &ue.Email, &ue.CreatedOn, &ue.Age)
+		if err != nil {
+			return web.User{}, err
+		}
+	}
+	result := adaptToUser(ue)
+	return result, err
+
+	return web.User{}, err
 }
 
 func (u userRepository) Create(usr web.RequestUser) (web.User, error) {
@@ -59,6 +74,17 @@ type userEntity struct {
 	Age       int       `db:"age"`
 	CreatedOn time.Time `db:"created_on"`
 	Email     string    `db:"email"`
+}
+
+func adaptToUser(u userEntity) web.User {
+	return web.User{
+		GUID:      u.GUID,
+		Name:      u.Name,
+		Password:  u.Password,
+		Email:     u.Email,
+		Age:       u.Age,
+		CreatedOn: u.CreatedOn,
+	}
 }
 
 func NewUserRepository(db *sql.DB) web.UserRepository {

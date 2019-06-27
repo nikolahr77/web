@@ -8,6 +8,18 @@ import (
 	"time"
 )
 
+func GetUser(cr web.UserRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := mux.Vars(r)["id"]
+		user, err := cr.Get(id)
+		if err != nil {
+			http.Error(w, "Internal error", 500)
+			return
+		}
+		json.NewEncoder(w).Encode(userToDTO(user))
+	}
+}
+
 func UpdateUser(cr web.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
