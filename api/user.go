@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/web"
 	"net/http"
@@ -33,7 +32,6 @@ func UpdateUser(cr web.UserRepository) http.HandlerFunc {
 		usr := adaptToRequestUser(u)
 		user, err := cr.Update(id, usr)
 		if err != nil {
-			fmt.Println(err)
 			http.Error(w, "Internal error", 500)
 			return
 		}
@@ -78,7 +76,6 @@ type UserDTO struct {
 	Email     string    `json:"email"`
 	CreatedOn time.Time `json:"created_on"`
 	UpdatedOn time.Time `json:"updated_on"`
-
 }
 
 type RequestUserDTO struct {

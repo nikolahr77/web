@@ -59,7 +59,8 @@ func (u userRepository) Create(usr web.RequestUser) (web.User, error) {
 func (u userRepository) Update(guid string, usr web.RequestUser) (web.User, error) {
 	updateUser := `
 	UPDATE users
-	SET name=$1, password=$2, email=$3, age=$4, updated_on=$5`
+	SET name=$1, password=$2, email=$3, age=$4, updated_on=$5
+	WHERE guid = $6`
 	updatedOn := time.Now().UTC()
 	saltedBytes := []byte(usr.Password)
 	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
@@ -68,12 +69,12 @@ func (u userRepository) Update(guid string, usr web.RequestUser) (web.User, erro
 	}
 	cryptPass := string(hashedBytes[:])
 
-	_, err = u.db.Exec(updateUser, usr.Name, cryptPass, usr.Email, usr.Age, updatedOn)
+	_, err = u.db.Exec(updateUser, usr.Name, cryptPass, usr.Email, usr.Age, updatedOn, guid)
 	return web.User{
-		Name:     usr.Name,
-		Password: usr.Password,
-		Email:    usr.Email,
-		Age:      usr.Age,
+		Name:      usr.Name,
+		Password:  usr.Password,
+		Email:     usr.Email,
+		Age:       usr.Age,
 		UpdatedOn: updatedOn,
 	}, err
 }
