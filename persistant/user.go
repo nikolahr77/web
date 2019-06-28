@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/google/uuid"
 	"github.com/web"
+	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
@@ -35,7 +36,15 @@ func (u userRepository) Create(usr web.RequestUser) (web.User, error) {
 	VALUES ($1, $2, $3, $4, $5, $6)`
 	guid := uuid.New()
 	createdOn := time.Now().UTC()
-	_, err := u.db.Exec(createUser, guid, usr.Name, usr.Password, usr.Email, createdOn, usr.Age)
+
+	saltedBytes := []byte(usr.Password)
+	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
+	if err != nil {
+		return web.User{}, err
+	}
+	hash := string(hashedBytes[:])
+
+	_, err = u.db.Exec(createUser, guid, usr.Name, hash, usr.Email, createdOn, usr.Age)
 	return web.User{
 		GUID:      guid.String(),
 		Name:      usr.Name,
