@@ -59,6 +59,7 @@ func TestCreateUser(t *testing.T) {
 		Password:  "sss1234",
 		Email:     "ton@gmail.com",
 		CreatedOn: time.Unix(80, 0).UTC(),
+		UpdatedOn: time.Unix(80, 0).UTC(),
 	}
 	testObj := new(MockUserRepository)
 
@@ -76,6 +77,7 @@ func TestCreateUser(t *testing.T) {
 		Password:  "sss1234",
 		Email:     "ton@gmail.com",
 		CreatedOn: time.Unix(80, 0).UTC(),
+		UpdatedOn: time.Unix(80, 0).UTC(),
 	}
 	assert.Equal(t, expected, actual)
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -143,6 +145,8 @@ func TestUpdateUser(t *testing.T) {
 		Password:  "sss1234",
 		Email:     "ton@gmail.com",
 		CreatedOn: time.Unix(80, 0).UTC(),
+		UpdatedOn: time.Unix(120, 0).UTC(),
+
 	}
 	testObj := new(MockUserRepository)
 
@@ -160,6 +164,8 @@ func TestUpdateUser(t *testing.T) {
 		Password:  "sss1234",
 		Email:     "ton@gmail.com",
 		CreatedOn: time.Unix(80, 0).UTC(),
+		UpdatedOn: time.Unix(120, 0).UTC(),
+
 	}
 	assert.Equal(t, expected, actual)
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -257,6 +263,8 @@ func TestGetUser(t *testing.T) {
 		Password:  "sss1234",
 		Email:     "ton@gmail.com",
 		CreatedOn: time.Unix(80, 0).UTC(),
+		UpdatedOn: time.Unix(120, 0).UTC(),
+
 	}
 
 	testObj := new(MockUserRepository)
@@ -275,6 +283,7 @@ func TestGetUser(t *testing.T) {
 		Password:  "sss1234",
 		Email:     "ton@gmail.com",
 		CreatedOn: time.Unix(80, 0).UTC(),
+		UpdatedOn: time.Unix(120, 0).UTC(),
 	}
 	assert.Equal(t, expected, actual)
 	assert.Equal(t, http.StatusOK, w.Code)

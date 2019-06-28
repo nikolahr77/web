@@ -19,7 +19,7 @@ func (u userRepository) Get(guid string) (web.User, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err := rows.Scan(&ue.GUID, &ue.Name, &ue.Password, &ue.Email, &ue.CreatedOn, &ue.Age)
+		err := rows.Scan(&ue.GUID, &ue.Name, &ue.Password, &ue.Email, &ue.Age, &ue.CreatedOn, &ue.UpdatedOn)
 		if err != nil {
 			return web.User{}, err
 		}
@@ -32,19 +32,19 @@ func (u userRepository) Get(guid string) (web.User, error) {
 
 func (u userRepository) Create(usr web.RequestUser) (web.User, error) {
 	createUser := `
-	INSERT INTO users (guid, name, password, email, created_on, age)
-	VALUES ($1, $2, $3, $4, $5, $6)`
+	INSERT INTO users (guid, name, password, email, created_on, age, updated_on)
+	VALUES ($1, $2, $3, $4, $5, $6, $7)`
 	guid := uuid.New()
 	createdOn := time.Now().UTC()
 
-	saltedBytes := []byte(usr.Password)
-	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
+	passBytes := []byte(usr.Password)
+	hashedBytes, err := bcrypt.GenerateFromPassword(passBytes, bcrypt.DefaultCost)
 	if err != nil {
 		return web.User{}, err
 	}
-	hash := string(hashedBytes[:])
+	cryptPass := string(hashedBytes[:])
 
-	_, err = u.db.Exec(createUser, guid, usr.Name, hash, usr.Email, createdOn, usr.Age)
+	_, err = u.db.Exec(createUser, guid, usr.Name, cryptPass, usr.Email, createdOn, usr.Age, createdOn)
 	return web.User{
 		GUID:      guid.String(),
 		Name:      usr.Name,
@@ -52,19 +52,29 @@ func (u userRepository) Create(usr web.RequestUser) (web.User, error) {
 		Email:     usr.Email,
 		Age:       usr.Age,
 		CreatedOn: createdOn,
+		UpdatedOn: createdOn,
 	}, err
 }
 
 func (u userRepository) Update(guid string, usr web.RequestUser) (web.User, error) {
 	updateUser := `
 	UPDATE users
-	SET name=$1, password=$2, email=$3, age=$4`
-	_, err := u.db.Exec(updateUser, usr.Name, usr.Password, usr.Email, usr.Age)
+	SET name=$1, password=$2, email=$3, age=$4, updated_on=$5`
+	updatedOn := time.Now().UTC()
+	saltedBytes := []byte(usr.Password)
+	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
+	if err != nil {
+		return web.User{}, err
+	}
+	cryptPass := string(hashedBytes[:])
+
+	_, err = u.db.Exec(updateUser, usr.Name, cryptPass, usr.Email, usr.Age, updatedOn)
 	return web.User{
 		Name:     usr.Name,
 		Password: usr.Password,
 		Email:    usr.Email,
 		Age:      usr.Age,
+		UpdatedOn: updatedOn,
 	}, err
 }
 
@@ -82,6 +92,7 @@ type userEntity struct {
 	Password  string    `db:"password"`
 	Age       int       `db:"age"`
 	CreatedOn time.Time `db:"created_on"`
+	UpdatedOn time.Time `db:"updated_on"`
 	Email     string    `db:"email"`
 }
 
@@ -93,6 +104,7 @@ func adaptToUser(u userEntity) web.User {
 		Email:     u.Email,
 		Age:       u.Age,
 		CreatedOn: u.CreatedOn,
+		UpdatedOn: u.UpdatedOn,
 	}
 }
 

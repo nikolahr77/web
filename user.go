@@ -9,6 +9,7 @@ type User struct {
 	Email     string
 	Age       int
 	CreatedOn time.Time
+	UpdatedOn time.Time
 }
 
 type RequestUser struct {
