@@ -7,10 +7,10 @@ import (
 	"strings"
 )
 
-func main(){
+func main() {
 	contact := `{"name":"Petur", "address":"Pleven", "age":11, "email":"pepi@test.com"}`
 
-	resp, err := http.Post("http://localhost:8080/contacts","application/json", strings.NewReader(contact))
+	resp, err := http.Post("http://localhost:8080/contacts", "application/json", strings.NewReader(contact))
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -9,7 +9,6 @@ import (
 func main() {
 	client := &http.Client{}
 
-
 	req, err := http.NewRequest("DELETE", "http://localhost:8080/contacts/8422a98d-56ea-431b-9109-3d592e6f92f3", nil)
 	if err != nil {
 		fmt.Println(err)
