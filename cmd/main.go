@@ -20,7 +20,7 @@ func main() {
 	cam := persistant.NewCampaignRepository(db)
 	usr := persistant.NewUserRepository(db)
 	r := mux.NewRouter()
-
+	//s := r.Host("/users").Subrouter()
 	r.HandleFunc("/contacts/{id}", api.GetContact(cr)).Methods("GET")
 	r.HandleFunc("/contacts/{id}", api.UpdateContact(cr)).Methods("PUT")
 	r.HandleFunc("/contacts", api.CreateContact(cr)).Methods("POST")
@@ -40,7 +40,8 @@ func main() {
 	r.HandleFunc("/users/{id}", api.UpdateUser(usr)).Methods("PUT")
 	r.HandleFunc("/users", api.CreateUser(usr)).Methods("POST") //bez middleware
 	r.HandleFunc("/users/{id}", api.DeleteUser(usr)).Methods("DELETE")
-	r.Use(web.BasicAuth)
+	authMiddleware := web.AuthMiddleware{UserRepository:usr}
+	r.Use(authMiddleware.BasicAuth)
 
 	http.ListenAndServe(":8080", r)
 

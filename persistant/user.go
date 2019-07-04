@@ -8,6 +8,29 @@ import (
 	"time"
 )
 
+func (u userRepository) GetByName(name string) (web.User, error) {
+		query := `
+		SELECT * FROM users WHERE name = $1`
+
+		rows, err := u.db.Query(query, name)
+
+	var ue userEntity
+
+	if err != nil {
+		return web.User{}, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&ue.GUID, &ue.Name, &ue.Password, &ue.Email, &ue.Age, &ue.CreatedOn, &ue.UpdatedOn)
+		if err != nil {
+			return web.User{}, err
+		}
+	}
+	result := adaptToUser(ue)
+	return result, err
+}
+
+
 func (u userRepository) Get(guid string) (web.User, error) {
 	getUser := `
 	SELECT * FROM users WHERE guid = $1`

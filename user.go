@@ -20,6 +20,7 @@ type RequestUser struct {
 }
 
 type UserRepository interface {
+	GetByName(name string) (User, error)
 	Get(guid string) (User, error)
 	Create(usr RequestUser) (User, error)
 	Update(guid string, usr RequestUser) (User, error)

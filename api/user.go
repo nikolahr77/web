@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+
 func GetUser(cr web.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
