@@ -9,10 +9,10 @@ import (
 )
 
 func (u userRepository) GetByName(name string) (web.User, error) {
-		query := `
+	query := `
 		SELECT * FROM users WHERE name = $1`
 
-		rows, err := u.db.Query(query, name)
+	rows, err := u.db.Query(query, name)
 
 	var ue userEntity
 
@@ -29,7 +29,6 @@ func (u userRepository) GetByName(name string) (web.User, error) {
 	result := adaptToUser(ue)
 	return result, err
 }
-
 
 func (u userRepository) Get(guid string) (web.User, error) {
 	getUser := `

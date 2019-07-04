@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 )
+
 type AuthMiddleware struct {
 	UserRepository UserRepository
 }
@@ -43,14 +44,14 @@ type MessageRequest struct {
 }
 
 type Message2 struct {
-	From email //az
-	To []email //contacts
-	TextPart string //slagame content ot messages
+	From     email   //az
+	To       []email //contacts
+	TextPart string  //slagame content ot messages
 }
 
 type email struct {
 	email string
-	name string
+	name  string
 }
 
 //func GetUserByName(name string) (User, error) {
@@ -112,4 +113,3 @@ type email struct {
 //	return true
 //}
 //
-

@@ -40,7 +40,7 @@ func main() {
 	r.HandleFunc("/users/{id}", api.UpdateUser(usr)).Methods("PUT")
 	r.HandleFunc("/users", api.CreateUser(usr)).Methods("POST") //bez middleware
 	r.HandleFunc("/users/{id}", api.DeleteUser(usr)).Methods("DELETE")
-	authMiddleware := web.AuthMiddleware{UserRepository:usr}
+	authMiddleware := web.AuthMiddleware{UserRepository: usr}
 	r.Use(authMiddleware.BasicAuth)
 
 	http.ListenAndServe(":8080", r)
