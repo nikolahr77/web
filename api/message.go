@@ -17,13 +17,16 @@ func CreateMessage(msg web.MessageRepository) http.HandlerFunc {
 			http.Error(w, "Bad request", 400)
 			return
 		}
-		result := adaptToRequestMessage(m)
-		message, err := msg.Create(result)
+		adaptedReqMsg := web.RequestMessage{}
+		SourceToDestination(m, &adaptedReqMsg)
+		message, err := msg.Create(adaptedReqMsg)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return
 		}
-		json.NewEncoder(w).Encode(adaptMessageToDTO(message))
+		adaptedMsg := MessageDTO{}
+		SourceToDestination(message, &adaptedMsg)
+		json.NewEncoder(w).Encode(adaptedMsg)
 	}
 }
 
@@ -47,13 +50,16 @@ func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 			http.Error(w, "Bad request", 400)
 			return
 		}
-		result := adaptToRequestMessage(m)
-		message, err := msg.Update(id, result)
+		adaptedReqMsg := web.RequestMessage{}
+		SourceToDestination(m, &adaptedReqMsg)
+		message, err := msg.Update(id, adaptedReqMsg)
 		if err != nil {
 			http.Error(w, "Internal Error", 500)
 			return
 		}
-		json.NewEncoder(w).Encode(adaptMessageToDTO(message))
+		adaptedMsg := MessageDTO{}
+		SourceToDestination(message, &adaptedMsg)
+		json.NewEncoder(w).Encode(adaptedMsg)
 	}
 }
 
@@ -65,7 +71,9 @@ func GetMessage(msg web.MessageRepository) http.HandlerFunc {
 			http.Error(w, "Internal Error", 500)
 			return
 		}
-		json.NewEncoder(w).Encode(adaptMessageToDTO(message))
+		adaptedMsg := MessageDTO{}
+		SourceToDestination(message, &adaptedMsg)
+		json.NewEncoder(w).Encode(adaptedMsg)
 	}
 }
 
@@ -80,21 +88,4 @@ type MessageDTO struct {
 type RequestMessageDTO struct {
 	Name    string `json:"name"`
 	Content string `json:"content"`
-}
-
-func adaptToRequestMessage(m RequestMessageDTO) web.RequestMessage {
-	return web.RequestMessage{
-		Name:    m.Name,
-		Content: m.Content,
-	}
-}
-
-func adaptMessageToDTO(c web.Message) MessageDTO {
-	return MessageDTO{
-		GUID:      c.GUID,
-		Name:      c.Name,
-		Content:   c.Content,
-		CreatedOn: c.CreatedOn,
-		UpdatedOn: c.UpdatedOn,
-	}
 }
