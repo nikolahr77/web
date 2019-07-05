@@ -16,7 +16,9 @@ func GetCampaign(cr web.CampaignRepository) http.HandlerFunc {
 			http.Error(w, "Internal error", 500)
 			return
 		}
-		json.NewEncoder(w).Encode(adaptCamToDTO(campaign))
+		adaptedCam := CampaignDTO{}
+		SourceToDestination(campaign, &adaptedCam)
+		json.NewEncoder(w).Encode(adaptedCam)
 	}
 }
 
@@ -38,12 +40,16 @@ func CreateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 			http.Error(w, "Bad request", 400)
 			return
 		}
-		cam := adaptToRequestCampaign(c)
+		cam := web.RequestCampaign{}
+		SourceToDestination(c, &cam)
 		campaign, err := cr.Create(cam)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return
 		}
+		//camDTO := CampaignDTO{}
+		//SourceToDestination(campaign, &camDTO)
+		//json.NewEncoder(w).Encode(camDTO)
 		json.NewEncoder(w).Encode(adaptCamToDTO(campaign))
 	}
 }
@@ -56,29 +62,17 @@ func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 			http.Error(w, "Bad request", 400)
 			return
 		}
-		cam := adaptToRequestCampaign(c)
+		cam := web.RequestCampaign{}
+		SourceToDestination(c, &cam)
 		id := mux.Vars(r)["id"]
 		campaign, err := cr.Update(id, cam)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return
 		}
-		json.NewEncoder(w).Encode(adaptCamToDTO(campaign))
-	}
-}
-
-func adaptToRequestCampaign(c RequestCampaignDTO) web.RequestCampaign {
-	return web.RequestCampaign{
-		Name:         c.Name,
-		Segmentation: adaptDTOtoSeg(c.Segmentation),
-		Status:       c.Status,
-	}
-}
-
-func adaptDTOtoSeg(c SegmentationDTO) web.Segmentation {
-	return web.Segmentation{
-		Address: c.Address,
-		Age:     c.Age,
+		adaptedCam := CampaignDTO{}
+		SourceToDestination(campaign, &adaptedCam)
+		json.NewEncoder(w).Encode(adaptedCam)
 	}
 }
 
