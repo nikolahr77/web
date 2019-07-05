@@ -13,13 +13,15 @@ import (
 func GetContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		guid := mux.Vars(r)["id"]
-		c, err := cr.Get(guid)
+		contact, err := cr.Get(guid)
 		if err != nil {
 			fmt.Println(err)
 			http.Error(w, "Internal error", 500)
 			return
 		}
-		json.NewEncoder(w).Encode(adaptToDTO(c))
+		contactDTO := ContactDTO{}
+		SourceToDestination(contact, &contactDTO)
+		json.NewEncoder(w).Encode(contactDTO)
 	}
 
 }
@@ -42,13 +44,16 @@ func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 			http.Error(w, "Bad request", 400)
 			return
 		}
-		con := adaptToRequestContact(c)
+		con := web.RequestContact{}
+		SourceToDestination(c, &con)
 		contact, err1 := cr.Create(con)
 		if err1 != nil {
 			http.Error(w, "Internal error", 500)
 			return
 		}
-		json.NewEncoder(w).Encode(adaptToDTO(contact))
+		contactDTO := ContactDTO{}
+		SourceToDestination(contact, &contactDTO)
+		json.NewEncoder(w).Encode(contactDTO)
 	}
 }
 
@@ -60,14 +65,17 @@ func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 			http.Error(w, "Bad request", 400)
 			return
 		}
-		con := adaptToRequestContact(c)
+		con := web.RequestContact{}
+		SourceToDestination(c, &con)
 		id := mux.Vars(r)["id"]
 		contact, err := cr.Update(id, con)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return
 		}
-		json.NewEncoder(w).Encode(adaptToDTO(contact))
+		contactDTO := ContactDTO{}
+		SourceToDestination(contact, &contactDTO)
+		json.NewEncoder(w).Encode(contactDTO)
 	}
 }
 
@@ -89,25 +97,4 @@ type RequestContactDTO struct {
 	Email   string `json:"email"`
 	Age     int    `json:"age"`
 	Address string `json:"address"`
-}
-
-func adaptToDTO(c web.Contact) ContactDTO {
-	return ContactDTO{
-		GUID:      c.GUID,
-		Name:      c.Name,
-		Email:     c.Email,
-		Age:       c.Age,
-		Address:   c.Address,
-		CreatedOn: c.CreatedOn,
-		UpdatedOn: c.UpdatedOn,
-	}
-}
-
-func adaptToRequestContact(c RequestContactDTO) web.RequestContact {
-	return web.RequestContact{
-		Name:    c.Name,
-		Age:     c.Age,
-		Address: c.Address,
-		Email:   c.Email,
-	}
 }
