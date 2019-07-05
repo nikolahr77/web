@@ -24,6 +24,11 @@ func (m *MockUserRepository) Get(guid string) (web.User, error) {
 	return args.Get(0).(web.User), args.Error(1)
 }
 
+func (m *MockUserRepository) GetByName(name string) (web.User, error) {
+	args := m.Called(name)
+	return args.Get(0).(web.User), args.Error(1)
+}
+
 func (m *MockUserRepository) Create(usr web.RequestUser) (web.User, error) {
 	args := m.Called(usr)
 	return args.Get(0).(web.User), args.Error(1)

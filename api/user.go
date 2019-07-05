@@ -16,7 +16,9 @@ func GetUser(cr web.UserRepository) http.HandlerFunc {
 			http.Error(w, "Internal error", 500)
 			return
 		}
-		json.NewEncoder(w).Encode(userToDTO(user))
+		adaptedUser := UserDTO{}
+		SourceToDestination(user, &adaptedUser)
+		json.NewEncoder(w).Encode(adaptedUser)
 	}
 }
 
@@ -29,13 +31,16 @@ func UpdateUser(cr web.UserRepository) http.HandlerFunc {
 			http.Error(w, "Bad request", 400)
 			return
 		}
-		usr := adaptToRequestUser(u)
+		usr := web.RequestUser{}
+		SourceToDestination(u, &usr)
 		user, err := cr.Update(id, usr)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return
 		}
-		json.NewEncoder(w).Encode(userToDTO(user))
+		adaptedUser := UserDTO{}
+		SourceToDestination(user, &adaptedUser)
+		json.NewEncoder(w).Encode(adaptedUser)
 	}
 }
 
@@ -47,13 +52,17 @@ func CreateUser(cr web.UserRepository) http.HandlerFunc {
 			http.Error(w, "Bad request", 400)
 			return
 		}
-		usr := adaptToRequestUser(u)
+
+		usr := web.RequestUser{}
+		SourceToDestination(u, &usr)
 		user, err := cr.Create(usr)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return
 		}
-		json.NewEncoder(w).Encode(userToDTO(user))
+		adaptedUser := UserDTO{}
+		SourceToDestination(user, &adaptedUser)
+		json.NewEncoder(w).Encode(adaptedUser)
 	}
 }
 
@@ -83,25 +92,4 @@ type RequestUserDTO struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Age      int    `json:"age"`
-}
-
-func adaptToRequestUser(u RequestUserDTO) web.RequestUser {
-	return web.RequestUser{
-		Name:     u.Name,
-		Age:      u.Age,
-		Email:    u.Email,
-		Password: u.Password,
-	}
-}
-
-func userToDTO(u web.User) UserDTO {
-	return UserDTO{
-		GUID:      u.GUID,
-		Password:  u.Password,
-		Name:      u.Name,
-		Age:       u.Age,
-		Email:     u.Email,
-		CreatedOn: u.CreatedOn,
-		UpdatedOn: u.UpdatedOn,
-	}
 }
