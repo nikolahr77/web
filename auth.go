@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
@@ -13,7 +12,6 @@ type AuthMiddleware struct {
 
 func (am AuthMiddleware) BasicAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(r.URL.String())
 		if r.URL.String() == "/users" {
 			next.ServeHTTP(w, r)
 			return
