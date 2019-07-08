@@ -40,6 +40,9 @@ func main() {
 	r.HandleFunc("/users/{id}", api.UpdateUser(usr)).Methods("PUT")
 	r.HandleFunc("/users", api.CreateUser(usr)).Methods("POST") //bez middleware
 	r.HandleFunc("/users/{id}", api.DeleteUser(usr)).Methods("DELETE")
+	startCampaignRepo := web.StartCamRepo{CampaignRepository:cam}
+	r.HandleFunc("/campaign/start/{id}", startCampaignRepo.StartCampaign()).Methods("GET")
+
 	authMiddleware := web.AuthMiddleware{UserRepository: usr}
 	r.Use(authMiddleware.BasicAuth)
 

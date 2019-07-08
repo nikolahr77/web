@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/web"
+	"github.com/web/convert"
 	"net/http"
 	"time"
 )
@@ -20,7 +21,7 @@ func GetContact(cr web.ContactRepository) http.HandlerFunc {
 			return
 		}
 		contactDTO := ContactDTO{}
-		SourceToDestination(contact, &contactDTO)
+		convert.SourceToDestination(contact, &contactDTO)
 		json.NewEncoder(w).Encode(contactDTO)
 	}
 
@@ -45,14 +46,14 @@ func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 			return
 		}
 		con := web.RequestContact{}
-		SourceToDestination(c, &con)
+		convert.SourceToDestination(c, &con)
 		contact, err1 := cr.Create(con)
 		if err1 != nil {
 			http.Error(w, "Internal error", 500)
 			return
 		}
 		contactDTO := ContactDTO{}
-		SourceToDestination(contact, &contactDTO)
+		convert.SourceToDestination(contact, &contactDTO)
 		json.NewEncoder(w).Encode(contactDTO)
 	}
 }
@@ -66,7 +67,7 @@ func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 			return
 		}
 		con := web.RequestContact{}
-		SourceToDestination(c, &con)
+		convert.SourceToDestination(c, &con)
 		id := mux.Vars(r)["id"]
 		contact, err := cr.Update(id, con)
 		if err != nil {
@@ -74,7 +75,7 @@ func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 			return
 		}
 		contactDTO := ContactDTO{}
-		SourceToDestination(contact, &contactDTO)
+		convert.SourceToDestination(contact, &contactDTO)
 		json.NewEncoder(w).Encode(contactDTO)
 	}
 }

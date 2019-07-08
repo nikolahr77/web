@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/web"
+	"github.com/web/convert"
 	"net/http"
 	"time"
 )
@@ -18,14 +19,14 @@ func CreateMessage(msg web.MessageRepository) http.HandlerFunc {
 			return
 		}
 		adaptedReqMsg := web.RequestMessage{}
-		SourceToDestination(m, &adaptedReqMsg)
+		convert.SourceToDestination(m, &adaptedReqMsg)
 		message, err := msg.Create(adaptedReqMsg)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return
 		}
 		adaptedMsg := MessageDTO{}
-		SourceToDestination(message, &adaptedMsg)
+		convert.SourceToDestination(message, &adaptedMsg)
 		json.NewEncoder(w).Encode(adaptedMsg)
 	}
 }
@@ -51,14 +52,14 @@ func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 			return
 		}
 		adaptedReqMsg := web.RequestMessage{}
-		SourceToDestination(m, &adaptedReqMsg)
+		convert.SourceToDestination(m, &adaptedReqMsg)
 		message, err := msg.Update(id, adaptedReqMsg)
 		if err != nil {
 			http.Error(w, "Internal Error", 500)
 			return
 		}
 		adaptedMsg := MessageDTO{}
-		SourceToDestination(message, &adaptedMsg)
+		convert.SourceToDestination(message, &adaptedMsg)
 		json.NewEncoder(w).Encode(adaptedMsg)
 	}
 }
@@ -72,7 +73,7 @@ func GetMessage(msg web.MessageRepository) http.HandlerFunc {
 			return
 		}
 		adaptedMsg := MessageDTO{}
-		SourceToDestination(message, &adaptedMsg)
+		convert.SourceToDestination(message, &adaptedMsg)
 		json.NewEncoder(w).Encode(adaptedMsg)
 	}
 }

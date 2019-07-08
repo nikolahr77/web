@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/web"
+	"github.com/web/convert"
 	"net/http"
 	"time"
 )
@@ -17,7 +18,7 @@ func GetCampaign(cr web.CampaignRepository) http.HandlerFunc {
 			return
 		}
 		adaptedCam := CampaignDTO{}
-		SourceToDestination(campaign, &adaptedCam)
+		convert.SourceToDestination(campaign, &adaptedCam)
 		json.NewEncoder(w).Encode(adaptedCam)
 	}
 }
@@ -41,16 +42,16 @@ func CreateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 			return
 		}
 		cam := web.RequestCampaign{}
-		SourceToDestination(c, &cam)
+		convert.SourceToDestination(c, &cam)
 		campaign, err := cr.Create(cam)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return
 		}
-		//camDTO := CampaignDTO{}
-		//SourceToDestination(campaign, &camDTO)
-		//json.NewEncoder(w).Encode(camDTO)
-		json.NewEncoder(w).Encode(adaptCamToDTO(campaign))
+		camDTO := CampaignDTO{}
+		convert.SourceToDestination(campaign, &camDTO)
+		json.NewEncoder(w).Encode(camDTO)
+		//json.NewEncoder(w).Encode(adaptCamToDTO(campaign))
 	}
 }
 
@@ -63,7 +64,7 @@ func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 			return
 		}
 		cam := web.RequestCampaign{}
-		SourceToDestination(c, &cam)
+		convert.SourceToDestination(c, &cam)
 		id := mux.Vars(r)["id"]
 		campaign, err := cr.Update(id, cam)
 		if err != nil {
@@ -71,26 +72,8 @@ func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 			return
 		}
 		adaptedCam := CampaignDTO{}
-		SourceToDestination(campaign, &adaptedCam)
+		convert.SourceToDestination(campaign, &adaptedCam)
 		json.NewEncoder(w).Encode(adaptedCam)
-	}
-}
-
-func adaptCamToDTO(c web.Campaign) CampaignDTO {
-	return CampaignDTO{
-		GUID:         c.GUID,
-		Name:         c.Name,
-		Status:       c.Status,
-		Segmentation: adaptSegToDTO(c.Segmentation),
-		CreatedOn:    c.CreatedOn,
-		UpdatedOn:    c.UpdatedOn,
-	}
-}
-
-func adaptSegToDTO(c web.Segmentation) SegmentationDTO {
-	return SegmentationDTO{
-		Age:     c.Age,
-		Address: c.Address,
 	}
 }
 

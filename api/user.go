@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/web"
+	"github.com/web/convert"
 	"net/http"
 	"time"
 )
@@ -17,7 +18,7 @@ func GetUser(cr web.UserRepository) http.HandlerFunc {
 			return
 		}
 		adaptedUser := UserDTO{}
-		SourceToDestination(user, &adaptedUser)
+		convert.SourceToDestination(user, &adaptedUser)
 		json.NewEncoder(w).Encode(adaptedUser)
 	}
 }
@@ -32,14 +33,14 @@ func UpdateUser(cr web.UserRepository) http.HandlerFunc {
 			return
 		}
 		usr := web.RequestUser{}
-		SourceToDestination(u, &usr)
+		convert.SourceToDestination(u, &usr)
 		user, err := cr.Update(id, usr)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return
 		}
 		adaptedUser := UserDTO{}
-		SourceToDestination(user, &adaptedUser)
+		convert.SourceToDestination(user, &adaptedUser)
 		json.NewEncoder(w).Encode(adaptedUser)
 	}
 }
@@ -54,14 +55,14 @@ func CreateUser(cr web.UserRepository) http.HandlerFunc {
 		}
 
 		usr := web.RequestUser{}
-		SourceToDestination(u, &usr)
+		convert.SourceToDestination(u, &usr)
 		user, err := cr.Create(usr)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return
 		}
 		adaptedUser := UserDTO{}
-		SourceToDestination(user, &adaptedUser)
+		convert.SourceToDestination(user, &adaptedUser)
 		json.NewEncoder(w).Encode(adaptedUser)
 	}
 }

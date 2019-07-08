@@ -56,8 +56,8 @@ func TestCreateCampaign(t *testing.T) {
 		GUID:      "334",
 		Name:      "Test Campaign",
 		Status:    "draft",
-		CreatedOn: time.Unix(10, 0),
-		UpdatedOn: time.Unix(20, 0),
+		CreatedOn: time.Unix(10, 0).UTC(),
+		UpdatedOn: time.Unix(20, 0).UTC(),
 		Segmentation: web.Segmentation{
 			Address: "Sofia 1512",
 			Age:     12,
@@ -77,8 +77,8 @@ func TestCreateCampaign(t *testing.T) {
 		GUID:      "334",
 		Name:      "Test Campaign",
 		Status:    "draft",
-		CreatedOn: time.Unix(10, 0),
-		UpdatedOn: time.Unix(20, 0),
+		CreatedOn: time.Unix(10, 0).UTC(),
+		UpdatedOn: time.Unix(20, 0).UTC(),
 		Segmentation: api.SegmentationDTO{
 			Address: "Sofia 1512",
 			Age:     12,

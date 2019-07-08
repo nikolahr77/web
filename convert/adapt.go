@@ -1,4 +1,4 @@
-package api
+package convert
 
 import (
 	"errors"

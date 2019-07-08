@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/google/uuid"
 	"github.com/web"
-	"github.com/web/api"
+	"github.com/web/convert"
 	"time"
 )
 
@@ -29,7 +29,7 @@ func (c campaignRepository) Get(id string) (web.Campaign, error) {
 		}
 	}
 	result := web.Campaign{}
-	api.SourceToDestination(cam, &result)
+	convert.SourceToDestination(cam, &result)
 	return result, err
 }
 

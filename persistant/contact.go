@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/google/uuid"
 	"github.com/web"
+	"github.com/web/convert"
 	"time"
 )
 
@@ -21,7 +22,8 @@ func (c contactRepository) Get(id string) (web.Contact, error) {
 			return web.Contact{}, err
 		}
 	}
-	result := adaptToContact(e)
+	result := web.Contact{}
+	convert.SourceToDestination(e, &result)
 	return result, err
 }
 
@@ -79,17 +81,6 @@ type contactEntity struct {
 	UpdatedOn time.Time `db:"updated_on"`
 }
 
-func adaptToContact(entity contactEntity) web.Contact {
-	return web.Contact{
-		GUID:      entity.GUID,
-		Name:      entity.Name,
-		Email:     entity.Email,
-		Age:       entity.Age,
-		Address:   entity.Address,
-		CreatedOn: entity.CreatedOn,
-		UpdatedOn: entity.UpdatedOn,
-	}
-}
 
 func NewContactRepository(db *sql.DB) web.ContactRepository {
 	return contactRepository{db: db}
