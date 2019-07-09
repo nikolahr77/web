@@ -37,20 +37,20 @@ func (am AuthMiddleware) BasicAuth(next http.Handler) http.Handler {
 	})
 }
 
-type MessageRequest struct {
-	Messages []Message2
-}
-
-type Message2 struct {
-	From     email   //az
-	To       []email //contacts
-	TextPart string  //slagame content ot messages
-}
-
-type email struct {
-	email string
-	name  string
-}
+//type MessageRequest struct {
+//	Messages []Message2
+//}
+//
+//type Message2 struct {
+//	From     email   //az
+//	To       []email //contacts
+//	TextPart string  //slagame content ot messages
+//}
+//
+//type email struct {
+//	email string
+//	name  string
+//}
 
 //func GetUserByName(name string) (User, error) {
 //	return User{}, nil
