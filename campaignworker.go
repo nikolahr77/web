@@ -4,12 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 )
+
 type ContactInfo struct {
 	email string
 }
 
-
-func GetContactInfo(campaign Campaign) error{
+func GetContactInfo(campaign Campaign) error {
 	connStr := "user=postgres dbname=mail sslmode=disable password=1234"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
@@ -17,9 +17,9 @@ func GetContactInfo(campaign Campaign) error{
 	}
 
 	query := `
-	SELECT * FROM contacts WHERE age = $1 AND address = $2`
+	SELECT email FROM contacts WHERE age = $1 AND address = $2`
 	var c ContactInfo
-	rows, err := db.Query(query,campaign.Segmentation.Age,campaign.Segmentation.Address)
+	rows, err := db.Query(query, campaign.Segmentation.Age, campaign.Segmentation.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -31,16 +31,15 @@ func GetContactInfo(campaign Campaign) error{
 			return err
 		}
 	}
-	//fmt.Println(campaign.Segmentation.Age)
-	//fmt.Println(campaign.Segmentation.Address)
+	fmt.Println(campaign.Segmentation.Age)
+	fmt.Println(campaign.Segmentation.Address)
 	fmt.Println(c.email)
 	return nil
 }
 
-
 func ReceiveCampaignID(ch chan Campaign) {
 	var cam Campaign
-	for i := range ch{
+	for i := range ch {
 		cam = i
 	}
 	GetContactInfo(cam)

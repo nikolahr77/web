@@ -81,7 +81,6 @@ type contactEntity struct {
 	UpdatedOn time.Time `db:"updated_on"`
 }
 
-
 func NewContactRepository(db *sql.DB) web.ContactRepository {
 	return contactRepository{db: db}
 }

@@ -10,7 +10,7 @@ type StartCamRepo struct {
 	CampaignRepository CampaignRepository
 }
 
-func (cr StartCamRepo) StartCampaign() http.HandlerFunc{
+func (cr StartCamRepo) StartCampaign() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
 		campaign, err := cr.CampaignRepository.Get(id)
