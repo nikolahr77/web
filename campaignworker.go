@@ -5,9 +5,6 @@ import (
 	"fmt"
 )
 
-type ContactInfo struct {
-	email string
-}
 
 func GetContactInfo(campaign Campaign) error {
 	connStr := "user=postgres dbname=mail sslmode=disable password=1234"
@@ -18,7 +15,7 @@ func GetContactInfo(campaign Campaign) error {
 
 	query := `
 	SELECT email FROM contacts WHERE age = $1 AND address = $2`
-	var c ContactInfo
+	var c Contact
 	rows, err := db.Query(query, campaign.Segmentation.Age, campaign.Segmentation.Address)
 	if err != nil {
 		panic(err)
@@ -26,14 +23,14 @@ func GetContactInfo(campaign Campaign) error {
 
 	defer rows.Close()
 	for rows.Next() {
-		err := rows.Scan(&c.email)
+		err := rows.Scan(&c.Email)
 		if err != nil {
 			return err
 		}
 	}
 	fmt.Println(campaign.Segmentation.Age)
 	fmt.Println(campaign.Segmentation.Address)
-	fmt.Println(c.email)
+	fmt.Println(c.Email)
 	return nil
 }
 
