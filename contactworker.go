@@ -5,7 +5,6 @@ import (
 	"fmt"
 )
 
-
 func GetContactInfo(campaign Campaign) error {
 	connStr := "user=postgres dbname=mail sslmode=disable password=1234"
 	db, err := sql.Open("postgres", connStr)
@@ -20,17 +19,22 @@ func GetContactInfo(campaign Campaign) error {
 	if err != nil {
 		panic(err)
 	}
-
+	ContactSlice := make([]Contact, 1)
 	defer rows.Close()
 	for rows.Next() {
 		err := rows.Scan(&c.Email)
 		if err != nil {
 			return err
 		}
+		ContactSlice = append(ContactSlice, c)
 	}
-	fmt.Println(campaign.Segmentation.Age)
-	fmt.Println(campaign.Segmentation.Address)
-	fmt.Println(c.Email)
+
+	ch := make(chan []Contact)
+	go SendContact(ch, ContactSlice)
+	fmt.Println(ContactSlice)
+	//fmt.Println(campaign.Segmentation.Age)
+	//fmt.Println(campaign.Segmentation.Address)
+	//fmt.Println(c.Email)
 	return nil
 }
 
@@ -40,4 +44,9 @@ func ReceiveCampaignID(ch chan Campaign) {
 		cam = i
 	}
 	GetContactInfo(cam)
+}
+
+func SendContact(ch chan []Contact, contact []Contact) {
+	ch <- contact
+	close(ch)
 }
