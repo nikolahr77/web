@@ -1,11 +1,11 @@
 package web
 
-func EmailSender(contacts []Contact) error{
+import "fmt"
+
+func EmailSender(contacts []Contact) error {
+	fmt.Println(contacts)
 	return nil
 }
-
-
-
 
 func ReceiveContacts(ch chan []Contact) {
 	var ContactSlice []Contact

@@ -2,7 +2,6 @@ package web
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 func GetContactInfo(campaign Campaign) error {
@@ -31,7 +30,8 @@ func GetContactInfo(campaign Campaign) error {
 
 	ch := make(chan []Contact)
 	go SendContact(ch, ContactSlice)
-	fmt.Println(ContactSlice)
+	ReceiveContacts(ch)
+	//fmt.Println(ContactSlice)
 	//fmt.Println(campaign.Segmentation.Age)
 	//fmt.Println(campaign.Segmentation.Address)
 	//fmt.Println(c.Email)

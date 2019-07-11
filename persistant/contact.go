@@ -9,9 +9,8 @@ import (
 )
 
 func (c contactRepository) Get(id string) (web.Contact, error) {
-	query := `SELECT * FROM contacts WHERE id=$1;`
 	var e contactEntity
-	rows, err := c.db.Query(query, id)
+	rows, err := c.db.Query(`SELECT * FROM contacts WHERE id=?`, id)
 	if err != nil {
 		return web.Contact{}, err
 	}
