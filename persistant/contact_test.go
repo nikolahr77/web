@@ -1,7 +1,9 @@
 package persistant_test
 
 import (
+	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/jonboulle/clockwork"
 	"github.com/stretchr/testify/assert"
 	"github.com/web"
 	"github.com/web/persistant"
@@ -87,3 +89,44 @@ func TestContactRepositoryGetReturnQueryError(t *testing.T) {
 //
 //	assert.Equal(t, expected, actual)
 //}
+
+func WhatTimeIsIt(clock clockwork.Clock) string {
+	return fmt.Sprintf("It's %d", clock.Now().Unix())
+}
+
+func TestContactRepository_Update(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	rows := sqlmock.NewRows([]string{"id", "name", "email", "age", "address", "created_on", "updated_on"}).
+		AddRow("15", "Ivan", "ivan@abv.bg", 15, "Sofia", time.Unix(10, 0).UTC(), time.Unix(10, 0).UTC())
+
+	newContact := web.RequestContact{
+		Name:    "Petur",
+		Email:   "petur@abv.bg",
+		Age:     95,
+		Address: "Plovdiv",
+	}
+
+	mock.ExpectExec("UPDATE contacts").WithArgs("15", "Petur", "petur@abv.bg", 95, "Plovdiv", time.Unix(30, 0).UTC()).WillReturnResult(sqlmock.NewResult(0, 1))
+	mock.ExpectQuery("SELECT \\* FROM contacts").
+		WithArgs("15").
+		WillReturnRows(rows)
+
+	myDB := persistant.NewContactRepository(db)
+
+	actual, err := myDB.Update("15", newContact)
+
+	expected := web.Contact{
+		Name:      "Petur",
+		Email:     "petur@abv.bg",
+		Age:       95,
+		Address:   "Plovdiv",
+		UpdatedOn: time.Now().UTC(),
+	}
+
+	assert.Equal(t, expected, actual)
+}
