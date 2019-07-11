@@ -65,3 +65,25 @@ func TestCampaignRepositoryGetReturnQueryError(t *testing.T) {
 
 	assert.Equal(t, expectedError, err)
 }
+
+
+//func TestCampaignRepository_UpdateReturnError(t *testing.T) {
+//	db, mock, err := sqlmock.New()
+//	if err != nil {
+//		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+//	}
+//	defer db.Close()
+//
+//	mock.ExpectExec("UPDATE campaign").WillReturnError(SQLerror{"ERROR"})
+//	mock.ExpectQuery("SELECT \\* FROM campaign").
+//		WithArgs("15").
+//		WillReturnError(SQLerror{"ERROR"})
+//
+//	myDB := persistant.NewCampaignRepository(db)
+//
+//	_ , err = myDB.Update("15", web.RequestCampaign{Segmentation:web.RequestSegmentation{}})
+//
+//	expected := SQLerror{"ERROR"}
+//
+//	assert.Equal(t, expected, err)
+//}
