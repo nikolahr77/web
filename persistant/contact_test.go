@@ -1,7 +1,6 @@
 package persistant_test
 
 import (
-	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/web"
@@ -9,6 +8,14 @@ import (
 	"testing"
 	"time"
 )
+
+type SQLerror struct {
+	content string
+}
+
+func (err SQLerror) Error() string {
+	return "SQL Error"
+}
 
 func TestContactRepository_Get(t *testing.T) {
 	db, mock, err := sqlmock.New()
@@ -50,12 +57,33 @@ func TestContactRepositoryGetReturnQueryError(t *testing.T) {
 
 	mock.ExpectQuery("SELECT \\* FROM contacts").
 		WithArgs("15").
-		WillReturnError(errors.New("test error"))
+		WillReturnError(SQLerror{"SQL Error"})
 
 	myDB := persistant.NewContactRepository(db)
 
-	actual, err := myDB.Get("15")
+	_, err = myDB.Get("15")
+	expectedError := SQLerror{"SQL Error"}
 
-	expected := web.Contact{}
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, expectedError, err)
+
 }
+
+//func TestContactRepository_GetReturnRowsError(t *testing.T) {
+//	db, mock, err := sqlmock.New()
+//	if err != nil {
+//		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+//	}
+//	defer db.Close()
+//
+//	mock.ExpectQuery("SELECT \\* FROM contacts").
+//		WithArgs("15").
+//		WillReturnRows(nil)
+//
+//	myDB := persistant.NewContactRepository(db)
+//
+//	actual, err := myDB.Get("15")
+//
+//	//expected := errors.New("SQL")
+//
+//	assert.Equal(t, expected, actual)
+//}

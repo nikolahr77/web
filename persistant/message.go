@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/google/uuid"
 	"github.com/web"
+	"github.com/web/convert"
 	"time"
 )
 
@@ -60,7 +61,8 @@ func (m messageRepository) Get(id string) (web.Message, error) {
 			return web.Message{}, err
 		}
 	}
-	result := adaptToMessage(e)
+	result := web.Message{}
+	convert.SourceToDestination(e, &result)
 	return result, err
 }
 
@@ -78,12 +80,4 @@ type messageEntity struct {
 
 func NewMessageRepository(db *sql.DB) web.MessageRepository {
 	return messageRepository{db: db}
-}
-
-func adaptToMessage(m messageEntity) web.Message {
-	return web.Message{
-		GUID:    m.GUID,
-		Name:    m.Name,
-		Content: m.Content,
-	}
 }

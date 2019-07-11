@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/google/uuid"
 	"github.com/web"
+	"github.com/web/convert"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -26,7 +27,8 @@ func (u userRepository) GetByName(name string) (web.User, error) {
 			return web.User{}, err
 		}
 	}
-	result := adaptToUser(ue)
+	result := web.User{}
+	convert.SourceToDestination(ue, &result)
 	return result, err
 }
 
@@ -46,7 +48,8 @@ func (u userRepository) Get(guid string) (web.User, error) {
 			return web.User{}, err
 		}
 	}
-	result := adaptToUser(ue)
+	result := web.User{}
+	convert.SourceToDestination(ue, &result)
 	return result, err
 
 	return web.User{}, err
@@ -117,18 +120,6 @@ type userEntity struct {
 	CreatedOn time.Time `db:"created_on"`
 	UpdatedOn time.Time `db:"updated_on"`
 	Email     string    `db:"email"`
-}
-
-func adaptToUser(u userEntity) web.User {
-	return web.User{
-		GUID:      u.GUID,
-		Name:      u.Name,
-		Password:  u.Password,
-		Email:     u.Email,
-		Age:       u.Age,
-		CreatedOn: u.CreatedOn,
-		UpdatedOn: u.UpdatedOn,
-	}
 }
 
 func NewUserRepository(db *sql.DB) web.UserRepository {
