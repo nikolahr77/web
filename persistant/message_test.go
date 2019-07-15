@@ -122,3 +122,4 @@ func TestMessageRepository_UpdateReturnError(t *testing.T) {
 
 	assert.Equal(t, expected, err)
 }
+

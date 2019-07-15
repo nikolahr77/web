@@ -83,7 +83,7 @@ type contactEntity struct {
 }
 
 func NewContactRepository(db *sql.DB) web.ContactRepository {
-	return contactRepository{db: db}
+	return contactRepository{db: db} //shte dobavqme i clock
 }
 
 type contactRepository struct {

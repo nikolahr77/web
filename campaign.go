@@ -16,6 +16,7 @@ type Campaign struct {
 	Status       string
 	CreatedOn    time.Time
 	UpdatedOn    time.Time
+	//messageGUID da se dobavi
 }
 
 type RequestCampaign struct {

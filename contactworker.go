@@ -1,52 +1,44 @@
 package web
 
-import (
-	"database/sql"
-)
+type ContactWorker struct {
+	ContactRepository ContactRepository
+	contacts chan <- SendContacts //samo izprashta
+	campaigns <- chan Campaign  //samo chete
+	workers int
+	stopChan chan struct{}
+}
 
-func GetContactInfo(campaign Campaign) error {
-	connStr := "user=postgres dbname=mail sslmode=disable password=1234"
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		panic(err)
-	}
+type SendContacts struct {
+	MessageGUID string
+	Contacts []Contact
+}
 
-	query := `
-	SELECT email FROM contacts WHERE age = $1 AND address = $2`
-	var c Contact
-	rows, err := db.Query(query, campaign.Segmentation.Age, campaign.Segmentation.Address)
-	if err != nil {
-		panic(err)
+//func NewContactWorker(repository ContactRepository, contacts chan []Contact, campaigns chan Campaign, workers int) ContactWorker{
+//	return ContactWorker{
+//		ContactRepository: repository,
+//		contacts: contacts,
+//		campaigns: campaigns,
+//		workers: workers,
+//	}
+//}
+
+func (c ContactWorker) Start() {
+	for i := 0; i < c.workers; i++ {
+
 	}
-	ContactSlice := make([]Contact, 1)
-	defer rows.Close()
-	for rows.Next() {
-		err := rows.Scan(&c.Email)
-		if err != nil {
-			return err
+}
+
+
+
+func (c ContactWorker) GetContact() {
+	for {
+		select {
+		case <- c.stopChan:
+			return
+		case campaign := <- c.campaigns:
+
+			contacts, err := c.ContactRepository.GetAll(campaign.Segmentation)
+			c.contacts <- contacts
 		}
-		ContactSlice = append(ContactSlice, c)
 	}
-
-	ch := make(chan []Contact)
-	go SendContact(ch, ContactSlice)
-	ReceiveContacts(ch)
-	//fmt.Println(ContactSlice)
-	//fmt.Println(campaign.Segmentation.Age)
-	//fmt.Println(campaign.Segmentation.Address)
-	//fmt.Println(c.Email)
-	return nil
-}
-
-func ReceiveCampaignID(ch chan Campaign) {
-	var cam Campaign
-	for i := range ch {
-		cam = i
-	}
-	GetContactInfo(cam)
-}
-
-func SendContact(ch chan []Contact, contact []Contact) {
-	ch <- contact
-	close(ch)
 }
