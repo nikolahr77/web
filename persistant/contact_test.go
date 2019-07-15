@@ -192,5 +192,34 @@ func TestContactRepository_CreateReturnError(t *testing.T) {
 }
 
 func TestContactRepository_Delete(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
 
+	mock.ExpectExec("DELETE FROM contacts ").WithArgs("52-23d").WillReturnResult(sqlmock.NewResult(0, 1))
+
+	myDB := persistant.NewContactRepository(db)
+
+	err = myDB.Delete("52-23d")
+
+	assert.Equal(t, nil, err)
+}
+
+func TestContactRepository_DeleteReturnError(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	mock.ExpectExec("DELETE FROM contacts ").WithArgs("52-23d").WillReturnError(SQLerror{"ERROR"})
+
+	myDB := persistant.NewContactRepository(db)
+
+	err = myDB.Delete("52-23d")
+	expected := SQLerror{"ERROR"}
+
+	assert.Equal(t, expected, err)
 }
