@@ -66,7 +66,6 @@ func TestCampaignRepositoryGetReturnQueryError(t *testing.T) {
 	assert.Equal(t, expectedError, err)
 }
 
-
 //func TestCampaignRepository_UpdateReturnError(t *testing.T) {
 //	db, mock, err := sqlmock.New()
 //	if err != nil {

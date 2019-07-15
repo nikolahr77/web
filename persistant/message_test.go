@@ -1,6 +1,7 @@
 package persistant_test
 
 import (
+	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/web"
@@ -58,6 +59,25 @@ func TestMessageRepositoryGetReturnQueryError(t *testing.T) {
 
 }
 
+func init() {
+	// Uncomment and add to _test.go init()
+
+}
+
+var timeNow = time.Now
+
+func main() {
+	fmt.Println(timeNow())
+}
+
+func init() {
+	// Uncomment and add to _test.go init()
+	timeNow = func() time.Time {
+		t, _ := time.Parse("2006-01-02 15:04:05", "2017-01-20 01:02:03")
+		return t
+	}
+}
+
 func TestMessageRepository_Update(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -65,18 +85,12 @@ func TestMessageRepository_Update(t *testing.T) {
 	}
 	defer db.Close()
 
-	rows := sqlmock.NewRows([]string{"guid", "name", "content", "created_on", "updated_on"}).
-		AddRow("3ff-d2", "Welcome", "This is a welcome msg", time.Unix(10, 0).UTC(), time.Unix(10, 0).UTC())
-
 	newMsg := web.RequestMessage{
 		Name:    "Edited",
 		Content: "This message was edited",
 	}
 
 	mock.ExpectExec("UPDATE messages").WithArgs("15", newMsg).WillReturnResult(sqlmock.NewResult(0, 1))
-	mock.ExpectQuery("SELECT \\* FROM messages").
-		WithArgs("15").
-		WillReturnRows(rows)
 
 	myDB := persistant.NewMessageRepository(db)
 
@@ -85,7 +99,7 @@ func TestMessageRepository_Update(t *testing.T) {
 	expected := web.Message{
 		Name:      "Edited",
 		Content:   "This message was edited",
-		UpdatedOn: time.Now().UTC(),
+		UpdatedOn: timeNow(),
 	}
 
 	assert.Equal(t, expected, actual)
@@ -99,9 +113,6 @@ func TestMessageRepository_UpdateReturnError(t *testing.T) {
 	defer db.Close()
 
 	mock.ExpectExec("UPDATE messages").WillReturnError(SQLerror{"ERROR"})
-	mock.ExpectQuery("SELECT \\* FROM messages").
-		WithArgs("15").
-		WillReturnError(SQLerror{"ERROR"})
 
 	myDB := persistant.NewMessageRepository(db)
 

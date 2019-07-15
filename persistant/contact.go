@@ -2,6 +2,7 @@ package persistant
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/web"
 	"github.com/web/convert"
@@ -34,6 +35,7 @@ func (c contactRepository) Create(con web.RequestContact) (web.Contact, error) {
 	createdOn := time.Now().UTC()
 	_, err := c.db.Exec(query, uuid, con.Name, con.Email, con.Age, con.Address, createdOn, createdOn)
 	if err != nil {
+		fmt.Println(err)
 		return web.Contact{}, err
 	}
 	return web.Contact{

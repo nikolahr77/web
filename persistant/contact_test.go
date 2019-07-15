@@ -95,9 +95,6 @@ func TestContactRepository_Update(t *testing.T) {
 	}
 	defer db.Close()
 
-	rows := sqlmock.NewRows([]string{"id", "name", "email", "age", "address", "created_on", "updated_on"}).
-		AddRow("15", "Ivan", "ivan@abv.bg", 15, "Sofia", time.Unix(10, 0).UTC(), time.Unix(10, 0).UTC())
-
 	newContact := web.RequestContact{
 		Name:    "Petur",
 		Email:   "petur@abv.bg",
@@ -106,9 +103,6 @@ func TestContactRepository_Update(t *testing.T) {
 	}
 
 	mock.ExpectExec("UPDATE contacts").WithArgs("15", newContact).WillReturnResult(sqlmock.NewResult(0, 1))
-	mock.ExpectQuery("SELECT \\* FROM contacts").
-		WithArgs("15").
-		WillReturnRows(rows)
 
 	myDB := persistant.NewContactRepository(db)
 
@@ -119,7 +113,7 @@ func TestContactRepository_Update(t *testing.T) {
 		Email:     "petur@abv.bg",
 		Age:       95,
 		Address:   "Plovdiv",
-		UpdatedOn: time.Now(),
+		UpdatedOn: time.Unix(10, 0).UTC(),
 	}
 
 	assert.Equal(t, expected, actual)
@@ -133,9 +127,6 @@ func TestContactRepository_UpdateReturnError(t *testing.T) {
 	defer db.Close()
 
 	mock.ExpectExec("UPDATE contacts").WillReturnError(SQLerror{"ERROR"})
-	mock.ExpectQuery("SELECT \\* FROM contacts").
-		WithArgs("15").
-		WillReturnError(SQLerror{"ERROR"})
 
 	myDB := persistant.NewContactRepository(db)
 
@@ -144,4 +135,62 @@ func TestContactRepository_UpdateReturnError(t *testing.T) {
 	expected := SQLerror{"ERROR"}
 
 	assert.Equal(t, expected, err)
+}
+
+func TestContactRepository_Create(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	newContact := web.RequestContact{
+		Name:    "Dani",
+		Email:   "dani@abv.bg",
+		Age:     62,
+		Address: "Pleven",
+	}
+
+	mock.ExpectExec("INSERT INTO contacts").WithArgs(newContact).WillReturnResult(sqlmock.NewResult(0, 1))
+
+	myDB := persistant.NewContactRepository(db)
+
+	actual, err := myDB.Create(newContact)
+
+	expected := web.Contact{
+		GUID:      "32b-15",
+		Name:      "Dani",
+		Email:     "dani@abv.bg",
+		Age:       62,
+		Address:   "Pleven",
+		CreatedOn: time.Now(),
+		UpdatedOn: time.Now(),
+	}
+
+	assert.Equal(t, expected, actual)
+}
+
+func TestContactRepository_CreateReturnError(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	mock.ExpectExec("INSERT INTO contacts").WillReturnError(SQLerror{"ERROR"})
+	mock.ExpectQuery("SELECT \\* FROM contacts").
+		WithArgs("15").
+		WillReturnError(SQLerror{"ERROR"})
+
+	myDB := persistant.NewContactRepository(db)
+
+	_, err = myDB.Create(web.RequestContact{})
+
+	expected := SQLerror{"ERROR"}
+
+	assert.Equal(t, expected, err)
+}
+
+func TestContactRepository_Delete(t *testing.T) {
+
 }

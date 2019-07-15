@@ -66,9 +66,6 @@ func TestUserRepository_Update(t *testing.T) {
 	}
 	defer db.Close()
 
-	rows := sqlmock.NewRows([]string{"guid", "name", "password", "email", "age", "created_on", "updated_on"}).
-		AddRow("3f2-fds-d2", "Ivo", "5lJm2Sy2dkv2uxX9FcrobuZCl8WnvZ6z7yLvlt3w.ps9HZLxZv2MK", "ivo@abv.bg", 35, time.Unix(10, 0).UTC(), time.Unix(10, 0).UTC())
-
 	newUsr := web.RequestUser{
 		Name:     "Toni",
 		Email:    "ton@abv.bg",
@@ -77,9 +74,6 @@ func TestUserRepository_Update(t *testing.T) {
 	}
 
 	mock.ExpectExec("UPDATE users").WithArgs("15", newUsr).WillReturnResult(sqlmock.NewResult(0, 1))
-	mock.ExpectQuery("SELECT \\* FROM users").
-		WithArgs("15").
-		WillReturnRows(rows)
 
 	myDB := persistant.NewUserRepository(db)
 
@@ -104,9 +98,6 @@ func TestUserRepository_UpdateReturnError(t *testing.T) {
 	defer db.Close()
 
 	mock.ExpectExec("UPDATE users").WillReturnError(SQLerror{"ERROR"})
-	mock.ExpectQuery("SELECT \\* FROM users").
-		WithArgs("15").
-		WillReturnError(SQLerror{"ERROR"})
 
 	myDB := persistant.NewUserRepository(db)
 
