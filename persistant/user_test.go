@@ -125,7 +125,6 @@ func TestUserRepository_DeleteReturnError(t *testing.T) {
 	assert.Equal(t, expected, err)
 }
 
-
 //func TestUserRepository_Delete(t *testing.T) {
 //	db, mock, err := sqlmock.New()
 //	if err != nil {

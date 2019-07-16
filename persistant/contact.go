@@ -9,6 +9,28 @@ import (
 	"time"
 )
 
+func (c contactRepository) GetAll(camSegmentation web.Segmentation) (web.Contact, error) {
+	query := `
+	SELECT * FROM contacts WHERE age = $1 AND address = $2`
+	var e contactEntity
+	rows, err := c.db.Query(query, camSegmentation.Age, camSegmentation.Address)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&e.Email)
+		if err != nil {
+			return web.Contact{}, err
+		}
+	}
+	//fmt.Println(campaign.Segmentation.Address)
+	//fmt.Println(e.Email)
+	result := web.Contact{}
+	convert.SourceToDestination(e, &result)
+	return result, err
+}
+
 func (c contactRepository) Get(id string) (web.Contact, error) {
 	var e contactEntity
 	rows, err := c.db.Query(`SELECT * FROM contacts WHERE id=?`, id)
