@@ -25,27 +25,27 @@ type SendContacts struct {
 
 func (c ContactWorker) Start() {
 	for i := 0; i < c.workers; i++ {
-		go c.GetContact()
+	//	go c.GetContact()
 	}
 }
 
 
-
-func (c ContactWorker) GetContact() {
-	for {
-		select {
-		case <- c.stopChan:
-			return
-		case campaign := <- c.campaigns:
-
-			contacts, err := c.ContactRepository.GetAll(campaign.Segmentation)
-			if err != nil {
-				panic(err)
-			}
-			var send &SendContacts
-			send.Contacts := append(send.)
-
-			c.contacts <- contacts
-		}
-	}
-}
+//
+//func (c ContactWorker) GetContact() {
+//	for {
+//		select {
+//		case <- c.stopChan:
+//			return
+//		case campaign := <- c.campaigns:
+//
+//			contacts, err := c.ContactRepository.GetAll(campaign.Segmentation)
+//			if err != nil {
+//				panic(err)
+//			}
+//			var send &SendContacts
+//			send.Contacts := append(send.)
+//
+//			c.contacts <- contacts
+//		}
+//	}
+//}

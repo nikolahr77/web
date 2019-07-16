@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/web"
 	"github.com/web/convert"
@@ -45,13 +46,13 @@ func CreateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 		convert.SourceToDestination(c, &cam)
 		campaign, err := cr.Create(cam)
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, "Internal error", 500)
 			return
 		}
 		camDTO := CampaignDTO{}
 		convert.SourceToDestination(campaign, &camDTO)
 		json.NewEncoder(w).Encode(camDTO)
-		//json.NewEncoder(w).Encode(adaptCamToDTO(campaign))
 	}
 }
 
@@ -84,6 +85,7 @@ type CampaignDTO struct {
 	Status       string          `json:"status"`
 	CreatedOn    time.Time       `json:"created_on"`
 	UpdatedOn    time.Time       `json:"updated_on"`
+	MessageGUID  string			 `json:"message_guid"`
 }
 
 type SegmentationDTO struct {
@@ -95,4 +97,5 @@ type RequestCampaignDTO struct {
 	Name         string          `json:"name"`
 	Segmentation SegmentationDTO `json:"segmentation"`
 	Status       string          `json:"status"`
+	MessageGUID string `json:"message_guid"`
 }

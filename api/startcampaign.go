@@ -15,8 +15,9 @@ func StartCampaign(cr web.CampaignRepository, ch chan web.Campaign) http.Handler
 			panic(err)
 		}
 
-		go ReceiveCampaignID(ch)
+		//go ReceiveCampaignID(ch)
 		SendCampaignID(ch, campaign)
+		cr.SentStatus(id)
 		json.NewEncoder(w).Encode(http.StatusOK)
 	}
 }
@@ -25,5 +26,3 @@ func SendCampaignID(ch chan web.Campaign, campaign web.Campaign) {
 	ch <- campaign
 	close(ch)
 }
-
-//da otide v api packet
