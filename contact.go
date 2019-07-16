@@ -20,7 +20,7 @@ type RequestContact struct {
 }
 
 type ContactRepository interface {
-	GetAll(camSegmentation Segmentation) (Contact, error)
+	GetAll(camSegmentation Segmentation) ([]Contact, error)
 	Get(id string) (Contact, error)
 	Create(con RequestContact) (Contact, error)
 	Delete(id string) error

@@ -85,7 +85,7 @@ type CampaignDTO struct {
 	Status       string          `json:"status"`
 	CreatedOn    time.Time       `json:"created_on"`
 	UpdatedOn    time.Time       `json:"updated_on"`
-	MessageGUID  string			 `json:"message_guid"`
+	MessageGUID  string          `json:"message_guid"`
 }
 
 type SegmentationDTO struct {
@@ -97,5 +97,5 @@ type RequestCampaignDTO struct {
 	Name         string          `json:"name"`
 	Segmentation SegmentationDTO `json:"segmentation"`
 	Status       string          `json:"status"`
-	MessageGUID string `json:"message_guid"`
+	MessageGUID  string          `json:"message_guid"`
 }

@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func (c contactRepository) GetAll(camSegmentation web.Segmentation) (web.Contact, error) {
+func (c contactRepository) GetAll(camSegmentation web.Segmentation) ([]web.Contact, error) {
 	query := `
 	SELECT * FROM contacts WHERE age = $1 AND address = $2`
 	var e contactEntity
@@ -18,16 +18,18 @@ func (c contactRepository) GetAll(camSegmentation web.Segmentation) (web.Contact
 		panic(err)
 	}
 	defer rows.Close()
+	ContactSlice := make([]contactEntity, 1)
 	for rows.Next() {
 		err := rows.Scan(&e.Email)
 		if err != nil {
-			return web.Contact{}, err
+			return []web.Contact{}, err
 		}
+		ContactSlice = append(ContactSlice, e)
 	}
 	//fmt.Println(campaign.Segmentation.Address)
 	//fmt.Println(e.Email)
-	result := web.Contact{}
-	convert.SourceToDestination(e, &result)
+	result := []web.Contact{}
+	convert.SourceToDestination(ContactSlice, &result)
 	return result, err
 }
 

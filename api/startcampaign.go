@@ -15,7 +15,6 @@ func StartCampaign(cr web.CampaignRepository, ch chan web.Campaign) http.Handler
 			panic(err)
 		}
 
-		//go ReceiveCampaignID(ch)
 		SendCampaignID(ch, campaign)
 		cr.SentStatus(id)
 		json.NewEncoder(w).Encode(http.StatusOK)

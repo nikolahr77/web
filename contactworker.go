@@ -1,16 +1,18 @@
 package web
 
+import "fmt"
+
 type ContactWorker struct {
 	ContactRepository ContactRepository
-	contacts chan <- SendContacts //samo izprashta
-	campaigns <- chan Campaign  //samo chete
-	workers int
-	stopChan chan struct{}
+	contacts          chan<- SendContacts //samo izprashta
+	campaigns         <-chan Campaign     //samo chete
+	workers           int
+	stopChan          chan struct{}
 }
 
 type SendContacts struct {
 	MessageGUID string
-	Contacts []Contact
+	Contacts    []Contact
 }
 
 //func NewContactWorker(repository ContactRepository, contacts chan []Contact, campaigns chan Campaign, workers int) ContactWorker{
@@ -22,30 +24,29 @@ type SendContacts struct {
 //	}
 //}
 
-
 func (c ContactWorker) Start() {
 	for i := 0; i < c.workers; i++ {
-	//	go c.GetContact()
+		go c.GetContact()
 	}
 }
 
+func (c ContactWorker) GetContact() {
+	for {
+		select {
+		case <-c.stopChan:
+			return
+		case campaign := <-c.campaigns:
 
-//
-//func (c ContactWorker) GetContact() {
-//	for {
-//		select {
-//		case <- c.stopChan:
-//			return
-//		case campaign := <- c.campaigns:
-//
-//			contacts, err := c.ContactRepository.GetAll(campaign.Segmentation)
-//			if err != nil {
-//				panic(err)
-//			}
-//			var send &SendContacts
-//			send.Contacts := append(send.)
-//
-//			c.contacts <- contacts
-//		}
-//	}
-//}
+			contacts, err := c.ContactRepository.GetAll(campaign.Segmentation)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(contacts)
+			//contactSlice := make([]Contact,4)
+			//var send &SendContacts
+			//send.Contacts := append(send.)
+
+			//c.contacts <- contacts
+		}
+	}
+}

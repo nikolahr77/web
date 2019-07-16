@@ -23,9 +23,9 @@ func (c campaignRepository) Get(id string) (web.Campaign, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err := rows.Scan(&cam.GUID, &cam.Name, &cam.Status, &cam.CreatedOn, &cam.UpdatedOn,
+		err := rows.Scan(&cam.GUID, &cam.Name, &cam.Status, &cam.CreatedOn, &cam.UpdatedOn, &cam.MessageGUID,
 			&cam.Segmentation.Address, &cam.Segmentation.Age, &cam.Segmentation.CampaignID,
-			&cam.Segmentation.GUID, &cam.MessageGUID)
+			&cam.Segmentation.GUID)
 		if err != nil {
 			return web.Campaign{}, err
 		}
@@ -74,7 +74,7 @@ func (c campaignRepository) Update(id string, m web.RequestCampaign) (web.Campai
 	updatedOn := time.Now().UTC()
 
 	tx, _ := c.db.Begin()
-	_, err := c.db.Exec(updateCampaign, m.Name, "draft", updatedOn, m.MessageGUID,id)
+	_, err := c.db.Exec(updateCampaign, m.Name, "draft", updatedOn, m.MessageGUID, id)
 	if err != nil {
 		tx.Rollback()
 		return web.Campaign{}, err
@@ -94,17 +94,17 @@ func (c campaignRepository) Update(id string, m web.RequestCampaign) (web.Campai
 			Address: m.Segmentation.Address,
 			Age:     m.Segmentation.Age,
 		},
-		UpdatedOn: updatedOn,
+		UpdatedOn:   updatedOn,
 		MessageGUID: m.MessageGUID,
 	}, err
 }
 
-func (c campaignRepository) SentStatus(id string) (web.Campaign, error){
+func (c campaignRepository) SentStatus(id string) (web.Campaign, error) {
 	updateStatus := `UPDATE campaign 
 	SET status=$1
 	WHERE guid = $2
 	`
-	_, err := c.db.Exec(updateStatus, "sent",id)
+	_, err := c.db.Exec(updateStatus, "sent", id)
 	if err != nil {
 		return web.Campaign{}, err
 	}
@@ -146,8 +146,8 @@ func (c campaignRepository) Create(m web.RequestCampaign) (web.Campaign, error) 
 			Address: m.Segmentation.Address,
 			Age:     m.Segmentation.Age,
 		},
-		CreatedOn: createdOn,
-		UpdatedOn: createdOn,
+		CreatedOn:   createdOn,
+		UpdatedOn:   createdOn,
 		MessageGUID: m.MessageGUID,
 	}, err
 }
@@ -159,7 +159,7 @@ type campaignEntity struct {
 	Status       string    `db": "status"`
 	CreatedOn    time.Time `db: "created_on"`
 	UpdatedOn    time.Time `db: "updated_on"`
-	MessageGUID  string `db: "message_guid"`
+	MessageGUID  string    `db: "message_guid"`
 }
 
 type segmentationEntity struct {
