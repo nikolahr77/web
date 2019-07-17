@@ -1,5 +1,7 @@
 package web
 
+import "fmt"
+
 type SenderWorker struct {
 	ContactRepository ContactRepository
 	MessageRepository MessageRepository
@@ -10,7 +12,7 @@ type SenderWorker struct {
 
 func (s SenderWorker) Start() {
 	for i := 0; i < s.Workers; i++ {
-		//go c.GetContact()
+		go s.SendEmail()
 	}
 }
 
@@ -27,6 +29,7 @@ func (s SenderWorker) SendEmail() {
 			myEmail := MyEmailConstructor()
 			receiverEmails := EmailConstructor(contacts)
 			sendMessage := SendMessageConstructor(myEmail, receiverEmails, message)
+			fmt.Println(sendMessage)
 		}
 	}
 }

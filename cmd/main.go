@@ -56,6 +56,14 @@ func main() {
 	}
 
 	contactWorker.Start()
+	senderWorker := web.SenderWorker{
+		ContactRepository: cr,
+		MessageRepository: msg,
+		Contacts:          contactsChan,
+		Workers:           2,
+		StopChan:          stopChan,
+	}
+	senderWorker.Start()
 
 	authMiddleware := web.AuthMiddleware{UserRepository: usr}
 	r.Use(authMiddleware.BasicAuth)
