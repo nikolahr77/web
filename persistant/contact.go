@@ -11,7 +11,7 @@ import (
 
 func (c contactRepository) GetAll(camSegmentation web.Segmentation) ([]web.Contact, error) {
 	query := `
-	SELECT * FROM contacts WHERE age = $1 AND address = $2`
+	SELECT email FROM contacts WHERE age = $1 AND address = $2`
 	var e contactEntity
 	rows, err := c.db.Query(query, camSegmentation.Age, camSegmentation.Address)
 	if err != nil {

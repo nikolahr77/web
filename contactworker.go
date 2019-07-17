@@ -1,13 +1,11 @@
 package web
 
-import "fmt"
-
 type ContactWorker struct {
 	ContactRepository ContactRepository
-	contacts          chan<- SendContacts //samo izprashta
-	campaigns         <-chan Campaign     //samo chete
-	workers           int
-	stopChan          chan struct{}
+	Contacts          chan<- SendContacts //samo izprashta
+	Campaigns         <-chan Campaign     //samo chete
+	Workers           int
+	StopChan          chan struct{}
 }
 
 type SendContacts struct {
@@ -25,7 +23,7 @@ type SendContacts struct {
 //}
 
 func (c ContactWorker) Start() {
-	for i := 0; i < c.workers; i++ {
+	for i := 0; i < c.Workers; i++ {
 		go c.GetContact()
 	}
 }
@@ -33,20 +31,23 @@ func (c ContactWorker) Start() {
 func (c ContactWorker) GetContact() {
 	for {
 		select {
-		case <-c.stopChan:
+		case <-c.StopChan:
 			return
-		case campaign := <-c.campaigns:
-
+		case campaign := <-c.Campaigns:
 			contacts, err := c.ContactRepository.GetAll(campaign.Segmentation)
 			if err != nil {
 				panic(err)
 			}
-			fmt.Println(contacts)
-			//contactSlice := make([]Contact,4)
-			//var send &SendContacts
-			//send.Contacts := append(send.)
+			SendContacts := SendContactsConstructor(contacts, campaign.MessageGUID)
 
-			//c.contacts <- contacts
+			c.Contacts <- SendContacts
 		}
+	}
+}
+
+func SendContactsConstructor(contacts []Contact, messageID string) SendContacts {
+	return SendContacts{
+		Contacts:    contacts,
+		MessageGUID: messageID,
 	}
 }

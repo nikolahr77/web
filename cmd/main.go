@@ -44,13 +44,17 @@ func main() {
 	ch := make(chan web.Campaign)
 	r.HandleFunc("/campaign/start/{id}", api.StartCampaign(cam, ch)).Methods("POST") //post zaqvka
 
-	//contactsChan := make(chan web.SendContacts)
-	//campaigns := make(chan web.Campaign)
+	contactsChan := make(chan web.SendContacts)
 	//workers := 5
-	//stopChan := make(chan struct{})
+	stopChan := make(chan struct{})
 	contactWorker := web.ContactWorker{
 		ContactRepository: cr,
+		Contacts:          contactsChan,
+		Campaigns:         ch,
+		Workers:           2,
+		StopChan:          stopChan,
 	}
+
 	contactWorker.Start()
 
 	authMiddleware := web.AuthMiddleware{UserRepository: usr}

@@ -23,5 +23,5 @@ func StartCampaign(cr web.CampaignRepository, ch chan web.Campaign) http.Handler
 
 func SendCampaignID(ch chan web.Campaign, campaign web.Campaign) {
 	ch <- campaign
-	close(ch)
+	//close(ch)
 }
