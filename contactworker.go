@@ -1,7 +1,5 @@
 package web
 
-import "fmt"
-
 type ContactWorker struct {
 	ContactRepository ContactRepository
 	Contacts          chan<- SendContacts //samo izprashta
@@ -39,8 +37,8 @@ func (c ContactWorker) GetContact() {
 			contacts, err := c.ContactRepository.GetAll(campaign.Segmentation)
 			if err != nil {
 				panic(err)
+
 			}
-			fmt.Println(contacts)
 			SendContacts := SendContactsConstructor(contacts, campaign.MessageGUID)
 
 			c.Contacts <- SendContacts

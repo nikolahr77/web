@@ -24,30 +24,40 @@ func (s SenderWorker) SendEmail() {
 			if err != nil {
 				panic(err)
 			}
-
-			var SendMessage struct{}
-			for i := range contacts.Contacts {
-				contacts.Contacts[i]
-			}
+			myEmail := MyEmailConstructor()
+			receiverEmails := EmailConstructor(contacts)
+			sendMessage := SendMessageConstructor(myEmail, receiverEmails, message)
 		}
 	}
 }
 
-func SendMessageConstructor(contacts SendContacts, message Message) SendMessage {
-	return SendMessage{
-		From: "n.hristov@proxiad.com",
-		To:   contacts,
+func MyEmailConstructor() Email {
+	return Email{
+		email: "n.hristov@proxiad.com",
+		name:  "Nikola Hristov",
 	}
 }
 
-//func ReceiveContacts(ch chan []Contact) {
-//	var ContactSlice []Contact
-//	for i := range ch {
-//		ContactSlice = i
-//	}
-//	EmailSender(ContactSlice)
-//}
-//
+func SendMessageConstructor(myMail Email, receiverMails []Email, message Message) SendMessage {
+	return SendMessage{
+		From:     myMail,
+		To:       receiverMails,
+		TextPart: message.Content,
+	}
+}
+
+func EmailConstructor(contacts SendContacts) []Email {
+	singleEmail := Email{}
+	receiverEmails := make([]Email, 1)
+
+	for _, x := range contacts.Contacts {
+		singleEmail.name = x.Name
+		singleEmail.email = x.Email
+		receiverEmails = append(receiverEmails, singleEmail)
+	}
+	return receiverEmails
+}
+
 type MessageRequest struct {
 	Messages []SendMessage
 }
