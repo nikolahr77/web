@@ -11,7 +11,7 @@ import (
 
 func (c contactRepository) GetAll(camSegmentation web.Segmentation) ([]web.Contact, error) {
 	query := `
-	SELECT email FROM contacts WHERE age = $1 AND address = $2`
+	SELECT name, email FROM contacts WHERE age = $1 AND address = $2`
 	var e contactEntity
 	rows, err := c.db.Query(query, camSegmentation.Age, camSegmentation.Address)
 	if err != nil {
@@ -20,7 +20,7 @@ func (c contactRepository) GetAll(camSegmentation web.Segmentation) ([]web.Conta
 	defer rows.Close()
 	ContactSlice := make([]contactEntity, 1)
 	for rows.Next() {
-		err := rows.Scan(&e.Email)
+		err := rows.Scan(&e.Name, &e.Email)
 		if err != nil {
 			return []web.Contact{}, err
 		}
