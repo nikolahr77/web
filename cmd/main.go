@@ -44,12 +44,12 @@ func main() {
 	ch := make(chan web.Campaign)
 	r.HandleFunc("/campaign/start/{id}", api.StartCampaign(cam, ch)).Methods("POST") //post zaqvka
 
-	contactsChan := make(chan web.SendContacts)
+	msgChan := make(chan web.MessageRequest)
 	//workers := 5
 	stopChan := make(chan struct{})
-	contactWorker := web.ContactWorker{
+	contactWorker := web.EmailWorker{
 		ContactRepository: cr,
-		Contacts:          contactsChan,
+		MessageRepository: msg,
 		Campaigns:         ch,
 		Workers:           2,
 		StopChan:          stopChan,
@@ -57,11 +57,9 @@ func main() {
 
 	contactWorker.Start()
 	senderWorker := web.SenderWorker{
-		ContactRepository: cr,
-		MessageRepository: msg,
-		Contacts:          contactsChan,
-		Workers:           2,
-		StopChan:          stopChan,
+		Messages: msgChan,
+		Workers:  2,
+		StopChan: stopChan,
 	}
 	senderWorker.Start()
 

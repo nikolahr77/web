@@ -14,14 +14,9 @@ func StartCampaign(cr web.CampaignRepository, ch chan web.Campaign) http.Handler
 		if err != nil {
 			panic(err)
 		}
+		cr.SentStatus(id) //check for error
 
-		SendCampaignID(ch, campaign)
-		cr.SentStatus(id)
+		ch <- campaign
 		json.NewEncoder(w).Encode(http.StatusOK)
 	}
-}
-
-func SendCampaignID(ch chan web.Campaign, campaign web.Campaign) {
-	ch <- campaign
-	//close(ch)
 }
