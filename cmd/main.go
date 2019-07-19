@@ -47,19 +47,24 @@ func main() {
 	msgChan := make(chan web.MessageRequest)
 	//workers := 5
 	stopChan := make(chan struct{})
-	contactWorker := web.EmailWorker{
+	contactWorker := web.MessageRequestWorker{
 		ContactRepository: cr,
 		MessageRepository: msg,
 		Campaigns:         ch,
+		Messages:          msgChan,
 		Workers:           2,
 		StopChan:          stopChan,
+		FromEmail:         "n.hristov@proxiad.com",
 	}
 
 	contactWorker.Start()
 	senderWorker := web.SenderWorker{
-		Messages: msgChan,
-		Workers:  2,
-		StopChan: stopChan,
+		MessageRequests: msgChan,
+		Workers:         2,
+		StopChan:        stopChan,
+		ApiKey:          "20ba63af8ed406c6f1f569dd1fb09d23",
+		SecretKey:       "f484b802912a98ac4b142e28d6d05276",
+		SAPIHost:        "https://api.mailjet.com/v3.1/send",
 	}
 	senderWorker.Start()
 

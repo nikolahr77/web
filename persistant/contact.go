@@ -18,18 +18,16 @@ func (c contactRepository) GetAll(camSegmentation web.Segmentation) ([]web.Conta
 		panic(err)
 	}
 	defer rows.Close()
-	ContactSlice := make([]contactEntity, 1)
+	var contacts []contactEntity
 	for rows.Next() {
 		err := rows.Scan(&e.Name, &e.Email)
 		if err != nil {
 			return []web.Contact{}, err
 		}
-		ContactSlice = append(ContactSlice, e)
+		contacts = append(contacts, e)
 	}
-	//fmt.Println(campaign.Segmentation.Address)
-	//fmt.Println(e.Email)
 	result := []web.Contact{}
-	convert.SourceToDestination(ContactSlice, &result)
+	convert.SourceToDestination(contacts, &result)
 	return result, err
 }
 

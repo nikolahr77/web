@@ -38,7 +38,7 @@ func (am AuthMiddleware) BasicAuth(next http.Handler) http.Handler {
 }
 
 //type MessageRequest struct {
-//	Messages []Message2
+//	MessageRequests []Message2
 //}
 //
 //type Message2 struct {
