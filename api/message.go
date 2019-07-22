@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+//CreateMessage decodes JSON from the request and creates a new message based on the POST request
 func CreateMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var m RequestMessageDTO
@@ -31,6 +32,7 @@ func CreateMessage(msg web.MessageRepository) http.HandlerFunc {
 	}
 }
 
+//DeleteMessage is used to delete a message with the ID from the DELETE request
 func DeleteMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
@@ -42,6 +44,8 @@ func DeleteMessage(msg web.MessageRepository) http.HandlerFunc {
 	}
 }
 
+//UpdateMessage selects a message with ID specified in the
+// request and uses the JSON from the PUT request to update the message
 func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
@@ -64,6 +68,8 @@ func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 	}
 }
 
+//GetMessage is used to get the ID from the GET request, sends a Get request
+// and returns the message with the same ID
 func GetMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
@@ -78,6 +84,7 @@ func GetMessage(msg web.MessageRepository) http.HandlerFunc {
 	}
 }
 
+//MessageDTO is the message database object
 type MessageDTO struct {
 	GUID      string
 	Name      string    `json:"name"`
@@ -86,6 +93,7 @@ type MessageDTO struct {
 	UpdatedOn time.Time `json:"updated_on"`
 }
 
+//RequestMessageDTO is used to return info relevant to the user
 type RequestMessageDTO struct {
 	Name    string `json:"name"`
 	Content string `json:"content"`

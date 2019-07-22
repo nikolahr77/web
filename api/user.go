@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+//GetUser is used to get the ID from the GET request, sends a Get request
+// and returns the user with the same ID
 func GetUser(cr web.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
@@ -23,6 +25,8 @@ func GetUser(cr web.UserRepository) http.HandlerFunc {
 	}
 }
 
+//UpdateUser selects a user with ID specified in the
+// request and uses the JSON from the PUT request to update the user
 func UpdateUser(cr web.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
@@ -45,6 +49,7 @@ func UpdateUser(cr web.UserRepository) http.HandlerFunc {
 	}
 }
 
+//CreateUser decodes JSON from the request and creates a new user based on the POST request
 func CreateUser(cr web.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var u RequestUserDTO
@@ -67,6 +72,7 @@ func CreateUser(cr web.UserRepository) http.HandlerFunc {
 	}
 }
 
+//DeleteUser is used to delete a user with the ID from the DELETE request
 func DeleteUser(cr web.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
@@ -78,6 +84,7 @@ func DeleteUser(cr web.UserRepository) http.HandlerFunc {
 	}
 }
 
+//UserDTO is the user database object
 type UserDTO struct {
 	GUID      string    `json:"guid"`
 	Name      string    `json:"name"`
@@ -88,6 +95,7 @@ type UserDTO struct {
 	UpdatedOn time.Time `json:"updated_on"`
 }
 
+//RequestUserDTO is used to return info relevant to the user
 type RequestUserDTO struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`

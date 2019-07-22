@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+//GetCampaign is used to get the ID from the GET request, sends a Get request
+// and returns the Campaign with the same ID
 func GetCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
@@ -24,6 +26,7 @@ func GetCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	}
 }
 
+//DeleteCampaign is used to delete a campaign with the ID from the DELETE request
 func DeleteCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
@@ -34,6 +37,7 @@ func DeleteCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	}
 }
 
+//CreateCampaign decodes JSON from the request and creates a new campaign based on the request
 func CreateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var c RequestCampaignDTO
@@ -56,6 +60,8 @@ func CreateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	}
 }
 
+//UpdateCampaign selects a campaign with ID specified in the
+// request and uses the JSON from the request to update the campaign
 func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var c RequestCampaignDTO
@@ -78,6 +84,7 @@ func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	}
 }
 
+//CampaignDTO is the campaign database object
 type CampaignDTO struct {
 	GUID         string          `json:"guid"`
 	Name         string          `json:"name"`
@@ -88,11 +95,13 @@ type CampaignDTO struct {
 	MessageGUID  string          `json:"message_guid"`
 }
 
+//SegmentationDTO is part of the campaignDTO
 type SegmentationDTO struct {
 	Address string `json:"address"`
 	Age     int    `json:"age"`
 }
 
+//RequestCampaignDTO is used to return info relevant to the user
 type RequestCampaignDTO struct {
 	Name         string          `json:"name"`
 	Segmentation SegmentationDTO `json:"segmentation"`

@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+//GetContact is used to get the ID from the GET request, sends a Get request
+// and returns the Contact with the same ID
 func GetContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		guid := mux.Vars(r)["id"]
@@ -27,6 +29,7 @@ func GetContact(cr web.ContactRepository) http.HandlerFunc {
 
 }
 
+//DeleteContact is used to delete a contact with the ID from the DELETE request
 func DeleteContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
@@ -37,6 +40,7 @@ func DeleteContact(cr web.ContactRepository) http.HandlerFunc {
 	}
 }
 
+//CreateCampaign decodes JSON from the request and creates a new contact based on the POST request
 func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var c RequestContactDTO
@@ -58,6 +62,8 @@ func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 	}
 }
 
+//UpdateContact selects a Contact with ID specified in the
+// request and uses the JSON from the PUT request to update the contact
 func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var c RequestContactDTO
@@ -80,6 +86,7 @@ func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 	}
 }
 
+//ContactDTO is the contact database object
 type ContactDTO struct {
 	GUID      string
 	Name      string    `json:"name"`
@@ -93,6 +100,7 @@ type ContactDTO struct {
 // RequestContactDTO, ContactDTO, |RequestContact, Contact,| ContactEntity (messages and campaign the same)
 //         API/http               |  domain                |  DB, persistent
 
+//RequestContactDTO is used to return info relevant to the user
 type RequestContactDTO struct {
 	Name    string `json:"name"`
 	Email   string `json:"email"`
