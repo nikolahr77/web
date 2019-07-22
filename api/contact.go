@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/web"
@@ -50,8 +51,8 @@ func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 			return
 		}
 		con := web.RequestContact{}
-		convert.SourceToDestination(c, &con)
-		contact, err1 := cr.Create(con)
+		userID := context.Get(r, "userID").(string)
+		contact, err1 := cr.Create(con, userID)
 		if err1 != nil {
 			http.Error(w, "Internal error", 500)
 			return
@@ -95,6 +96,7 @@ type ContactDTO struct {
 	Address   string    `json:"address"`
 	CreatedOn time.Time `json:"created_on"`
 	UpdatedOn time.Time `json:"updated_on"`
+	UserID    string    `json:"user_id"`
 }
 
 // RequestContactDTO, ContactDTO, |RequestContact, Contact,| ContactEntity (messages and campaign the same)
@@ -106,4 +108,5 @@ type RequestContactDTO struct {
 	Email   string `json:"email"`
 	Age     int    `json:"age"`
 	Address string `json:"address"`
+	UserID  string `json:"user_id"`
 }

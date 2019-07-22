@@ -1,6 +1,7 @@
 package web
 
 import (
+	"github.com/gorilla/context"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
@@ -27,6 +28,7 @@ func (am AuthMiddleware) BasicAuth(next http.Handler) http.Handler {
 			http.Error(w, "Internal error", 500)
 			return
 		}
+		context.Set(r, "userID", user.GUID)
 		passByte := []byte(user.Password)
 		requestPassByte := []byte(pass)
 		err = bcrypt.CompareHashAndPassword(passByte, requestPassByte)

@@ -52,13 +52,13 @@ func (c contactRepository) Get(id string) (web.Contact, error) {
 }
 
 //Create adds a new contact to the DB
-func (c contactRepository) Create(con web.RequestContact) (web.Contact, error) {
+func (c contactRepository) Create(con web.RequestContact, userID string) (web.Contact, error) {
 	uuid := uuid.New()
 	query := `
-	INSERT INTO contacts (id, name,email,age,address,created_on,updated_on)
-	VALUES ($1, $2, $3, $4, $5, $6, $7);`
+	INSERT INTO contacts (id, name,email,age,address,created_on,updated_on, userID)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`
 	createdOn := time.Now().UTC()
-	_, err := c.db.Exec(query, uuid, con.Name, con.Email, con.Age, con.Address, createdOn, createdOn)
+	_, err := c.db.Exec(query, uuid, con.Name, con.Email, con.Age, con.Address, createdOn, createdOn, userID)
 	if err != nil {
 		fmt.Println(err)
 		return web.Contact{}, err
@@ -71,6 +71,7 @@ func (c contactRepository) Create(con web.RequestContact) (web.Contact, error) {
 		Email:     con.Email,
 		CreatedOn: createdOn,
 		UpdatedOn: createdOn,
+		UserID:    userID,
 	}, err
 }
 
@@ -108,6 +109,7 @@ type contactEntity struct {
 	Address   string    `db:"address"`
 	CreatedOn time.Time `db:"created_on"`
 	UpdatedOn time.Time `db:"updated_on"`
+	UserID    string    `db: "userID"`
 }
 
 func NewContactRepository(db *sql.DB) web.ContactRepository {
