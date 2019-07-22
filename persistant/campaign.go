@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+//Get is used to return a campaign from the DB by a given ID.
 func (c campaignRepository) Get(id string) (web.Campaign, error) {
 	var cam campaignEntity
 	getCampaign := `
@@ -35,6 +36,7 @@ func (c campaignRepository) Get(id string) (web.Campaign, error) {
 	return result, err
 }
 
+//Delete is used to remove a campaign from the DB by a given ID.
 func (c campaignRepository) Delete(id string) error {
 	deleteCampaign := `
 	DELETE FROM campaign WHERE guid=$1`
@@ -57,6 +59,8 @@ func (c campaignRepository) Delete(id string) error {
 	return err
 }
 
+//Update searches the DB for a campaign by a given
+// ID and updates the campaign with the given RequestCampaign
 func (c campaignRepository) Update(id string, m web.RequestCampaign) (web.Campaign, error) {
 	if m.Status != "draft" {
 		return web.Campaign{}, errors.New("Sent or delivered campaign can't be edited")
@@ -99,6 +103,7 @@ func (c campaignRepository) Update(id string, m web.RequestCampaign) (web.Campai
 	}, err
 }
 
+//SentStatus changes the satatus of the campaign to sent
 func (c campaignRepository) SentStatus(id string) (web.Campaign, error) {
 	updateStatus := `UPDATE campaign 
 	SET status=$1
@@ -113,6 +118,7 @@ func (c campaignRepository) SentStatus(id string) (web.Campaign, error) {
 	}, err
 }
 
+//Create adds a new campaign to the DB
 func (c campaignRepository) Create(m web.RequestCampaign) (web.Campaign, error) {
 	uuid := uuid.New()
 	inseretCampaign := `

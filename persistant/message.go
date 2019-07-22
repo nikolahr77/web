@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+//Create adds a new message to the DB
 func (m messageRepository) Create(msg web.RequestMessage) (web.Message, error) {
 	query := `
 	INSERT INTO messages (guid, name, content, created_on, updated_on)
@@ -24,6 +25,7 @@ func (m messageRepository) Create(msg web.RequestMessage) (web.Message, error) {
 	}, err
 }
 
+//Delete is used to remove a message from the DB by a given ID.
 func (m messageRepository) Delete(id string) error {
 	query := `
 	DELETE FROM messages WHERE guid=$1`
@@ -31,6 +33,8 @@ func (m messageRepository) Delete(id string) error {
 	return err
 }
 
+//Update searches the DB for a message by a given
+// ID and updates the message with the given RequestMessage
 func (m messageRepository) Update(id string, msg web.RequestMessage) (web.Message, error) {
 	query := `
 	UPDATE messages
@@ -45,6 +49,7 @@ func (m messageRepository) Update(id string, msg web.RequestMessage) (web.Messag
 	}, err
 }
 
+//Get is used to return a message from the DB by a given ID.
 func (m messageRepository) Get(id string) (web.Message, error) {
 	query := `
 	SELECT * FROM messages WHERE guid=$1`

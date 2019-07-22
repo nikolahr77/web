@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+//GetAll returns all of the contacts which have the wanted address and age
 func (c contactRepository) GetAll(camSegmentation web.Segmentation) ([]web.Contact, error) {
 	query := `
 	SELECT name, email FROM contacts WHERE age = $1 AND address = $2`
@@ -31,6 +32,7 @@ func (c contactRepository) GetAll(camSegmentation web.Segmentation) ([]web.Conta
 	return result, err
 }
 
+//Get is used to return a contact from the DB by a given ID.
 func (c contactRepository) Get(id string) (web.Contact, error) {
 	var e contactEntity
 	rows, err := c.db.Query(`SELECT * FROM contacts WHERE id=?`, id)
@@ -49,6 +51,7 @@ func (c contactRepository) Get(id string) (web.Contact, error) {
 	return result, err
 }
 
+//Create adds a new contact to the DB
 func (c contactRepository) Create(con web.RequestContact) (web.Contact, error) {
 	uuid := uuid.New()
 	query := `
@@ -71,6 +74,7 @@ func (c contactRepository) Create(con web.RequestContact) (web.Contact, error) {
 	}, err
 }
 
+//Delete is used to remove a contact from the DB by a given ID.
 func (c contactRepository) Delete(id string) error {
 	query := `
 	DELETE FROM contacts WHERE id=$1;`
@@ -78,6 +82,8 @@ func (c contactRepository) Delete(id string) error {
 	return err
 }
 
+//Update searches the DB for a contact by a given
+// ID and updates the campaign with the given RequestContact
 func (c contactRepository) Update(id string, con web.RequestContact) (web.Contact, error) {
 	query := `
 	UPDATE contacts

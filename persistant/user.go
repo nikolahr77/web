@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+//GetByName searches the DB for a user with the specified name
+// and returns this user
 func (u userRepository) GetByName(name string) (web.User, error) {
 	query := `
 		SELECT * FROM users WHERE name = $1`
@@ -32,6 +34,7 @@ func (u userRepository) GetByName(name string) (web.User, error) {
 	return result, err
 }
 
+//Get is used to return a user from the DB by a given ID.
 func (u userRepository) Get(guid string) (web.User, error) {
 	getUser := `
 	SELECT * FROM users WHERE guid = $1`
@@ -55,6 +58,7 @@ func (u userRepository) Get(guid string) (web.User, error) {
 	return web.User{}, err
 }
 
+//Create adds a new user to the DB
 func (u userRepository) Create(usr web.RequestUser) (web.User, error) {
 	createUser := `
 	INSERT INTO users (guid, name, password, email, created_on, age, updated_on)
@@ -81,6 +85,8 @@ func (u userRepository) Create(usr web.RequestUser) (web.User, error) {
 	}, err
 }
 
+//Update searches the DB for a user by a given
+// ID and updates the users with the given RequestUser
 func (u userRepository) Update(guid string, usr web.RequestUser) (web.User, error) {
 	updateUser := `
 	UPDATE users
@@ -104,6 +110,7 @@ func (u userRepository) Update(guid string, usr web.RequestUser) (web.User, erro
 	}, err
 }
 
+//Delete is used to remove a user from the DB by a given ID.
 func (u userRepository) Delete(guid string) error {
 	deleteUser := `
 	DELETE FROM users WHERE guid = $1`
