@@ -27,22 +27,22 @@ func (m messageRepository) Create(msg web.RequestMessage, userID string) (web.Me
 }
 
 //Delete is used to remove a message from the DB by a given ID.
-func (m messageRepository) Delete(id string) error {
+func (m messageRepository) Delete(id string, userID string) error {
 	query := `
-	DELETE FROM messages WHERE guid=$1`
-	_, err := m.db.Exec(query, id)
+	DELETE FROM messages WHERE guid=$1 AND userID = $2`
+	_, err := m.db.Exec(query, id, userID)
 	return err
 }
 
 //Update searches the DB for a message by a given
 // ID and updates the message with the given RequestMessage
-func (m messageRepository) Update(id string, msg web.RequestMessage) (web.Message, error) {
+func (m messageRepository) Update(id string, msg web.RequestMessage, userID string) (web.Message, error) {
 	query := `
 	UPDATE messages
 	SET name=$1, content=$2, updated_on=$3
-	WHERE guid=$4`
+	WHERE guid=$4 AND userID = $5`
 	updatedOn := time.Now().UTC()
-	_, err := m.db.Exec(query, msg.Name, msg.Content, updatedOn, id)
+	_, err := m.db.Exec(query, msg.Name, msg.Content, updatedOn, id, userID)
 	return web.Message{
 		Name:      msg.Name,
 		Content:   msg.Content,

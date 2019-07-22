@@ -25,6 +25,6 @@ type ContactRepository interface {
 	GetAll(camSegmentation Segmentation) ([]Contact, error)
 	Get(id string) (Contact, error)
 	Create(con RequestContact, userID string) (Contact, error)
-	Delete(id string) error
-	Update(id string, con RequestContact) (Contact, error)
+	Delete(id string, userID string) error
+	Update(id string, con RequestContact, userID string) (Contact, error)
 }

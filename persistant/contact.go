@@ -35,7 +35,7 @@ func (c contactRepository) GetAll(camSegmentation web.Segmentation) ([]web.Conta
 //Get is used to return a contact from the DB by a given ID.
 func (c contactRepository) Get(id string) (web.Contact, error) {
 	var e contactEntity
-	rows, err := c.db.Query(`SELECT * FROM contacts WHERE id=?`, id)
+	rows, err := c.db.Query(`SELECT * FROM contacts WHERE id=? AND userID=?`, id)
 	if err != nil {
 		return web.Contact{}, err
 	}
@@ -76,22 +76,22 @@ func (c contactRepository) Create(con web.RequestContact, userID string) (web.Co
 }
 
 //Delete is used to remove a contact from the DB by a given ID.
-func (c contactRepository) Delete(id string) error {
+func (c contactRepository) Delete(id string, userID string) error {
 	query := `
-	DELETE FROM contacts WHERE id=$1;`
-	_, err := c.db.Exec(query, id)
+	DELETE FROM contacts WHERE id=$1 AND userID = $2;`
+	_, err := c.db.Exec(query, id, userID)
 	return err
 }
 
 //Update searches the DB for a contact by a given
 // ID and updates the campaign with the given RequestContact
-func (c contactRepository) Update(id string, con web.RequestContact) (web.Contact, error) {
+func (c contactRepository) Update(id string, con web.RequestContact, userID string) (web.Contact, error) {
 	query := `
 	UPDATE contacts
 	SET name=$1,email=$2,age=$3,address=$4,updated_on=$5
-	WHERE id=$6;`
+	WHERE id=$6 AND userID = $7;` //da dobavq i userID
 	updatedOn := time.Now().UTC()
-	_, err := c.db.Exec(query, con.Name, con.Email, con.Age, con.Address, updatedOn, id)
+	_, err := c.db.Exec(query, con.Name, con.Email, con.Age, con.Address, updatedOn, id, userID)
 	return web.Contact{
 		Name:      con.Name,
 		Address:   con.Address,

@@ -53,16 +53,16 @@ func (mrw MessageRequestWorker) create() {
 				recipients[i] = e
 			}
 
-			mrw.Messages <- MessageRequest{Messages: []SendMessage{{From: Email{Email: mrw.FromEmail}, To: recipients, TextPart: message.Content}}}
+			mrw.Messages <- MessageRequest{Messages: []NewMessage{{From: Email{Email: mrw.FromEmail}, To: recipients, TextPart: message.Content}}}
 		}
 	}
 }
 
 type MessageRequest struct {
-	Messages []SendMessage
+	Messages []NewMessage
 }
 
-type SendMessage struct {
+type NewMessage struct {
 	From     Email   //az
 	To       []Email //contacts
 	TextPart string  //slagame content ot messages

@@ -37,7 +37,7 @@ func (c campaignRepository) Get(id string) (web.Campaign, error) {
 }
 
 //Delete is used to remove a campaign from the DB by a given ID.
-func (c campaignRepository) Delete(id string) error {
+func (c campaignRepository) Delete(id string, userID string) error {
 	deleteCampaign := `
 	DELETE FROM campaign WHERE guid=$1`
 
@@ -61,14 +61,14 @@ func (c campaignRepository) Delete(id string) error {
 
 //Update searches the DB for a campaign by a given
 // ID and updates the campaign with the given RequestCampaign
-func (c campaignRepository) Update(id string, m web.RequestCampaign) (web.Campaign, error) {
+func (c campaignRepository) Update(id string, m web.RequestCampaign, userID string) (web.Campaign, error) {
 	if m.Status != "draft" {
 		return web.Campaign{}, errors.New("Sent or delivered campaign can't be edited")
 	}
 	updateCampaign := `
 	UPDATE campaign 
 	SET name=$1, status=$2, updated_on=$3, messageGUID=$4
-	WHERE guid = $5;`
+	WHERE guid = $5 AND userID = $6;`
 
 	updateSegmentation := `
 	UPDATE segmentation
