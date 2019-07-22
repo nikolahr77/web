@@ -9,19 +9,20 @@ import (
 )
 
 //Create adds a new message to the DB
-func (m messageRepository) Create(msg web.RequestMessage) (web.Message, error) {
+func (m messageRepository) Create(msg web.RequestMessage, userID string) (web.Message, error) {
 	query := `
-	INSERT INTO messages (guid, name, content, created_on, updated_on)
-	VALUES ($1,$2,$3,$4,$5);`
+	INSERT INTO messages (guid, name, content, created_on, updated_on, userID)
+	VALUES ($1,$2,$3,$4,$5,$6);`
 	uuid := uuid.New()
 	createdOn := time.Now().UTC()
-	_, err := m.db.Exec(query, uuid, msg.Name, msg.Content, createdOn, createdOn)
+	_, err := m.db.Exec(query, uuid, msg.Name, msg.Content, createdOn, createdOn, userID)
 	return web.Message{
 		GUID:      uuid.String(),
 		Name:      msg.Name,
 		Content:   msg.Content,
 		CreatedOn: createdOn,
 		UpdatedOn: createdOn,
+		UserID:    userID,
 	}, err
 }
 
@@ -81,6 +82,7 @@ type messageEntity struct {
 	Content   string    `db:"content"`
 	CreatedOn time.Time `db:"created_on"`
 	UpdatedOn time.Time `db:"updated_on"`
+	UserID    string    `db: "userID"`
 }
 
 func NewMessageRepository(db *sql.DB) web.MessageRepository {

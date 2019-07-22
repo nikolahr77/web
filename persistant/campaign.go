@@ -119,11 +119,11 @@ func (c campaignRepository) SentStatus(id string) (web.Campaign, error) {
 }
 
 //Create adds a new campaign to the DB
-func (c campaignRepository) Create(m web.RequestCampaign) (web.Campaign, error) {
+func (c campaignRepository) Create(m web.RequestCampaign, userID string) (web.Campaign, error) {
 	uuid := uuid.New()
 	inseretCampaign := `
-	INSERT INTO campaign (guid, name, status, created_on, updated_on, message_guid)
-	VALUES ($1, $2, $3, $4, $5, $6);`
+	INSERT INTO campaign (guid, name, status, created_on, updated_on, message_guid, userID)
+	VALUES ($1, $2, $3, $4, $5, $6, $7);`
 
 	inseretSegmentation := `
 	INSERT INTO segmentation (address, age, campaign_id)
@@ -131,7 +131,7 @@ func (c campaignRepository) Create(m web.RequestCampaign) (web.Campaign, error) 
 
 	createdOn := time.Now().UTC()
 	tx, _ := c.db.Begin()
-	_, err := tx.Exec(inseretCampaign, uuid, m.Name, "draft", createdOn, createdOn, m.MessageGUID)
+	_, err := tx.Exec(inseretCampaign, uuid, m.Name, "draft", createdOn, createdOn, m.MessageGUID, userID)
 	if err != nil {
 		tx.Rollback()
 		return web.Campaign{}, err
@@ -155,6 +155,7 @@ func (c campaignRepository) Create(m web.RequestCampaign) (web.Campaign, error) 
 		CreatedOn:   createdOn,
 		UpdatedOn:   createdOn,
 		MessageGUID: m.MessageGUID,
+		UserID:      userID,
 	}, err
 }
 
@@ -166,6 +167,7 @@ type campaignEntity struct {
 	CreatedOn    time.Time `db: "created_on"`
 	UpdatedOn    time.Time `db: "updated_on"`
 	MessageGUID  string    `db: "message_guid"`
+	UserID       string    `db: "userID"`
 }
 
 type segmentationEntity struct {

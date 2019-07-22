@@ -17,6 +17,7 @@ type Campaign struct {
 	CreatedOn    time.Time
 	UpdatedOn    time.Time
 	MessageGUID  string
+	UserID       string
 }
 
 type RequestCampaign struct {
@@ -24,6 +25,7 @@ type RequestCampaign struct {
 	Segmentation Segmentation
 	Status       string
 	MessageGUID  string
+	UserID       string
 }
 
 type RequestSegmentation struct {
@@ -33,7 +35,7 @@ type RequestSegmentation struct {
 
 type CampaignRepository interface {
 	Get(id string) (Campaign, error)
-	Create(m RequestCampaign) (Campaign, error)
+	Create(m RequestCampaign, userID string) (Campaign, error)
 	Delete(id string) error
 	Update(id string, m RequestCampaign) (Campaign, error)
 	SentStatus(id string) (Campaign, error)

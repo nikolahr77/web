@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/web"
@@ -20,8 +21,9 @@ func CreateMessage(msg web.MessageRepository) http.HandlerFunc {
 			return
 		}
 		adaptedReqMsg := web.RequestMessage{}
+		userID := context.Get(r, "userID").(string)
 		convert.SourceToDestination(m, &adaptedReqMsg)
-		message, err := msg.Create(adaptedReqMsg)
+		message, err := msg.Create(adaptedReqMsg, userID)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return

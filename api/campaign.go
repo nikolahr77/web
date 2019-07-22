@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/web"
 	"github.com/web/convert"
@@ -47,8 +48,9 @@ func CreateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 			return
 		}
 		cam := web.RequestCampaign{}
+		userID := context.Get(r, "userID").(string)
 		convert.SourceToDestination(c, &cam)
-		campaign, err := cr.Create(cam)
+		campaign, err := cr.Create(cam, userID)
 		if err != nil {
 			fmt.Println(err)
 			http.Error(w, "Internal error", 500)
