@@ -16,11 +16,14 @@ type MessageRequestWorker struct {
 	FromEmail         string
 }
 
+//Contacts contains a slice of the contacts with the desired specifications and the GUID
+// of the message that needs to be sent
 type Contacts struct {
 	MessageGUID string
 	Contacts    []Contact
 }
 
+//Start starts a specified number of workers
 func (c MessageRequestWorker) Start() {
 	for i := 0; i < c.Workers; i++ {
 		go c.create()

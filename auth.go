@@ -10,6 +10,7 @@ type AuthMiddleware struct {
 	UserRepository UserRepository
 }
 
+//BasicAuth is a middleware used to verify the user from the request
 func (am AuthMiddleware) BasicAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.String() == "/users" {

@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+//SenderWorker sends the payload
 type SenderWorker struct {
 	MessageRequests <-chan MessageRequest //samo chete
 	Workers         int
@@ -19,13 +20,14 @@ type SenderWorker struct {
 	SAPIHost        string
 }
 
+//Start starts a specified number of workers
 func (s SenderWorker) Start() {
 	for i := 0; i < s.Workers; i++ {
-		go s.SendEmail()
+		go s.sendEmail()
 	}
 }
 
-func (s SenderWorker) SendEmail() {
+func (s SenderWorker) sendEmail() {
 	for {
 		select {
 		case <-s.StopChan:
