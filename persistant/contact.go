@@ -35,7 +35,7 @@ func (c contactRepository) GetAll(camSegmentation web.Segmentation) ([]web.Conta
 //Get is used to return a contact from the DB by a given ID.
 func (c contactRepository) Get(id string) (web.Contact, error) {
 	var e contactEntity
-	rows, err := c.db.Query(`SELECT * FROM contacts WHERE id=? AND userID=?`, id)
+	rows, err := c.db.Query(`SELECT * FROM contacts WHERE id=?`, id)
 	if err != nil {
 		return web.Contact{}, err
 	}
@@ -109,7 +109,7 @@ type contactEntity struct {
 	Address   string    `db:"address"`
 	CreatedOn time.Time `db:"created_on"`
 	UpdatedOn time.Time `db:"updated_on"`
-	UserID    string    `db: "userID"`
+	//UserID    string    `db: "userID"`
 }
 
 func NewContactRepository(db *sql.DB) web.ContactRepository {

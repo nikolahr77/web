@@ -27,7 +27,6 @@ func GetContact(cr web.ContactRepository) http.HandlerFunc {
 		convert.SourceToDestination(contact, &contactDTO)
 		json.NewEncoder(w).Encode(contactDTO)
 	}
-
 }
 
 //DeleteContact is used to delete a contact with the ID from the DELETE request
