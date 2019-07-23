@@ -34,7 +34,8 @@ func GetContact(cr web.ContactRepository) http.HandlerFunc {
 func DeleteContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		err1 := cr.Delete(id)
+		userID := context.Get(r, "userID").(string)
+		err1 := cr.Delete(id, userID)
 		if err1 != nil {
 			http.Error(w, "Internal error", 500)
 		}
@@ -52,6 +53,7 @@ func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 		}
 		con := web.RequestContact{}
 		userID := context.Get(r, "userID").(string)
+		convert.SourceToDestination(c, &con)
 		contact, err1 := cr.Create(con, userID)
 		if err1 != nil {
 			http.Error(w, "Internal error", 500)
@@ -76,7 +78,8 @@ func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 		con := web.RequestContact{}
 		convert.SourceToDestination(c, &con)
 		id := mux.Vars(r)["id"]
-		contact, err := cr.Update(id, con)
+		userID := context.Get(r, "userID").(string)
+		contact, err := cr.Update(id, con, userID)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return

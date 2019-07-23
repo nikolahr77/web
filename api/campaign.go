@@ -31,7 +31,8 @@ func GetCampaign(cr web.CampaignRepository) http.HandlerFunc {
 func DeleteCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		err := cr.Delete(id)
+		userID := context.Get(r, "userID").(string)
+		err := cr.Delete(id, userID)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 		}
@@ -75,7 +76,8 @@ func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 		cam := web.RequestCampaign{}
 		convert.SourceToDestination(c, &cam)
 		id := mux.Vars(r)["id"]
-		campaign, err := cr.Update(id, cam)
+		userID := context.Get(r, "userID").(string)
+		campaign, err := cr.Update(id, cam, userID)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return

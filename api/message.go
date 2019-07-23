@@ -38,7 +38,8 @@ func CreateMessage(msg web.MessageRepository) http.HandlerFunc {
 func DeleteMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		err := msg.Delete(id)
+		userID := context.Get(r, "userID").(string)
+		err := msg.Delete(id, userID)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return
@@ -59,7 +60,8 @@ func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 		}
 		adaptedReqMsg := web.RequestMessage{}
 		convert.SourceToDestination(m, &adaptedReqMsg)
-		message, err := msg.Update(id, adaptedReqMsg)
+		userID := context.Get(r, "userID").(string)
+		message, err := msg.Update(id, adaptedReqMsg, userID)
 		if err != nil {
 			http.Error(w, "Internal Error", 500)
 			return
