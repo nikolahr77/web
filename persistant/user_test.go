@@ -23,7 +23,10 @@ func TestUserRepository_Get(t *testing.T) {
 		WithArgs("15").
 		WillReturnRows(rows)
 
-	myDB := persistant.NewUserRepository(db)
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	myDB := persistant.NewUserRepository(db, clock)
 
 	actual, err := myDB.Get("15")
 
@@ -51,7 +54,10 @@ func TestUserRepositoryGetReturnQueryError(t *testing.T) {
 		WithArgs("32ff-sad2-fg5").
 		WillReturnError(SQLerror{"SQL Error"})
 
-	myDB := persistant.NewUserRepository(db)
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	myDB := persistant.NewUserRepository(db, clock)
 
 	_, err = myDB.Get("32ff-sad2-fg5")
 	expectedError := SQLerror{"SQL Error"}
@@ -75,7 +81,10 @@ func TestUserRepository_Update(t *testing.T) {
 
 	mock.ExpectExec("UPDATE users").WithArgs("15", newUsr).WillReturnResult(sqlmock.NewResult(0, 1))
 
-	myDB := persistant.NewUserRepository(db)
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	myDB := persistant.NewUserRepository(db, clock)
 
 	actual, err := myDB.Update("15", newUsr)
 
@@ -99,7 +108,10 @@ func TestUserRepository_UpdateReturnError(t *testing.T) {
 
 	mock.ExpectExec("UPDATE users").WillReturnError(SQLerror{"ERROR"})
 
-	myDB := persistant.NewUserRepository(db)
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	myDB := persistant.NewUserRepository(db, clock)
 
 	_, err = myDB.Update("15", web.RequestUser{})
 
@@ -117,7 +129,10 @@ func TestUserRepository_DeleteReturnError(t *testing.T) {
 
 	mock.ExpectExec("DELETE FROM users ").WithArgs("71241vb253fdsv").WillReturnError(SQLerror{"ERROR"})
 
-	myDB := persistant.NewUserRepository(db)
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	myDB := persistant.NewUserRepository(db, clock)
 
 	err = myDB.Delete("71241vb253fdsv")
 

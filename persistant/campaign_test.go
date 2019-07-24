@@ -26,7 +26,9 @@ func TestCampaignRepository_Get(t *testing.T) {
 		WithArgs("8fsa-321nfuv").
 		WillReturnRows(rowsCam, rowsSeg)
 
-	myDB := persistant.NewUserRepository(db)
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+	myDB := persistant.NewUserRepository(db, clock)
 
 	actual, err := myDB.Get("15")
 
@@ -58,7 +60,9 @@ func TestCampaignRepositoryGetReturnQueryError(t *testing.T) {
 		WithArgs("32ff-sad2-fg5").
 		WillReturnError(SQLerror{"SQL Error"})
 
-	myDB := persistant.NewUserRepository(db)
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+	myDB := persistant.NewUserRepository(db, clock)
 
 	_, err = myDB.Get("32ff-sad2-fg5")
 	expectedError := SQLerror{"SQL Error"}
