@@ -7,6 +7,7 @@ import (
 	"github.com/web/api"
 	"github.com/web/persistant"
 	"net/http"
+	"time"
 )
 
 func main() {
@@ -15,9 +16,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	clock := persistant.Clock{Time: time.Time{}}
+
 	cr := persistant.NewContactRepository(db)
 	msg := persistant.NewMessageRepository(db)
-	cam := persistant.NewCampaignRepository(db)
+	cam := persistant.NewCampaignRepository(db, clock)
 	usr := persistant.NewUserRepository(db)
 	r := mux.NewRouter()
 	//s := r.Host("/users").Subrouter()

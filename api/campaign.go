@@ -16,7 +16,8 @@ import (
 func GetCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		campaign, err := cr.Get(id)
+		userID := context.Get(r, "userID").(string)
+		campaign, err := cr.Get(id, userID)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
 			return
@@ -34,6 +35,7 @@ func DeleteCampaign(cr web.CampaignRepository) http.HandlerFunc {
 		userID := context.Get(r, "userID").(string)
 		err := cr.Delete(id, userID)
 		if err != nil {
+			//fmt.Println(err)
 			http.Error(w, "Internal error", 500)
 		}
 	}
@@ -53,7 +55,6 @@ func CreateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 		convert.SourceToDestination(c, &cam)
 		campaign, err := cr.Create(cam, userID)
 		if err != nil {
-			fmt.Println(err)
 			http.Error(w, "Internal error", 500)
 			return
 		}
@@ -79,6 +80,7 @@ func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 		userID := context.Get(r, "userID").(string)
 		campaign, err := cr.Update(id, cam, userID)
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, "Internal error", 500)
 			return
 		}
@@ -97,6 +99,7 @@ type CampaignDTO struct {
 	CreatedOn    time.Time       `json:"created_on"`
 	UpdatedOn    time.Time       `json:"updated_on"`
 	MessageGUID  string          `json:"message_guid"`
+	UserID       string          `json:"user_id"`
 }
 
 //SegmentationDTO is part of the campaignDTO

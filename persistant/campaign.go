@@ -10,15 +10,15 @@ import (
 )
 
 //Get is used to return a campaign from the DB by a given ID.
-func (c campaignRepository) Get(id string) (web.Campaign, error) {
+func (c campaignRepository) Get(id string, userID string) (web.Campaign, error) {
 	var cam campaignEntity
 	getCampaign := `
 	SELECT * FROM campaign 
 	CROSS JOIN segmentation 
-	WHERE guid = $1
+	WHERE guid = $1 AND userid = $2
      `
 
-	rows, err := c.db.Query(getCampaign, id)
+	rows, err := c.db.Query(getCampaign, id, userID)
 	if err != nil {
 		return web.Campaign{}, err
 	}
@@ -67,7 +67,7 @@ func (c campaignRepository) Update(id string, m web.RequestCampaign, userID stri
 	}
 	updateCampaign := `
 	UPDATE campaign 
-	SET name=$1, status=$2, updated_on=$3, messageGUID=$4
+	SET name=$1, status=$2, updated_on=$3, message_guid=$4
 	WHERE guid = $5 AND userID = $6;`
 
 	updateSegmentation := `
@@ -78,7 +78,7 @@ func (c campaignRepository) Update(id string, m web.RequestCampaign, userID stri
 	updatedOn := time.Now().UTC()
 
 	tx, _ := c.db.Begin()
-	_, err := c.db.Exec(updateCampaign, m.Name, "draft", updatedOn, m.MessageGUID, id)
+	_, err := c.db.Exec(updateCampaign, m.Name, "draft", updatedOn, m.MessageGUID, id, userID)
 	if err != nil {
 		tx.Rollback()
 		return web.Campaign{}, err
@@ -177,10 +177,11 @@ type segmentationEntity struct {
 	CampaignID string `db:"campaign_id"`
 }
 
-func NewCampaignRepository(db *sql.DB) web.CampaignRepository {
-	return campaignRepository{db: db}
+func NewCampaignRepository(db *sql.DB, time Clock) web.CampaignRepository {
+	return campaignRepository{db: db, clock: time}
 }
 
 type campaignRepository struct {
-	db *sql.DB
+	db    *sql.DB
+	clock Clock
 }

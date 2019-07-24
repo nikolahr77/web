@@ -36,7 +36,7 @@ func (mrw MessageRequestWorker) create() {
 		case <-mrw.StopChan:
 			return
 		case campaign := <-mrw.Campaigns:
-			message, err := mrw.MessageRepository.Get(campaign.MessageGUID)
+			message, err := mrw.MessageRepository.Get(campaign.MessageGUID, campaign.UserID)
 			if err != nil {
 				log.Print(err)
 			}

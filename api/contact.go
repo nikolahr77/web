@@ -17,7 +17,8 @@ import (
 func GetContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		guid := mux.Vars(r)["id"]
-		contact, err := cr.Get(guid)
+		userID := context.Get(r, "userID").(string)
+		contact, err := cr.Get(guid, userID)
 		if err != nil {
 			fmt.Println(err)
 			http.Error(w, "Internal error", 500)

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/web"
 	"net/http"
@@ -10,7 +11,8 @@ import (
 func StartCampaign(cr web.CampaignRepository, ch chan web.Campaign) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		campaign, err := cr.Get(id)
+		userID := context.Get(r, "userID").(string)
+		campaign, err := cr.Get(id, userID)
 		if err != nil {
 			panic(err)
 		}

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -41,6 +42,7 @@ func DeleteMessage(msg web.MessageRepository) http.HandlerFunc {
 		userID := context.Get(r, "userID").(string)
 		err := msg.Delete(id, userID)
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, "Internal error", 500)
 			return
 		}
@@ -77,7 +79,8 @@ func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 func GetMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		message, err := msg.Get(id)
+		userID := context.Get(r, "userID").(string)
+		message, err := msg.Get(id, userID)
 		if err != nil {
 			http.Error(w, "Internal Error", 500)
 			return
@@ -95,6 +98,7 @@ type MessageDTO struct {
 	Content   string    `json:"content"`
 	CreatedOn time.Time `json:"created_on"`
 	UpdatedOn time.Time `json:"updated_on"`
+	UserID    string    `json:"user_id"`
 }
 
 //RequestMessageDTO is used to return info relevant to the user

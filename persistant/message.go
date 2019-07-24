@@ -51,18 +51,18 @@ func (m messageRepository) Update(id string, msg web.RequestMessage, userID stri
 }
 
 //Get is used to return a message from the DB by a given ID.
-func (m messageRepository) Get(id string) (web.Message, error) {
+func (m messageRepository) Get(id string, userID string) (web.Message, error) {
 	query := `
-	SELECT * FROM messages WHERE guid=$1`
+	SELECT * FROM messages WHERE guid=$1 AND userid=$2`
 
 	var e messageEntity
-	rows, err := m.db.Query(query, id)
+	rows, err := m.db.Query(query, id, userID)
 	if err != nil {
 		return web.Message{}, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err := rows.Scan(&e.GUID, &e.Name, &e.Content, &e.CreatedOn, &e.UpdatedOn)
+		err := rows.Scan(&e.GUID, &e.Name, &e.Content, &e.CreatedOn, &e.UpdatedOn, &e.UserID)
 		if err != nil {
 			return web.Message{}, err
 		}
