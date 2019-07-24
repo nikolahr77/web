@@ -14,7 +14,7 @@ func (m messageRepository) Create(msg web.RequestMessage, userID string) (web.Me
 	INSERT INTO messages (guid, name, content, created_on, updated_on, userID)
 	VALUES ($1,$2,$3,$4,$5,$6);`
 	uuid := uuid.New()
-	createdOn := time.Now().UTC()
+	createdOn := m.clock.Now().UTC()
 	_, err := m.db.Exec(query, uuid, msg.Name, msg.Content, createdOn, createdOn, userID)
 	return web.Message{
 		GUID:      uuid.String(),
@@ -41,7 +41,7 @@ func (m messageRepository) Update(id string, msg web.RequestMessage, userID stri
 	UPDATE messages
 	SET name=$1, content=$2, updated_on=$3
 	WHERE guid=$4 AND userID = $5`
-	updatedOn := time.Now().UTC()
+	updatedOn := m.clock.Now().UTC()
 	_, err := m.db.Exec(query, msg.Name, msg.Content, updatedOn, id, userID)
 	return web.Message{
 		Name:      msg.Name,
@@ -73,7 +73,8 @@ func (m messageRepository) Get(id string, userID string) (web.Message, error) {
 }
 
 type messageRepository struct {
-	db *sql.DB
+	db    *sql.DB
+	clock Clock
 }
 
 type messageEntity struct {
@@ -85,6 +86,6 @@ type messageEntity struct {
 	UserID    string    `db: "userID"`
 }
 
-func NewMessageRepository(db *sql.DB) web.MessageRepository {
-	return messageRepository{db: db}
+func NewMessageRepository(db *sql.DB, clock Clock) web.MessageRepository {
+	return messageRepository{db: db, clock: clock}
 }

@@ -75,7 +75,7 @@ func (c campaignRepository) Update(id string, m web.RequestCampaign, userID stri
 	SET address=$1,age = $2
 	WHERE campaign_id = $3;`
 
-	updatedOn := time.Now().UTC()
+	updatedOn := c.clock.Now().UTC()
 
 	tx, _ := c.db.Begin()
 	_, err := c.db.Exec(updateCampaign, m.Name, "draft", updatedOn, m.MessageGUID, id, userID)
@@ -129,7 +129,7 @@ func (c campaignRepository) Create(m web.RequestCampaign, userID string) (web.Ca
 	INSERT INTO segmentation (address, age, campaign_id)
 	VALUES ($1, $2, $3);`
 
-	createdOn := time.Now().UTC()
+	createdOn := c.clock.Now().UTC()
 	tx, _ := c.db.Begin()
 	_, err := tx.Exec(inseretCampaign, uuid, m.Name, "draft", createdOn, createdOn, m.MessageGUID, userID)
 	if err != nil {
@@ -177,8 +177,8 @@ type segmentationEntity struct {
 	CampaignID string `db:"campaign_id"`
 }
 
-func NewCampaignRepository(db *sql.DB, time Clock) web.CampaignRepository {
-	return campaignRepository{db: db, clock: time}
+func NewCampaignRepository(db *sql.DB, clock Clock) web.CampaignRepository {
+	return campaignRepository{db: db, clock: clock}
 }
 
 type campaignRepository struct {

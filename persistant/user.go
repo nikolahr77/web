@@ -64,7 +64,7 @@ func (u userRepository) Create(usr web.RequestUser) (web.User, error) {
 	INSERT INTO users (guid, name, password, email, created_on, age, updated_on)
 	VALUES ($1, $2, $3, $4, $5, $6, $7)`
 	guid := uuid.New()
-	createdOn := time.Now().UTC()
+	createdOn := u.clock.Now().UTC()
 
 	passBytes := []byte(usr.Password)
 	hashedBytes, err := bcrypt.GenerateFromPassword(passBytes, bcrypt.DefaultCost)
@@ -92,7 +92,7 @@ func (u userRepository) Update(guid string, usr web.RequestUser) (web.User, erro
 	UPDATE users
 	SET name=$1, password=$2, email=$3, age=$4, updated_on=$5
 	WHERE guid = $6`
-	updatedOn := time.Now().UTC()
+	updatedOn := u.clock.Now().UTC()
 	saltedBytes := []byte(usr.Password)
 	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
 	if err != nil {
@@ -129,10 +129,11 @@ type userEntity struct {
 	Email     string    `db:"email"`
 }
 
-func NewUserRepository(db *sql.DB) web.UserRepository {
-	return userRepository{db: db}
+func NewUserRepository(db *sql.DB, clock Clock) web.UserRepository {
+	return userRepository{db: db, clock: clock}
 }
 
 type userRepository struct {
-	db *sql.DB
+	db    *sql.DB
+	clock Clock
 }
