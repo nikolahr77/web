@@ -1,15 +1,44 @@
 package persistant_test
 
-//import (
-//	"fmt"
-//	"github.com/DATA-DOG/go-sqlmock"
-//	"github.com/stretchr/testify/assert"
-//	"github.com/web"
-//	"github.com/web/persistant"
-//	"testing"
-//	"time"
-//)
-//
+import (
+	"fmt"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/web"
+	"github.com/web/persistant"
+	"log"
+	"testing"
+)
+
+func TestCreateMessageRepository(t *testing.T) {
+
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	mr := persistant.NewMessageRepository(DB, clock)
+
+	newMsg := web.RequestMessage{
+		Name:    "TestMSG",
+		Content: "This is a test message",
+	}
+	userID := uuid.New()
+	actual, err := mr.Create(newMsg, userID.String())
+	if err != nil {
+		log.Print(err)
+	}
+	fmt.Println(err)
+	expected := web.Message{
+		GUID:      actual.GUID,
+		Name:      "TestMSG",
+		Content:   "This is a test message",
+		CreatedOn: actual.CreatedOn, //I should't do this
+		UpdatedOn: actual.UpdatedOn,
+		UserID:    userID.String(),
+	}
+
+	assert.Equal(t, expected, actual)
+}
+
 //func TestMessageRepository_Get(t *testing.T) {
 //	db, mock, err := sqlmock.New()
 //	if err != nil {
