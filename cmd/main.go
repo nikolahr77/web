@@ -6,6 +6,7 @@ import (
 	"github.com/web"
 	"github.com/web/api"
 	"github.com/web/persistant"
+	"log"
 	"net/http"
 )
 
@@ -13,7 +14,7 @@ func main() {
 	connStr := "user=postgres dbname=mail sslmode=disable password=1234"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		panic(err)
+		log.Print(err)
 	}
 	rc := persistant.RealClock{}
 	clock := persistant.Clock(rc)

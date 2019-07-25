@@ -1,5 +1,18 @@
 package persistant_test
 
+import (
+	"database/sql"
+	"fmt"
+	"github.com/google/uuid"
+	_ "github.com/lib/pq"
+	"github.com/stretchr/testify/assert"
+	"github.com/web"
+	"github.com/web/persistant"
+	"log"
+	"os"
+	"testing"
+)
+
 //import (
 //	"github.com/DATA-DOG/go-sqlmock"
 //	"github.com/stretchr/testify/assert"
@@ -17,6 +30,50 @@ func (err SQLerror) Error() string {
 	return "SQL Error"
 }
 
+var DB *sql.DB
+
+func TestMain(m *testing.M) {
+	connStr := "user=postgres dbname=testmail sslmode=disable password=1234"
+	DB, _ = sql.Open("postgres", connStr)
+	defer DB.Close()
+	code := m.Run()
+	os.Exit(code)
+}
+
+func TestCreateContactRepository(t *testing.T) {
+
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	cr := persistant.NewContactRepository(DB, clock)
+
+	newContact := web.RequestContact{
+		Name:    "Dani",
+		Email:   "dani@abv.bg",
+		Age:     62,
+		Address: "Pleven",
+	}
+	userID := uuid.New()
+	actual, err := cr.Create(newContact, userID.String())
+	if err != nil {
+		log.Print(err)
+	}
+	fmt.Println(err)
+	expected := web.Contact{
+		GUID:      actual.GUID,
+		Name:      "Dani",
+		Email:     "dani@abv.bg",
+		Age:       62,
+		Address:   "Pleven",
+		CreatedOn: actual.CreatedOn, //I should't do this
+		UpdatedOn: actual.UpdatedOn,
+		UserID:    userID.String(),
+	}
+
+	assert.Equal(t, expected, actual)
+}
+
+//
 //func TestContactRepository_Get(t *testing.T) {
 //	db, mock, err := sqlmock.New()
 //	if err != nil {
@@ -31,21 +88,30 @@ func (err SQLerror) Error() string {
 //		WithArgs("15").
 //		WillReturnRows(rows)
 //
-//
 //	rc := persistant.RealClock{}
 //	clock := persistant.Clock(rc)
 //	myDB := persistant.NewContactRepository(db, clock)
-
-//actual, err := myDB.Get("15",)
-
-//expected := web.Contact{
-//	GUID:      "15",
-//	Name:      "Ivan",
-//	Email:     "ivan@abv.bg",
-//	Age:       15,
-//	Address:   "Sofia",
-//	CreatedOn: time.Unix(10, 0).UTC(),
-//	UpdatedOn: time.Unix(10, 0).UTC(),
+//
+//	actual, err := myDB.Get("15", )
+//
+//	expected := web.Contact{
+//		GUID:      "15",
+//		Name:      "Ivan",
+//		Email:     "ivan@abv.bg",
+//		Age:       15,
+//		Address:   "Sofia",
+//		CreatedOn: time.Unix(10, 0).UTC(),
+//		UpdatedOn: time.Unix(10, 0).UTC(),
+//	}
+//}
+//
+//func ContactRepositoryTest(db *sql.DB, clock persistant.Clock) web.ContactRepository {
+//	return contactRepository{db: db, clock: clock}
+//}
+//
+//type contactRepository struct {
+//	db    *sql.DB
+//	clock persistant.Clock
 //}
 
 //assert.Equal(t, expected, actual)
