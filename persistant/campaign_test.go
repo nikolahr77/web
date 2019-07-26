@@ -110,7 +110,7 @@ func TestUpdateCampaignRepository(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, actual)
-	DBCleaner(DB, "campaign")
+	//DBCleaner(DB, "campaign")
 }
 
 //

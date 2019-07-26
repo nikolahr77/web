@@ -89,7 +89,7 @@ func (c campaignRepository) Update(id string, m web.RequestCampaign, userID stri
 	return web.Campaign{
 		GUID:   id,
 		Name:   m.Name,
-		Status: m.Status,
+		Status: "draft",
 		Segmentation: web.Segmentation{
 			Address: m.Segmentation.Address,
 			Age:     m.Segmentation.Age,
