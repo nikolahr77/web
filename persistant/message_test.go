@@ -77,6 +77,31 @@ func TestUpdateMessageRepository(t *testing.T) {
 	DBCleaner(DB, "messages")
 }
 
+func TestDeleteMessageRepository(t *testing.T) {
+
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	mr := persistant.NewMessageRepository(DB, clock)
+
+	oldMsg := web.RequestMessage{
+		Name:    "TestMSG",
+		Content: "This is a test message",
+	}
+
+	userID := uuid.New()
+	old, err := mr.Create(oldMsg, userID.String())
+	if err != nil {
+		panic(err)
+	}
+	err = mr.Delete(old.GUID, userID.String())
+	if err != nil {
+		panic(err)
+	}
+
+	assert.Equal(t, err, nil)
+}
+
 //func TestMessageRepository_Get(t *testing.T) {
 //	db, mock, err := sqlmock.New()
 //	if err != nil {

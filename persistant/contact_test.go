@@ -115,7 +115,7 @@ func TestUpdateContactRepository(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(err)
+
 	expected := web.Contact{
 		GUID:      actual.GUID,
 		Name:      "Ivan",
@@ -130,6 +130,34 @@ func TestUpdateContactRepository(t *testing.T) {
 	assert.Equal(t, expected, actual)
 
 	DBCleaner(DB, "contacts")
+}
+
+func TestDeleteContactRepository(t *testing.T) {
+
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	cr := persistant.NewContactRepository(DB, clock)
+
+	oldContact := web.RequestContact{
+		Name:    "Dani",
+		Email:   "dani@abv.bg",
+		Age:     62,
+		Address: "Pleven",
+	}
+
+	userID := uuid.New()
+	old, err := cr.Create(oldContact, userID.String())
+	if err != nil {
+		panic(err)
+	}
+
+	err = cr.Delete(old.GUID, userID.String())
+	if err != nil {
+		panic(err)
+	}
+
+	assert.Equal(t, err, nil)
 }
 
 //

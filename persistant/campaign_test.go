@@ -10,7 +10,6 @@ import (
 )
 
 func TestCreateCampaignRepository(t *testing.T) {
-
 	rc := persistant.RealClock{}
 	clock := persistant.Clock(rc)
 
@@ -54,7 +53,6 @@ func TestCreateCampaignRepository(t *testing.T) {
 }
 
 func TestUpdateCampaignRepository(t *testing.T) {
-
 	rc := persistant.RealClock{}
 	clock := persistant.Clock(rc)
 
@@ -110,7 +108,37 @@ func TestUpdateCampaignRepository(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, actual)
-	//DBCleaner(DB, "campaign")
+	DBCleaner(DB, "campaign")
+}
+
+func TestDeleteCampaignRepository(t *testing.T) {
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	mr := persistant.NewCampaignRepository(DB, clock)
+
+	oldSeg := web.Segmentation{
+		Address: "Sofia 1515",
+		Age:     30,
+	}
+	msgID := uuid.New()
+
+	oldCam := web.RequestCampaign{
+		Name:         "TestCampaign",
+		Segmentation: oldSeg,
+		MessageGUID:  msgID.String(),
+	}
+
+	userID := uuid.New()
+
+	old, err := mr.Create(oldCam, userID.String())
+
+	err = mr.Delete(old.GUID, userID.String())
+	if err != nil {
+		panic(err)
+	}
+
+	assert.Equal(t, err, nil)
 }
 
 //

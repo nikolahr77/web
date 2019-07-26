@@ -83,6 +83,33 @@ func TestUpdateUserRepository(t *testing.T) {
 	DBCleaner(DB, "users")
 }
 
+func TestDeleteUserRepository(t *testing.T) {
+
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	cr := persistant.NewUserRepository(DB, clock)
+
+	oldUser := web.RequestUser{
+		Name:     "toni3312",
+		Email:    "toncho@abv.bg",
+		Age:      32,
+		Password: "55f21",
+	}
+
+	old, err := cr.Create(oldUser)
+	if err != nil {
+		panic(err)
+	}
+	err = cr.Delete(old.GUID)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(err)
+
+	assert.Equal(t, err, nil)
+}
+
 //
 //func TestUserRepository_Get(t *testing.T) {
 //	db, mock, err := sqlmock.New()
