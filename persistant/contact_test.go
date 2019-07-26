@@ -68,7 +68,7 @@ func TestCreateContactRepository(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(err)
+
 	expected := web.Contact{
 		GUID:      actual.GUID,
 		Name:      "Dani",

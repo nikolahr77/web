@@ -1,7 +1,6 @@
 package persistant_test
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/web"
@@ -31,7 +30,7 @@ func TestCreateCampaignRepository(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(err)
+
 	expected := web.Campaign{
 		GUID: actual.GUID,
 		Name: "TestCampaign",
@@ -91,7 +90,7 @@ func TestUpdateCampaignRepository(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(err)
+
 	expected := web.Campaign{
 		GUID: actual.GUID,
 		Name: "NeWTestCampaign",

@@ -1,7 +1,6 @@
 package persistant_test
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/web"
@@ -25,7 +24,7 @@ func TestCreateMessageRepository(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(err)
+
 	expected := web.Message{
 		GUID:      actual.GUID,
 		Name:      "TestMSG",
@@ -64,7 +63,7 @@ func TestUpdateMessageRepository(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(err)
+
 	expected := web.Message{
 		GUID:      actual.GUID,
 		Name:      "NewMSG",

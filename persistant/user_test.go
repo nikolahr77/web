@@ -1,7 +1,6 @@
 package persistant_test
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/web"
 	"github.com/web/persistant"
@@ -25,7 +24,7 @@ func TestCreateUserRepository(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(err)
+
 	expected := web.User{
 		GUID:      actual.GUID,
 		Name:      "toni3312",
@@ -68,7 +67,7 @@ func TestUpdateUserRepository(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(err)
+
 	expected := web.User{
 		GUID:      actual.GUID,
 		Name:      "misho55",
@@ -105,7 +104,6 @@ func TestDeleteUserRepository(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(err)
 
 	assert.Equal(t, err, nil)
 }
