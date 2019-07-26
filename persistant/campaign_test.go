@@ -140,6 +140,41 @@ func TestDeleteCampaignRepository(t *testing.T) {
 	assert.Equal(t, err, nil)
 }
 
+func TestSentStatusCampaignRepository(t *testing.T) {
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	mr := persistant.NewCampaignRepository(DB, clock)
+
+	oldSeg := web.Segmentation{
+		Address: "Sofia 1515",
+		Age:     30,
+	}
+	msgID := uuid.New()
+
+	oldCam := web.RequestCampaign{
+		Name:         "TestCampaign",
+		Segmentation: oldSeg,
+		MessageGUID:  msgID.String(),
+	}
+
+	userID := uuid.New()
+
+	old, err := mr.Create(oldCam, userID.String())
+
+	actual, err := mr.SentStatus(old.GUID)
+	if err != nil {
+		panic(err)
+	}
+
+	expected := web.Campaign{
+		Status: "sent",
+	}
+
+	assert.Equal(t, expected, actual)
+	DBCleaner(DB, "campaign")
+}
+
 //
 //func TestCampaignRepository_Get(t *testing.T) {
 //	db, mock, err := sqlmock.New()
