@@ -39,6 +39,44 @@ func TestCreateMessageRepository(t *testing.T) {
 	DBCleaner(DB, "messages")
 }
 
+func TestUpdateMessageRepository(t *testing.T) {
+
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	mr := persistant.NewMessageRepository(DB, clock)
+
+	oldMsg := web.RequestMessage{
+		Name:    "TestMSG",
+		Content: "This is a test message",
+	}
+
+	newMsg := web.RequestMessage{
+		Name:    "NewMSG",
+		Content: "This is the new test message",
+	}
+	userID := uuid.New()
+	old, err := mr.Create(oldMsg, userID.String())
+	if err != nil {
+		panic(err)
+	}
+	actual, err := mr.Update(old.GUID, newMsg, userID.String())
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(err)
+	expected := web.Message{
+		GUID:      actual.GUID,
+		Name:      "NewMSG",
+		Content:   "This is the new test message",
+		CreatedOn: actual.CreatedOn, //I should't do this
+		UpdatedOn: actual.UpdatedOn,
+	}
+
+	assert.Equal(t, expected, actual)
+	DBCleaner(DB, "messages")
+}
+
 //func TestMessageRepository_Get(t *testing.T) {
 //	db, mock, err := sqlmock.New()
 //	if err != nil {

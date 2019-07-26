@@ -40,6 +40,49 @@ func TestCreateUserRepository(t *testing.T) {
 	DBCleaner(DB, "users")
 }
 
+func TestUpdateUserRepository(t *testing.T) {
+
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	cr := persistant.NewUserRepository(DB, clock)
+
+	oldUser := web.RequestUser{
+		Name:     "toni3312",
+		Email:    "toncho@abv.bg",
+		Age:      32,
+		Password: "55f21",
+	}
+
+	newUser := web.RequestUser{
+		Name:     "misho55",
+		Email:    "mishoo@abv.bg",
+		Age:      12,
+		Password: "5ggfdsh52f221",
+	}
+	old, err := cr.Create(oldUser)
+	if err != nil {
+		panic(err)
+	}
+	actual, err := cr.Update(old.GUID, newUser)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(err)
+	expected := web.User{
+		GUID:      actual.GUID,
+		Name:      "misho55",
+		Email:     "mishoo@abv.bg",
+		Age:       12,
+		Password:  "5ggfdsh52f221",
+		CreatedOn: actual.CreatedOn, //I should't do this
+		UpdatedOn: actual.UpdatedOn,
+	}
+
+	assert.Equal(t, expected, actual)
+	DBCleaner(DB, "users")
+}
+
 //
 //func TestUserRepository_Get(t *testing.T) {
 //	db, mock, err := sqlmock.New()

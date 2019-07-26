@@ -2,7 +2,6 @@ package persistant
 
 import (
 	"database/sql"
-	"errors"
 	"github.com/google/uuid"
 	"github.com/web"
 	"github.com/web/convert"
@@ -62,13 +61,10 @@ func (c campaignRepository) Delete(id string, userID string) error {
 //Update searches the DB for a campaign by a given
 // ID and updates the campaign with the given RequestCampaign
 func (c campaignRepository) Update(id string, m web.RequestCampaign, userID string) (web.Campaign, error) {
-	if m.Status != "draft" {
-		return web.Campaign{}, errors.New("Sent or delivered campaign can't be edited")
-	}
 	updateCampaign := `
 	UPDATE campaign 
 	SET name=$1, status=$2, updated_on=$3, message_guid=$4
-	WHERE guid = $5 AND userID = $6;`
+	WHERE guid = $5 AND userID = $6 AND status = $7;`
 
 	updateSegmentation := `
 	UPDATE segmentation
@@ -78,7 +74,7 @@ func (c campaignRepository) Update(id string, m web.RequestCampaign, userID stri
 	updatedOn := c.clock.Now().UTC()
 
 	tx, _ := c.db.Begin()
-	_, err := c.db.Exec(updateCampaign, m.Name, "draft", updatedOn, m.MessageGUID, id, userID)
+	_, err := c.db.Exec(updateCampaign, m.Name, "draft", updatedOn, m.MessageGUID, id, userID, "draft")
 	if err != nil {
 		tx.Rollback()
 		return web.Campaign{}, err
