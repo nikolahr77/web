@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/web"
 	"github.com/web/persistant"
+	"gopkg.in/khaiql/dbcleaner.v2"
 	"log"
 	"os"
 	"testing"
@@ -31,6 +32,15 @@ func (err SQLerror) Error() string {
 }
 
 var DB *sql.DB
+var Cleaner = dbcleaner.New()
+
+func DBCleaner(db *sql.DB, table string) {
+	query := fmt.Sprintf(`DELETE FROM %s`, table)
+	_, err := db.Exec(query)
+	if err != nil {
+		log.Print(err)
+	}
+}
 
 func TestMain(m *testing.M) {
 	connStr := "user=postgres dbname=testmail sslmode=disable password=1234"
@@ -56,7 +66,7 @@ func TestCreateContactRepository(t *testing.T) {
 	userID := uuid.New()
 	actual, err := cr.Create(newContact, userID.String())
 	if err != nil {
-		log.Print(err)
+		panic(err)
 	}
 	fmt.Println(err)
 	expected := web.Contact{
@@ -71,6 +81,8 @@ func TestCreateContactRepository(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, actual)
+
+	DBCleaner(DB, "contacts")
 }
 
 //

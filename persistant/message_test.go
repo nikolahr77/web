@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/web"
 	"github.com/web/persistant"
-	"log"
 	"testing"
 )
 
@@ -24,7 +23,7 @@ func TestCreateMessageRepository(t *testing.T) {
 	userID := uuid.New()
 	actual, err := mr.Create(newMsg, userID.String())
 	if err != nil {
-		log.Print(err)
+		panic(err)
 	}
 	fmt.Println(err)
 	expected := web.Message{
@@ -37,6 +36,7 @@ func TestCreateMessageRepository(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, actual)
+	DBCleaner(DB, "messages")
 }
 
 //func TestMessageRepository_Get(t *testing.T) {

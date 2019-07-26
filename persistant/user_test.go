@@ -5,7 +5,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/web"
 	"github.com/web/persistant"
-	"log"
 	"testing"
 )
 
@@ -24,7 +23,7 @@ func TestCreateUserRepository(t *testing.T) {
 	}
 	actual, err := cr.Create(newUser)
 	if err != nil {
-		log.Print(err)
+		panic(err)
 	}
 	fmt.Println(err)
 	expected := web.User{
@@ -38,6 +37,7 @@ func TestCreateUserRepository(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, actual)
+	DBCleaner(DB, "users")
 }
 
 //
