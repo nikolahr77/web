@@ -4,6 +4,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/web"
 	"github.com/web/persistant"
+	"golang.org/x/crypto/bcrypt"
 	"testing"
 )
 
@@ -106,6 +107,48 @@ func TestDeleteUserRepository(t *testing.T) {
 	}
 
 	assert.Equal(t, err, nil)
+}
+
+func TestGetUserRepository(t *testing.T) { //FIX PASSWORD !!!
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	cr := persistant.NewUserRepository(DB, clock)
+
+	newUser := web.RequestUser{
+		Name:     "misho55",
+		Email:    "mishoo@abv.bg",
+		Age:      12,
+		Password: "5ggfdsh52f221",
+	}
+	user, err := cr.Create(newUser)
+	if err != nil {
+		panic(err)
+	}
+	actual, err := cr.Get(user.GUID)
+	if err != nil {
+		panic(err)
+	}
+
+	passByte := []byte(actual.Password)
+	requestPassByte := []byte("5ggfdsh52f221")
+	err = bcrypt.CompareHashAndPassword(passByte, requestPassByte)
+	if err != nil {
+		panic(err)
+	}
+
+	expected := web.User{
+		GUID:      actual.GUID,
+		Name:      "misho55",
+		Email:     "mishoo@abv.bg",
+		Age:       12,
+		Password:  actual.Password,  //I am comparing passwords above
+		CreatedOn: actual.CreatedOn, //I should't do this
+		UpdatedOn: actual.UpdatedOn,
+	}
+
+	assert.Equal(t, expected, actual)
+	DBCleaner(DB, "users")
 }
 
 //

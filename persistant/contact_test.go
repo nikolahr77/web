@@ -160,6 +160,45 @@ func TestDeleteContactRepository(t *testing.T) {
 	assert.Equal(t, err, nil)
 }
 
+func TestGetContactRepository(t *testing.T) {
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	cr := persistant.NewContactRepository(DB, clock)
+
+	oldContact := web.RequestContact{
+		Name:    "Dani",
+		Email:   "dani@abv.bg",
+		Age:     62,
+		Address: "Pleven",
+	}
+
+	userID := uuid.New()
+	contactToGet, err := cr.Create(oldContact, userID.String())
+	if err != nil {
+		panic(err)
+	}
+
+	actual, err := cr.Get(contactToGet.GUID, userID.String())
+	if err != nil {
+		panic(err)
+	}
+
+	expected := web.Contact{
+		GUID:      actual.GUID,
+		Name:      "Dani",
+		Email:     "dani@abv.bg",
+		Age:       62,
+		Address:   "Pleven",
+		CreatedOn: actual.CreatedOn, //I should't do this
+		UpdatedOn: actual.UpdatedOn,
+		UserID:    userID.String(),
+	}
+
+	assert.Equal(t, expected, actual)
+	DBCleaner(DB, "contacts")
+}
+
 //
 //func TestContactRepository_Get(t *testing.T) {
 //	db, mock, err := sqlmock.New()

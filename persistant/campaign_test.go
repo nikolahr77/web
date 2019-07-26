@@ -175,6 +175,55 @@ func TestSentStatusCampaignRepository(t *testing.T) {
 	DBCleaner(DB, "campaign")
 }
 
+func TestGetCampaignRepository(t *testing.T) {
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+
+	mr := persistant.NewCampaignRepository(DB, clock)
+
+	newSeg := web.Segmentation{
+		Address: "Plovdiv 32515",
+		Age:     42,
+	}
+
+	NewMsgID := uuid.New()
+
+	newCam := web.RequestCampaign{
+		Name:         "NeWTestCampaign",
+		Segmentation: newSeg,
+		MessageGUID:  NewMsgID.String(),
+	}
+	userID := uuid.New()
+
+	campaign, err := mr.Create(newCam, userID.String())
+
+	actual, err := mr.Get(campaign.GUID, userID.String())
+	if err != nil {
+		panic(err)
+	}
+
+	expected := web.Campaign{
+		GUID: actual.GUID,
+		Name: "NeWTestCampaign",
+		Segmentation: web.Segmentation{
+			GUID:       actual.Segmentation.GUID,
+			Address:    "Plovdiv 32515",
+			Age:        42,
+			CampaignID: campaign.GUID,
+		},
+		Status:      "draft",
+		CreatedOn:   actual.CreatedOn, //I should't do this
+		UpdatedOn:   actual.UpdatedOn,
+		UserID:      userID.String(),
+		MessageGUID: NewMsgID.String(),
+	}
+
+	assert.Equal(t, expected, actual)
+	DBCleaner(DB, "campaign")
+	DBCleaner(DB, "segmentation")
+
+}
+
 //
 //func TestCampaignRepository_Get(t *testing.T) {
 //	db, mock, err := sqlmock.New()

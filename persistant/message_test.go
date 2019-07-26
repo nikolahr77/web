@@ -101,6 +101,38 @@ func TestDeleteMessageRepository(t *testing.T) {
 	assert.Equal(t, err, nil)
 }
 
+func TestGetMessageRepository(t *testing.T) {
+	rc := persistant.RealClock{}
+	clock := persistant.Clock(rc)
+	mr := persistant.NewMessageRepository(DB, clock)
+
+	newMsg := web.RequestMessage{
+		Name:    "NewMSG",
+		Content: "This is the new test message",
+	}
+	userID := uuid.New()
+	contact, err := mr.Create(newMsg, userID.String())
+	if err != nil {
+		panic(err)
+	}
+	actual, err := mr.Get(contact.GUID, userID.String())
+	if err != nil {
+		panic(err)
+	}
+
+	expected := web.Message{
+		GUID:      actual.GUID,
+		Name:      "NewMSG",
+		Content:   "This is the new test message",
+		CreatedOn: actual.CreatedOn, //I should't do this
+		UpdatedOn: actual.UpdatedOn,
+		UserID:    contact.UserID,
+	}
+
+	assert.Equal(t, expected, actual)
+	DBCleaner(DB, "messages")
+}
+
 //func TestMessageRepository_Get(t *testing.T) {
 //	db, mock, err := sqlmock.New()
 //	if err != nil {
