@@ -73,7 +73,7 @@ func (c contactRepository) Create(con web.RequestContact, userID string) (web.Co
 		CreatedOn: createdOn,
 		UpdatedOn: createdOn,
 		UserID:    userID,
-	}, err
+	}, nil
 }
 
 //Delete is used to remove a contact from the DB by a given ID.

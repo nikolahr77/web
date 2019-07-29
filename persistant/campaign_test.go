@@ -6,12 +6,13 @@ import (
 	"github.com/web"
 	"github.com/web/persistant"
 	"testing"
+	"time"
 )
 
 func TestCreateCampaignRepository(t *testing.T) {
-	rc := persistant.RealClock{}
-	clock := persistant.Clock(rc)
-
+	clock := fakeClock{
+		Seconds: 25000,
+	}
 	mr := persistant.NewCampaignRepository(DB, clock)
 	newSeg := web.Segmentation{
 		Address: "Sofia 1515",
@@ -40,21 +41,21 @@ func TestCreateCampaignRepository(t *testing.T) {
 			Age:     30,
 		},
 		Status:    "draft",
-		CreatedOn: actual.CreatedOn, //I should't do this
-		UpdatedOn: actual.UpdatedOn,
+		CreatedOn: time.Unix(25000, 0).UTC(), //I should't do this
+		UpdatedOn: time.Unix(25000, 0).UTC(),
 
 		MessageGUID: msgID.String(),
 		UserID:      userID.String(),
 	}
 
 	assert.Equal(t, expected, actual)
-	DBCleaner(DB, "campaign")
+	dbCleaner(DB, "campaign")
 }
 
 func TestUpdateCampaignRepository(t *testing.T) {
-	rc := persistant.RealClock{}
-	clock := persistant.Clock(rc)
-
+	clock := fakeClock{
+		Seconds: 25000,
+	}
 	mr := persistant.NewCampaignRepository(DB, clock)
 
 	oldSeg := web.Segmentation{
@@ -100,20 +101,20 @@ func TestUpdateCampaignRepository(t *testing.T) {
 			Age:     42,
 		},
 		Status:    "draft",
-		CreatedOn: actual.CreatedOn, //I should't do this
-		UpdatedOn: actual.UpdatedOn,
+		CreatedOn: time.Unix(25000, 0).UTC(), //I should't do this
+		UpdatedOn: time.Unix(25000, 0).UTC(),
 
 		MessageGUID: NewMsgID.String(),
 	}
 
 	assert.Equal(t, expected, actual)
-	DBCleaner(DB, "campaign")
+	dbCleaner(DB, "campaign")
 }
 
 func TestDeleteCampaignRepository(t *testing.T) {
-	rc := persistant.RealClock{}
-	clock := persistant.Clock(rc)
-
+	clock := fakeClock{
+		Seconds: 25000,
+	}
 	mr := persistant.NewCampaignRepository(DB, clock)
 
 	oldSeg := web.Segmentation{
@@ -141,8 +142,9 @@ func TestDeleteCampaignRepository(t *testing.T) {
 }
 
 func TestSentStatusCampaignRepository(t *testing.T) {
-	rc := persistant.RealClock{}
-	clock := persistant.Clock(rc)
+	clock := fakeClock{
+		Seconds: 25000,
+	}
 
 	mr := persistant.NewCampaignRepository(DB, clock)
 
@@ -172,13 +174,13 @@ func TestSentStatusCampaignRepository(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, actual)
-	DBCleaner(DB, "campaign")
+	dbCleaner(DB, "campaign")
 }
 
 func TestGetCampaignRepository(t *testing.T) {
-	rc := persistant.RealClock{}
-	clock := persistant.Clock(rc)
-
+	clock := fakeClock{
+		Seconds: 25000,
+	}
 	mr := persistant.NewCampaignRepository(DB, clock)
 
 	newSeg := web.Segmentation{
@@ -212,15 +214,15 @@ func TestGetCampaignRepository(t *testing.T) {
 			CampaignID: campaign.GUID,
 		},
 		Status:      "draft",
-		CreatedOn:   actual.CreatedOn, //I should't do this
-		UpdatedOn:   actual.UpdatedOn,
+		CreatedOn:   time.Unix(25000, 0).UTC(), //I should't do this
+		UpdatedOn:   time.Unix(25000, 0).UTC(),
 		UserID:      userID.String(),
 		MessageGUID: NewMsgID.String(),
 	}
 
 	assert.Equal(t, expected, actual)
-	DBCleaner(DB, "campaign")
-	DBCleaner(DB, "segmentation")
+	dbCleaner(DB, "campaign")
+	dbCleaner(DB, "segmentation")
 
 }
 
