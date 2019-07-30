@@ -10,6 +10,8 @@ import (
 )
 
 func TestCreateUpdateGetUserRepository(t *testing.T) {
+	dbCleaner(DB, "users")
+
 	clock := fakeClock{
 		Seconds: 25000,
 	}
@@ -62,10 +64,11 @@ func TestCreateUpdateGetUserRepository(t *testing.T) {
 
 	assert.Equal(t, expected, actual)
 	assert.Equal(t, err, nil)
-	dbCleaner(DB, "users")
 }
 
 func TestCreateDeleteGetUserRepository(t *testing.T) {
+	dbCleaner(DB, "users")
+
 	clock := fakeClock{
 		Seconds: 25000,
 	}

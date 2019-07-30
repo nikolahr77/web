@@ -10,6 +10,9 @@ import (
 )
 
 func TestCreateUpdateGetCampaignRepository(t *testing.T) {
+	dbCleaner(DB, "campaign")
+	dbCleaner(DB, "segmentation")
+
 	clock := fakeClock{
 		Seconds: 25000,
 	}
@@ -77,11 +80,12 @@ func TestCreateUpdateGetCampaignRepository(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, actual)
-	dbCleaner(DB, "campaign")
-	dbCleaner(DB, "segmentation")
 }
 
 func TestCreateDeleteGetCampaignRepository(t *testing.T) {
+	dbCleaner(DB, "campaign")
+	dbCleaner(DB, "segmentation")
+
 	clock := fakeClock{
 		Seconds: 25000,
 	}
@@ -119,6 +123,9 @@ func TestCreateDeleteGetCampaignRepository(t *testing.T) {
 }
 
 func TestSentStatusCampaignRepository(t *testing.T) {
+	dbCleaner(DB, "campaign")
+	dbCleaner(DB, "segmentation")
+
 	clock := fakeClock{
 		Seconds: 25000,
 	}
@@ -155,7 +162,4 @@ func TestSentStatusCampaignRepository(t *testing.T) {
 	}
 
 	assert.Equal(t, expected.Status, actual.Status)
-
-	dbCleaner(DB, "campaign")
-	dbCleaner(DB, "segmentation")
 }

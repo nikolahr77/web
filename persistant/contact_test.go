@@ -60,6 +60,8 @@ func TestMain(m *testing.M) {
 }
 
 func TestCreateUpdateDeleteContact(t *testing.T) {
+	dbCleaner(DB, "contacts")
+
 	clock := fakeClock{
 		Seconds: 25000,
 	}
@@ -107,11 +109,11 @@ func TestCreateUpdateDeleteContact(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, actual)
-
-	dbCleaner(DB, "contacts")
 }
 
 func TestCreateDeleteGetContact(t *testing.T) {
+	dbCleaner(DB, "contacts")
+
 	clock := fakeClock{
 		Seconds: 25000,
 	}
@@ -143,5 +145,4 @@ func TestCreateDeleteGetContact(t *testing.T) {
 
 	assert.Equal(t, err, nil)
 	assert.Equal(t, actual, web.Contact{})
-
 }

@@ -10,6 +10,8 @@ import (
 )
 
 func TestCreateUpdateGetMessageRepository(t *testing.T) {
+	dbCleaner(DB, "messages")
+
 	clock := fakeClock{
 		Seconds: 25000,
 	}
@@ -50,10 +52,11 @@ func TestCreateUpdateGetMessageRepository(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, actual)
-	dbCleaner(DB, "messages")
 }
 
 func TestCreateDeleteGetMessageRepository(t *testing.T) {
+	dbCleaner(DB, "messages")
+
 	clock := fakeClock{
 		Seconds: 25000,
 	}
@@ -82,5 +85,4 @@ func TestCreateDeleteGetMessageRepository(t *testing.T) {
 
 	assert.Equal(t, err, nil)
 	assert.Equal(t, actual, web.Message{})
-
 }
