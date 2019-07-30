@@ -3,6 +3,8 @@ package web
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -43,8 +45,14 @@ func (s SenderWorker) sendEmail() {
 			req.Header.Add("Content-Type", "application/json")
 			req.Header.Add("Authorization", key)
 
-			res, _ := http.DefaultClient.Do(req)
-
+			res, err := http.DefaultClient.Do(req)
+			if err != nil {
+				log.Print(err)
+			}
+			fmt.Println(res.Body)
+			bytes, err :=ioutil.ReadAll(res.Body)
+			fmt.Println(string(bytes))
+			fmt.Println(err)
 			defer res.Body.Close()
 		}
 	}

@@ -1,69 +1,81 @@
 package web_test
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/web"
-	"github.com/web/api"
-	"github.com/web/persistant"
-	"log"
 	"net/http"
 	"testing"
 )
 
-func myhttphandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
-}
-
-func startserver(t *testing.T, url string, want web.MessageRequest) {
+func startserver(t *testing.T, url string, actual web.MessageRequest,serverChan chan interface{}) {
+	r := mux.NewRouter()
 
 	f := func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("21111111")
 		got := web.MessageRequest{}
 
 		json.NewDecoder(r.Body).Decode(&got)
-		assert.Equal(t, got, want)
-	}
-
-	http.HandleFunc(url, myhttphandler)
-	http.ListenAndServe(":8090", nil)
+		assert.Equal(t, got, actual)
+		fmt.Println(got)
+		fmt.Println(actual)
+		}
+	r.HandleFunc(url, f).Methods("POST")
+	serverChan <- nil
+	http.ListenAndServe(":8090", r)
 }
 
 func TestSenderWorker_Start(t *testing.T) {
-	connStr := "user=postgres dbname=mail sslmode=disable password=1234"
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		log.Print(err)
+	Emails := web.Email{
+		Email: "nikola@gmail.com",
+		Name: "Nikola",
 	}
-	rc := persistant.RealClock{}
-	clock := persistant.Clock(rc)
+	Sender := web.Email{
+		Email: "Ivan@gmail.com",
+		Name: "Ivan",
+	}
+	recipients := make([]web.Email,1)
+	recipients[0] = Emails
 
-	cr := persistant.NewContactRepository(db, clock)
-	msg := persistant.NewMessageRepository(db, clock)
-	cam := persistant.NewCampaignRepository(db, clock)
+	NewMessages := web.NewMessage{
+		From: Sender,
+		To: recipients,
+		TextPart: "This is a test MSG",
+	}
 
-	ch := make(chan web.Campaign)
+	TestMessageRequest := make([]web.NewMessage,1)
+	TestMessageRequest[0] = NewMessages
+	MSGRequest := web.MessageRequest{
+		Messages: TestMessageRequest,
+	}
+
+	actual := web.MessageRequest{
+		Messages: []web.NewMessage{NewMessages},
+	}
+	serverChan := make(chan interface{})
+
+	go startserver(t,"/test", actual, serverChan)
+
+	<- serverChan
+
 	msgChan := make(chan web.MessageRequest)
 	stopChan := make(chan struct{})
 
-	api.StartCampaign(cam, ch)
 
-	contactWorker := web.MessageRequestWorker{
-		ContactRepository: cr,
-		MessageRepository: msg,
-		Campaigns:         ch,
-		Messages:          msgChan,
-		Workers:           2,
-		StopChan:          stopChan,
-		FromEmail:         "n.hristov@proxiad.com",
+	senderWorker := web.SenderWorker{
+		MessageRequests: msgChan,
+		Workers:         1,
+		StopChan:        stopChan,
+		ApiKey:          "AK1234",
+		SecretKey:       "SK4321",
+		SAPIHost:        "http://localhost:8090/test",
 	}
-	contactWorker.Start()
 
+	senderWorker.Start()
+
+	msgChan <- MSGRequest
+
+	stopChan <- struct{}{}
 }
-
-//Suzdavame worker (channetli reppository ....)
-//Puskame FakeServer
-//Suzdavame Expected
-//Suzdavame msgRequest i go puskame po channel
-//prashtam StopChan

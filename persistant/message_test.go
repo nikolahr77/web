@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func TestCreateUpdateGetMessageRepository(t *testing.T) {
+func TestUpdateMessageRepository(t *testing.T) {
 	dbCleaner(DB, "messages")
 
 	clock := fakeClock{

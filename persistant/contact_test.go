@@ -146,3 +146,37 @@ func TestCreateDeleteGetContact(t *testing.T) {
 	assert.Equal(t, err, nil)
 	assert.Equal(t, actual, web.Contact{})
 }
+
+func TestCreateContactWithSameEmail(t *testing.T) {
+	dbCleaner(DB, "contacts")
+
+	clock := fakeClock{
+		Seconds: 25000,
+	}
+
+	cr := persistant.NewContactRepository(DB, clock)
+
+	Contact := web.RequestContact{
+		Name:    "Dani",
+		Email:   "ivo@abv.bg",
+		Age:     62,
+		Address: "Pleven",
+	}
+
+	newContact := web.RequestContact{
+		Name:    "Ivailo",
+		Email:   "ivo@abv.bg",
+		Age:     32,
+		Address: "Yambol",
+	}
+	userID := uuid.New()
+
+	_, err := cr.Create(Contact, userID.String())
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = cr.Create(newContact, userID.String())
+
+	assert.Contains(t, err.Error(), "duplicate key value")
+}
