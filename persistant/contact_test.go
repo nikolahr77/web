@@ -59,42 +59,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestCreateContactRepository(t *testing.T) {
-	dbCleaner(DB, "contacts")
-	clock := fakeClock{
-		Seconds: 25000,
-	}
-
-	cr := persistant.NewContactRepository(DB, clock)
-
-	newContact := web.RequestContact{
-		Name:    "Dani",
-		Email:   "dani@abv.bg",
-		Age:     62,
-		Address: "Pleven",
-	}
-	userID := uuid.New()
-	actual, err := cr.Create(newContact, userID.String())
-	if err != nil {
-		panic(err)
-	}
-	// da dobavq get i da sravnqvam
-	expected := web.Contact{
-		GUID:      actual.GUID,
-		Name:      "Dani",
-		Email:     "dani@abv.bg",
-		Age:       62,
-		Address:   "Pleven",
-		CreatedOn: time.Unix(25000, 0).UTC(),
-		UpdatedOn: time.Unix(25000, 0).UTC(),
-		UserID:    userID.String(),
-	}
-
-	assert.Equal(t, expected, actual)
-
-}
-
-func TestUpdateContactRepository(t *testing.T) {
+func TestCreateUpdateDeleteContact(t *testing.T) {
 	clock := fakeClock{
 		Seconds: 25000,
 	}
@@ -120,11 +85,16 @@ func TestUpdateContactRepository(t *testing.T) {
 		panic(err)
 	}
 
-	actual, err := cr.Update(contactToUpdate.GUID, newContact, userID.String())
+	_, err = cr.Update(contactToUpdate.GUID, newContact, userID.String())
 	if err != nil {
 		panic(err)
 	}
-	//da dobavq get
+
+	actual, err := cr.Get(contactToUpdate.GUID, userID.String())
+	if err != nil {
+		panic(err)
+	}
+
 	expected := web.Contact{
 		GUID:      actual.GUID,
 		Name:      "Ivan",
@@ -141,7 +111,7 @@ func TestUpdateContactRepository(t *testing.T) {
 	dbCleaner(DB, "contacts")
 }
 
-func TestDeleteContactRepository(t *testing.T) {
+func TestCreateDeleteGetContact(t *testing.T) {
 	clock := fakeClock{
 		Seconds: 25000,
 	}
@@ -166,45 +136,12 @@ func TestDeleteContactRepository(t *testing.T) {
 		panic(err)
 	}
 
+	actual, err := cr.Get(old.GUID, userID.String())
+	if err != nil {
+		panic(err)
+	}
+
 	assert.Equal(t, err, nil)
-}
+	assert.Equal(t, actual, web.Contact{})
 
-func TestGetContactRepository(t *testing.T) {
-	clock := fakeClock{
-		Seconds: 25000,
-	}
-
-	cr := persistant.NewContactRepository(DB, clock)
-
-	oldContact := web.RequestContact{
-		Name:    "Dani",
-		Email:   "dani@abv.bg",
-		Age:     62,
-		Address: "Pleven",
-	}
-
-	userID := uuid.New()
-	contactToGet, err := cr.Create(oldContact, userID.String())
-	if err != nil {
-		panic(err)
-	}
-
-	actual, err := cr.Get(contactToGet.GUID, userID.String())
-	if err != nil {
-		panic(err)
-	}
-
-	expected := web.Contact{
-		GUID:      actual.GUID,
-		Name:      "Dani",
-		Email:     "dani@abv.bg",
-		Age:       62,
-		Address:   "Pleven",
-		CreatedOn: time.Unix(25000, 0).UTC(),
-		UpdatedOn: time.Unix(25000, 0).UTC(),
-		UserID:    userID.String(),
-	}
-
-	assert.Equal(t, expected, actual)
-	dbCleaner(DB, "contacts")
 }

@@ -6,39 +6,10 @@ import (
 	"github.com/web"
 	"github.com/web/persistant"
 	"testing"
+	"time"
 )
 
-func TestCreateMessageRepository(t *testing.T) {
-	clock := fakeClock{
-		Seconds: 25000,
-	}
-
-	mr := persistant.NewMessageRepository(DB, clock)
-
-	newMsg := web.RequestMessage{
-		Name:    "TestMSG",
-		Content: "This is a test message",
-	}
-	userID := uuid.New()
-	actual, err := mr.Create(newMsg, userID.String())
-	if err != nil {
-		panic(err)
-	}
-
-	expected := web.Message{
-		GUID:      actual.GUID,
-		Name:      "TestMSG",
-		Content:   "This is a test message",
-		CreatedOn: actual.CreatedOn, //I should't do this
-		UpdatedOn: actual.UpdatedOn,
-		UserID:    userID.String(),
-	}
-
-	assert.Equal(t, expected, actual)
-	dbCleaner(DB, "messages")
-}
-
-func TestUpdateMessageRepository(t *testing.T) {
+func TestCreateUpdateGetMessageRepository(t *testing.T) {
 	clock := fakeClock{
 		Seconds: 25000,
 	}
@@ -59,7 +30,12 @@ func TestUpdateMessageRepository(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	actual, err := mr.Update(old.GUID, newMsg, userID.String())
+	_, err = mr.Update(old.GUID, newMsg, userID.String())
+	if err != nil {
+		panic(err)
+	}
+
+	actual, err := mr.Get(old.GUID, userID.String())
 	if err != nil {
 		panic(err)
 	}
@@ -68,15 +44,16 @@ func TestUpdateMessageRepository(t *testing.T) {
 		GUID:      actual.GUID,
 		Name:      "NewMSG",
 		Content:   "This is the new test message",
-		CreatedOn: actual.CreatedOn, //I should't do this
-		UpdatedOn: actual.UpdatedOn,
+		CreatedOn: time.Unix(25000, 0).UTC(), //I should't do this
+		UpdatedOn: time.Unix(25000, 0).UTC(),
+		UserID:    userID.String(),
 	}
 
 	assert.Equal(t, expected, actual)
 	dbCleaner(DB, "messages")
 }
 
-func TestDeleteMessageRepository(t *testing.T) {
+func TestCreateDeleteGetMessageRepository(t *testing.T) {
 	clock := fakeClock{
 		Seconds: 25000,
 	}
@@ -98,39 +75,12 @@ func TestDeleteMessageRepository(t *testing.T) {
 		panic(err)
 	}
 
+	actual, err := mr.Get(old.GUID, userID.String())
+	if err != nil {
+		panic(err)
+	}
+
 	assert.Equal(t, err, nil)
-}
+	assert.Equal(t, actual, web.Message{})
 
-func TestGetMessageRepository(t *testing.T) {
-	clock := fakeClock{
-		Seconds: 25000,
-	}
-
-	mr := persistant.NewMessageRepository(DB, clock)
-
-	newMsg := web.RequestMessage{
-		Name:    "NewMSG",
-		Content: "This is the new test message",
-	}
-	userID := uuid.New()
-	contact, err := mr.Create(newMsg, userID.String())
-	if err != nil {
-		panic(err)
-	}
-	actual, err := mr.Get(contact.GUID, userID.String())
-	if err != nil {
-		panic(err)
-	}
-
-	expected := web.Message{
-		GUID:      actual.GUID,
-		Name:      "NewMSG",
-		Content:   "This is the new test message",
-		CreatedOn: actual.CreatedOn, //I should't do this
-		UpdatedOn: actual.UpdatedOn,
-		UserID:    contact.UserID,
-	}
-
-	assert.Equal(t, expected, actual)
-	dbCleaner(DB, "messages")
 }
