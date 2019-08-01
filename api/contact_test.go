@@ -45,6 +45,7 @@ func (m *MockContactRepository) GetAll(camSegmentation web.Segmentation) ([]web.
 	args := m.Called(camSegmentation)
 	return args.Get(0).([]web.Contact), args.Error(1)
 }
+
 func TestCreateContact(t *testing.T) {
 	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
 	req := httptest.NewRequest("POST", "/contacts", strings.NewReader(contact))
