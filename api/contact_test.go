@@ -13,32 +13,38 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"context"
 )
 
 type MockContactRepository struct {
 	mock.Mock
 }
 
-func (m *MockContactRepository) Get(id string) (web.Contact, error) {
+func (m *MockContactRepository) Get(id string, userID string) (web.Contact, error) {
 	args := m.Called(id)
 	return args.Get(0).(web.Contact), args.Error(1)
 }
 
-func (m *MockContactRepository) Create(con web.RequestContact) (web.Contact, error) {
+func (m *MockContactRepository) Create(con web.RequestContact, userID string) (web.Contact, error) {
 	args := m.Called(con)
 	return args.Get(0).(web.Contact), args.Error(1)
 }
 
-func (m *MockContactRepository) Delete(id string) error {
+func (m *MockContactRepository) Delete(id string, userID string) error {
 	args := m.Called(id)
 	return args.Error(0)
 }
 
-func (m *MockContactRepository) Update(id string, con web.RequestContact) (web.Contact, error) {
+func (m *MockContactRepository) Update(id string, con web.RequestContact, userID string) (web.Contact, error) {
 	args := m.Called(id, con)
 	return args.Get(0).(web.Contact), args.Error(1)
 }
 
+func (m *MockContactRepository) GetAll(camSegmentation web.Segmentation) ([]web.Contact, error) {
+	args := m.Called(camSegmentation)
+	return args.Get(0).([]web.Contact), args.Error(1)
+}
 func TestCreateContact(t *testing.T) {
 	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
 	req := httptest.NewRequest("POST", "/contacts", strings.NewReader(contact))
@@ -62,7 +68,9 @@ func TestCreateContact(t *testing.T) {
 	}
 
 	testObj := new(MockContactRepository)
-
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 	testObj.On("Create", cr).Return(c, nil)
 
 	r := mux.NewRouter()
@@ -97,6 +105,10 @@ func TestCreateContactError(t *testing.T) {
 	}
 
 	testObj := new(MockContactRepository)
+
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Create", cr).Return(web.Contact{}, errors.New("test error"))
 
@@ -139,6 +151,9 @@ func TestGetContact(t *testing.T) {
 	}
 
 	testObj := new(MockContactRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Get", "1").Return(c, nil)
 
@@ -168,6 +183,9 @@ func TestGetContactReturnError(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testObj := new(MockContactRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Get", "1").Return(web.Contact{}, errors.New("Test Error"))
 
@@ -203,6 +221,9 @@ func TestUpdateContact(t *testing.T) {
 	}
 
 	testObj := new(MockContactRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Update", "1", cr).Return(c, nil)
 
@@ -238,6 +259,9 @@ func TestUpdateContactReturnError(t *testing.T) {
 	}
 
 	testObj := new(MockContactRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Update", "1", cr).Return(web.Contact{}, errors.New("Test Error"))
 
@@ -268,6 +292,9 @@ func TestDeleteContact(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testObj := new(MockContactRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Delete", "512341").Return(nil)
 
@@ -287,6 +314,9 @@ func TestDeleteContactReturnError(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testObj := new(MockContactRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Delete", "512341").Return(errors.New("Test Error"))
 

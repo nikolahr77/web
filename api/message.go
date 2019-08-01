@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/web"
@@ -22,7 +21,7 @@ func CreateMessage(msg web.MessageRepository) http.HandlerFunc {
 			return
 		}
 		adaptedReqMsg := web.RequestMessage{}
-		userID := context.Get(r, "userID").(string)
+		userID := r.Context().Value("userID").(string)
 		convert.SourceToDestination(m, &adaptedReqMsg)
 		message, err := msg.Create(adaptedReqMsg, userID)
 		if err != nil {
@@ -39,7 +38,7 @@ func CreateMessage(msg web.MessageRepository) http.HandlerFunc {
 func DeleteMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		userID := context.Get(r, "userID").(string)
+		userID := r.Context().Value("userID").(string)
 		err := msg.Delete(id, userID)
 		if err != nil {
 			fmt.Println(err)
@@ -62,7 +61,7 @@ func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 		}
 		adaptedReqMsg := web.RequestMessage{}
 		convert.SourceToDestination(m, &adaptedReqMsg)
-		userID := context.Get(r, "userID").(string)
+		userID := r.Context().Value("userID").(string)
 		message, err := msg.Update(id, adaptedReqMsg, userID)
 		if err != nil {
 			http.Error(w, "Internal Error", 500)
@@ -79,7 +78,7 @@ func UpdateMessage(msg web.MessageRepository) http.HandlerFunc {
 func GetMessage(msg web.MessageRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		userID := context.Get(r, "userID").(string)
+		userID := r.Context().Value("userID").(string)
 		message, err := msg.Get(id, userID)
 		if err != nil {
 			http.Error(w, "Internal Error", 500)

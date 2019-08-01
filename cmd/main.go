@@ -24,7 +24,7 @@ func main() {
 	cam := persistant.NewCampaignRepository(db, clock)
 	usr := persistant.NewUserRepository(db, clock)
 	r := mux.NewRouter()
-	//s := r.Host("/users").Subrouter()
+
 	r.HandleFunc("/contacts/{id}", api.GetContact(cr)).Methods("GET")
 	r.HandleFunc("/contacts/{id}", api.UpdateContact(cr)).Methods("PUT")
 	r.HandleFunc("/contacts", api.CreateContact(cr)).Methods("POST")
@@ -49,7 +49,7 @@ func main() {
 	r.HandleFunc("/campaign/start/{id}", api.StartCampaign(cam, ch)).Methods("POST") //post zaqvka
 
 	msgChan := make(chan web.MessageRequest)
-	//workers := 5
+
 	stopChan := make(chan struct{})
 	contactWorker := web.MessageRequestWorker{
 		ContactRepository: cr,

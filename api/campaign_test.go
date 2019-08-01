@@ -1,6 +1,7 @@
 package api_test
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/gorilla/mux"
@@ -19,28 +20,28 @@ type MockCampaignRepository struct {
 	mock.Mock
 }
 
-func (m *MockCampaignRepository) Get(id string) (web.Campaign, error) {
-	args := m.Called(id)
+func (m *MockCampaignRepository) Get(id string, userID string) (web.Campaign, error) {
+	args := m.Called(id, userID)
 	return args.Get(0).(web.Campaign), args.Error(1)
 }
 
-func (m *MockCampaignRepository) Create(cam web.RequestCampaign) (web.Campaign, error) {
-	args := m.Called(cam)
+func (m *MockCampaignRepository) Create(cam web.RequestCampaign, userID string) (web.Campaign, error) {
+	args := m.Called(cam, userID)
 	return args.Get(0).(web.Campaign), args.Error(1)
 }
 
-func (m *MockCampaignRepository) Delete(id string) error {
-	args := m.Called(id)
+func (m *MockCampaignRepository) Delete(id string, userID string) error {
+	args := m.Called(id, userID)
 	return args.Error(0)
 }
 
-func (m *MockCampaignRepository) Update(id string, cam web.RequestCampaign) (web.Campaign, error) {
-	args := m.Called(id, cam)
+func (m *MockCampaignRepository) Update(id string, cam web.RequestCampaign, userID string) (web.Campaign, error) {
+	args := m.Called(id, cam, userID)
 	return args.Get(0).(web.Campaign), args.Error(1)
 }
 
-func (m *MockCampaignRepository) SentStatus(id string, cam web.RequestCampaign) (web.Campaign, error) {
-	args := m.Called(id, cam)
+func (m *MockCampaignRepository) SentStatus(id string) (web.Campaign, error) {
+	args := m.Called(id)
 	return args.Get(0).(web.Campaign), args.Error(1)
 }
 
@@ -70,8 +71,11 @@ func TestCreateCampaign(t *testing.T) {
 	}
 
 	testObj := new(MockCampaignRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
-	testObj.On("Create", cr).Return(c, nil)
+	testObj.On("Create", cr, "gvdfb-af232").Return(c, nil)
 
 	r := mux.NewRouter()
 	r.Handle("/campaign", api.CreateCampaign(testObj))
@@ -108,8 +112,11 @@ func TestCreateCampaignError(t *testing.T) {
 	}
 
 	testObj := new(MockCampaignRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
-	testObj.On("Create", cr).Return(web.Campaign{}, errors.New("Test error"))
+	testObj.On("Create", cr, "gvdfb-af232").Return(web.Campaign{}, errors.New("Test error"))
 
 	r := mux.NewRouter()
 	r.Handle("/campaign", api.CreateCampaign(testObj))
@@ -140,8 +147,11 @@ func TestDeleteCampaign(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testObj := new(MockCampaignRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
-	testObj.On("Delete", "325b").Return(nil)
+	testObj.On("Delete", "325b", "gvdfb-af232").Return(nil)
 
 	r := mux.NewRouter()
 	r.Handle("/campaign/{id}", api.DeleteCampaign(testObj))
@@ -157,8 +167,11 @@ func TestDeleteCampaignReturnError(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testObj := new(MockCampaignRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
-	testObj.On("Delete", "325b").Return(errors.New("test error"))
+	testObj.On("Delete", "325b", "gvdfb-af232").Return(errors.New("test error"))
 
 	r := mux.NewRouter()
 	r.Handle("/campaign/{id}", api.DeleteCampaign(testObj))
@@ -194,8 +207,11 @@ func TestUpdateCampaign(t *testing.T) {
 	}
 
 	testObj := new(MockCampaignRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
-	testObj.On("Update", "9f-245", cr).Return(c, nil)
+	testObj.On("Update", "9f-245", cr, "gvdfb-af232").Return(c, nil)
 
 	r := mux.NewRouter()
 	r.Handle("/campaign/{id}", api.UpdateCampaign(testObj))
@@ -233,8 +249,11 @@ func TestUpdateCampaignReturnError(t *testing.T) {
 	}
 
 	testObj := new(MockCampaignRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
-	testObj.On("Update", "9f-245", cr).Return(web.Campaign{}, errors.New("test error"))
+	testObj.On("Update", "9f-245", cr, "gvdfb-af232").Return(web.Campaign{}, errors.New("test error"))
 
 	r := mux.NewRouter()
 	r.Handle("/campaign/{id}", api.UpdateCampaign(testObj))
@@ -277,8 +296,11 @@ func TestGetCampaign(t *testing.T) {
 	}
 
 	testObj := new(MockCampaignRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
-	testObj.On("Get", "9f-245").Return(c, nil)
+	testObj.On("Get", "9f-245", "gvdfb-af232").Return(c, nil)
 
 	r := mux.NewRouter()
 	r.Handle("/campaign/{id}", api.GetCampaign(testObj))
@@ -308,8 +330,11 @@ func TestGetCampaignReturnError(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testObj := new(MockCampaignRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
-	testObj.On("Get", "9f-245").Return(web.Campaign{}, errors.New("Test error"))
+	testObj.On("Get", "9f-245", "gvdfb-af232").Return(web.Campaign{}, errors.New("Test error"))
 
 	r := mux.NewRouter()
 	r.Handle("/campaign/{id}", api.GetCampaign(testObj))

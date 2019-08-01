@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/web"
 	"github.com/web/convert"
@@ -16,7 +15,7 @@ import (
 func GetCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		userID := context.Get(r, "userID").(string)
+		userID := r.Context().Value("userID").(string)
 		campaign, err := cr.Get(id, userID)
 		if err != nil {
 			http.Error(w, "Internal error", 500)
@@ -32,7 +31,7 @@ func GetCampaign(cr web.CampaignRepository) http.HandlerFunc {
 func DeleteCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		userID := context.Get(r, "userID").(string)
+		userID := r.Context().Value("userID").(string)
 		err := cr.Delete(id, userID)
 		if err != nil {
 			//fmt.Println(err)
@@ -51,7 +50,7 @@ func CreateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 			return
 		}
 		cam := web.RequestCampaign{}
-		userID := context.Get(r, "userID").(string)
+		userID := r.Context().Value("userID").(string)
 		convert.SourceToDestination(c, &cam)
 		campaign, err := cr.Create(cam, userID)
 		if err != nil {
@@ -77,7 +76,7 @@ func UpdateCampaign(cr web.CampaignRepository) http.HandlerFunc {
 		cam := web.RequestCampaign{}
 		convert.SourceToDestination(c, &cam)
 		id := mux.Vars(r)["id"]
-		userID := context.Get(r, "userID").(string)
+		userID := r.Context().Value("userID").(string)
 		campaign, err := cr.Update(id, cam, userID)
 		if err != nil {
 			fmt.Println(err)

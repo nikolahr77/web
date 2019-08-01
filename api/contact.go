@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/web"
@@ -17,7 +16,7 @@ import (
 func GetContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		guid := mux.Vars(r)["id"]
-		userID := context.Get(r, "userID").(string)
+		userID := r.Context().Value("userID").(string)
 		contact, err := cr.Get(guid, userID)
 		if err != nil {
 			fmt.Println(err)
@@ -34,7 +33,7 @@ func GetContact(cr web.ContactRepository) http.HandlerFunc {
 func DeleteContact(cr web.ContactRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		userID := context.Get(r, "userID").(string)
+		userID := r.Context().Value("userID").(string)
 		err1 := cr.Delete(id, userID)
 		if err1 != nil {
 			http.Error(w, "Internal error", 500)
@@ -52,7 +51,7 @@ func CreateContact(cr web.ContactRepository) http.HandlerFunc {
 			return
 		}
 		con := web.RequestContact{}
-		userID := context.Get(r, "userID").(string)
+		userID := r.Context().Value("userID").(string)
 		convert.SourceToDestination(c, &con)
 		contact, err1 := cr.Create(con, userID)
 		if err1 != nil {
@@ -78,7 +77,7 @@ func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 		con := web.RequestContact{}
 		convert.SourceToDestination(c, &con)
 		id := mux.Vars(r)["id"]
-		userID := context.Get(r, "userID").(string)
+		userID := r.Context().Value("userID").(string)
 		contact, err := cr.Update(id, con, userID)
 		if err != nil {
 			http.Error(w, "Internal error", 500)

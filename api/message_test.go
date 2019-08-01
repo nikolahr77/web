@@ -1,6 +1,7 @@
 package api_test
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/gorilla/mux"
@@ -19,22 +20,22 @@ type MockMessageRepository struct {
 	mock.Mock
 }
 
-func (m *MockMessageRepository) Get(id string) (web.Message, error) {
+func (m *MockMessageRepository) Get(id string, userID string) (web.Message, error) {
 	args := m.Called(id)
 	return args.Get(0).(web.Message), args.Error(1)
 }
 
-func (m *MockMessageRepository) Create(msg web.RequestMessage) (web.Message, error) {
+func (m *MockMessageRepository) Create(msg web.RequestMessage, userID string) (web.Message, error) {
 	args := m.Called(msg)
 	return args.Get(0).(web.Message), args.Error(1)
 }
 
-func (m *MockMessageRepository) Update(id string, msg web.RequestMessage) (web.Message, error) {
+func (m *MockMessageRepository) Update(id string, msg web.RequestMessage, userID string) (web.Message, error) {
 	args := m.Called(id, msg)
 	return args.Get(0).(web.Message), args.Error(1)
 }
 
-func (m *MockMessageRepository) Delete(id string) error {
+func (m *MockMessageRepository) Delete(id string, userID string) error {
 	args := m.Called(id)
 	return args.Error(0)
 }
@@ -58,6 +59,9 @@ func TestCreateMessage(t *testing.T) {
 	}
 
 	testObj := new(MockMessageRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Create", mr).Return(m, nil)
 
@@ -91,6 +95,9 @@ func TestCreateMessageReturnError(t *testing.T) {
 	}
 
 	testObj := new(MockMessageRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Create", mr).Return(web.Message{}, errors.New("test error"))
 
@@ -137,6 +144,9 @@ func TestUpdateMessage(t *testing.T) {
 	}
 
 	testObj := new(MockMessageRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Update", "1", mr).Return(m, nil)
 
@@ -170,6 +180,9 @@ func TestUpdateMessageReturnError(t *testing.T) {
 	}
 
 	testObj := new(MockMessageRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Update", "1", mr).Return(web.Message{}, errors.New("Test Error"))
 
@@ -203,6 +216,9 @@ func TestDeleteMessage(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testObj := new(MockMessageRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Delete", "1").Return(nil)
 
@@ -221,6 +237,9 @@ func TestDeleteMessageReturnError(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testObj := new(MockMessageRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Delete", "1").Return(errors.New("test error"))
 
@@ -247,6 +266,9 @@ func TestGetMessage(t *testing.T) {
 	}
 
 	testObj := new(MockMessageRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Get", "1").Return(m, nil)
 
@@ -274,6 +296,9 @@ func TestGetMessageReturnError(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testObj := new(MockMessageRepository)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+	req = req.WithContext(ctx)
 
 	testObj.On("Get", "1").Return(web.Message{}, errors.New("test error"))
 

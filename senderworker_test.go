@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func startserver(t *testing.T, url string, actual web.MessageRequest,serverChan chan interface{}) {
+func startserver(t *testing.T, url string, actual web.MessageRequest, serverChan chan interface{}) {
 	r := mux.NewRouter()
 
 	f := func(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +21,7 @@ func startserver(t *testing.T, url string, actual web.MessageRequest,serverChan 
 		assert.Equal(t, got, actual)
 		fmt.Println(got)
 		fmt.Println(actual)
-		}
+	}
 	r.HandleFunc(url, f).Methods("POST")
 	serverChan <- nil
 	http.ListenAndServe(":8090", r)
@@ -30,22 +30,22 @@ func startserver(t *testing.T, url string, actual web.MessageRequest,serverChan 
 func TestSenderWorker_Start(t *testing.T) {
 	Emails := web.Email{
 		Email: "nikola@gmail.com",
-		Name: "Nikola",
+		Name:  "Nikola",
 	}
 	Sender := web.Email{
 		Email: "Ivan@gmail.com",
-		Name: "Ivan",
+		Name:  "Ivan",
 	}
-	recipients := make([]web.Email,1)
+	recipients := make([]web.Email, 1)
 	recipients[0] = Emails
 
 	NewMessages := web.NewMessage{
-		From: Sender,
-		To: recipients,
+		From:     Sender,
+		To:       recipients,
 		TextPart: "This is a test MSG",
 	}
 
-	TestMessageRequest := make([]web.NewMessage,1)
+	TestMessageRequest := make([]web.NewMessage, 1)
 	TestMessageRequest[0] = NewMessages
 	MSGRequest := web.MessageRequest{
 		Messages: TestMessageRequest,
@@ -56,13 +56,12 @@ func TestSenderWorker_Start(t *testing.T) {
 	}
 	serverChan := make(chan interface{})
 
-	go startserver(t,"/test", actual, serverChan)
+	go startserver(t, "/test", actual, serverChan)
 
-	<- serverChan
+	<-serverChan
 
 	msgChan := make(chan web.MessageRequest)
 	stopChan := make(chan struct{})
-
 
 	senderWorker := web.SenderWorker{
 		MessageRequests: msgChan,
