@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	_ "github.com/lib/pq"
 	"github.com/web"
 	"github.com/web/convert"
 	"net/http"
@@ -80,6 +79,7 @@ func UpdateContact(cr web.ContactRepository) http.HandlerFunc {
 		userID := r.Context().Value("userID").(string)
 		contact, err := cr.Update(id, con, userID)
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, "Internal error", 500)
 			return
 		}

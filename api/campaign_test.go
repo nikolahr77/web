@@ -296,15 +296,17 @@ func TestGetCampaign(t *testing.T) {
 	}
 
 	testObj := new(MockCampaignRepository)
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, "userID", "gvdfb-af232")
+
+	ctx := context.WithValue(req.Context(), "userID", "gvdfb-af232")
 	req = req.WithContext(ctx)
 
 	testObj.On("Get", "9f-245", "gvdfb-af232").Return(c, nil)
 
 	r := mux.NewRouter()
+
 	r.Handle("/campaign/{id}", api.GetCampaign(testObj))
 	r.ServeHTTP(w, req)
+
 	actual := api.CampaignDTO{}
 	json.NewDecoder(w.Body).Decode(&actual)
 	expected := api.CampaignDTO{

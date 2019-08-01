@@ -14,10 +14,19 @@ import (
 // and returns the Campaign with the same ID
 func GetCampaign(cr web.CampaignRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		//userID1 := g.Get(r, "userID")
+		//fmt.Println("mux: ", userID1)
+		//
+		//userID2 := r.Context().Value("userID")
+		//fmt.Println("context: ", userID2)
 		id := mux.Vars(r)["id"]
+		fmt.Println(id)
+		//userID := g.Get(r,"userID")
+		//fmt.Println(userID)
 		userID := r.Context().Value("userID").(string)
 		campaign, err := cr.Get(id, userID)
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, "Internal error", 500)
 			return
 		}
