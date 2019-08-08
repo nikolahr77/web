@@ -121,9 +121,8 @@ func TestCreateCampaignError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/campaign", api.CreateCampaign(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 
 	testObj.AssertExpectations(t)
 }
@@ -136,9 +135,8 @@ func TestCreateCampaignMalformedJson(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/campaign", api.CreateCampaign(nil))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 400
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
 func TestDeleteCampaign(t *testing.T) {
@@ -156,9 +154,8 @@ func TestDeleteCampaign(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/campaign/{id}", api.DeleteCampaign(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 200
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestDeleteCampaignReturnError(t *testing.T) {
@@ -176,9 +173,7 @@ func TestDeleteCampaignReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/campaign/{id}", api.DeleteCampaign(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 }
 
 func TestUpdateCampaign(t *testing.T) {
@@ -258,9 +253,8 @@ func TestUpdateCampaignReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/campaign/{id}", api.UpdateCampaign(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 
 	testObj.AssertExpectations(t)
 }
@@ -273,9 +267,8 @@ func TestUpdateCampaignMalformedJson(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/campaign/{id}", api.UpdateCampaign(nil))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 400
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
 func TestGetCampaign(t *testing.T) {
@@ -341,9 +334,8 @@ func TestGetCampaignReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/campaign/{id}", api.GetCampaign(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 
 	testObj.AssertExpectations(t)
 }

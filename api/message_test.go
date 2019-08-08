@@ -104,10 +104,9 @@ func TestCreateMessageReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/messages", api.CreateMessage(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
 
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+
 
 	testObj.AssertExpectations(t)
 }
@@ -120,9 +119,8 @@ func TestCreateMessageMalformedJson(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/messages", api.CreateMessage(nil))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 400
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
 func TestUpdateMessage(t *testing.T) {
@@ -189,10 +187,9 @@ func TestUpdateMessageReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/messages/{id}", api.UpdateMessage(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
 
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+
 
 	testObj.AssertExpectations(t)
 }
@@ -205,9 +202,8 @@ func TestUpdateMessageMalformedJson(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/messages/1", api.UpdateMessage(nil))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 400
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
 func TestDeleteMessage(t *testing.T) {
@@ -225,10 +221,8 @@ func TestDeleteMessage(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/messages/{id}", api.DeleteMessage(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 200
 
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestDeleteMessageReturnError(t *testing.T) {
@@ -246,10 +240,8 @@ func TestDeleteMessageReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/messages/{id}", api.DeleteMessage(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
 
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 }
 
 func TestGetMessage(t *testing.T) {
@@ -305,9 +297,8 @@ func TestGetMessageReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/messages/{id}", api.GetMessage(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 
 	testObj.AssertExpectations(t)
 }

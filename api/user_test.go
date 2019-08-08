@@ -109,9 +109,9 @@ func TestCreateUserReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/users", api.CreateUser(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+
 	testObj.AssertExpectations(t)
 
 }
@@ -126,9 +126,8 @@ func TestCreateUserMalformedJson(t *testing.T) {
 	r.ServeHTTP(w, req)
 	actual := w.Code
 	json.NewDecoder(w.Body).Decode(&actual)
-	expected := 400
-	assert.Equal(t, expected, actual)
 
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
 func TestUpdateUser(t *testing.T) {
@@ -195,9 +194,9 @@ func TestUpdateUserReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/users/{id}", api.UpdateUser(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+
 	testObj.AssertExpectations(t)
 
 }
@@ -210,10 +209,8 @@ func TestUpdateUserMalformedJson(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/users/{id}", api.UpdateUser(nil))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 400
-	assert.Equal(t, expected, actual)
 
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
 func TestDeleteUser(t *testing.T) {
@@ -228,9 +225,9 @@ func TestDeleteUser(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/users/{id}", api.DeleteUser(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 200
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
 	testObj.AssertExpectations(t)
 
 }
@@ -247,9 +244,9 @@ func TestDeleteUserReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/users/{id}", api.DeleteUser(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+
 	testObj.AssertExpectations(t)
 
 }
@@ -304,8 +301,8 @@ func TestGetUserReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/users/{id}", api.GetUser(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+
 	testObj.AssertExpectations(t)
 }

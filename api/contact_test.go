@@ -88,6 +88,7 @@ func TestCreateContact(t *testing.T) {
 		CreatedOn: time.Unix(10, 0).UTC(),
 		UpdatedOn: time.Unix(20, 0).UTC(),
 	}
+
 	assert.Equal(t, expected, actual)
 	assert.Equal(t, http.StatusOK, w.Code)
 	testObj.AssertExpectations(t)
@@ -116,9 +117,8 @@ func TestCreateContactError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/contacts", api.CreateContact(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+
 
 	testObj.AssertExpectations(t)
 }
@@ -131,9 +131,7 @@ func TestCreateContactMalformedJson(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/contacts", api.CreateContact(nil))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 400
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
 func TestGetContact(t *testing.T) {
@@ -193,9 +191,9 @@ func TestGetContactReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/contacts/{id}", api.GetContact(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+
 	testObj.AssertExpectations(t)
 }
 
@@ -269,9 +267,9 @@ func TestUpdateContactReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/contacts/{id}", api.UpdateContact(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+
 	testObj.AssertExpectations(t)
 }
 
@@ -282,9 +280,7 @@ func TestUpdateContactMalformedJson(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/contacts/1", api.UpdateContact(nil))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 400
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
 func TestDeleteContact(t *testing.T) {
@@ -302,9 +298,9 @@ func TestDeleteContact(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/contacts/{id}", api.DeleteContact(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 200
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
 
 	testObj.AssertExpectations(t)
 }
@@ -324,9 +320,9 @@ func TestDeleteContactReturnError(t *testing.T) {
 	r := mux.NewRouter()
 	r.Handle("/contacts/{id}", api.DeleteContact(testObj))
 	r.ServeHTTP(w, req)
-	actual := w.Code
-	expected := 500
-	assert.Equal(t, expected, actual)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+
 
 	testObj.AssertExpectations(t)
 }
