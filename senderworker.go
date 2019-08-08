@@ -49,10 +49,10 @@ func (s SenderWorker) sendEmail() {
 			if err != nil {
 				log.Print(err)
 			}
-			fmt.Println(res.Body)
+
 			bytes, err := ioutil.ReadAll(res.Body)
 			fmt.Println(string(bytes))
-			fmt.Println(err)
+
 			defer res.Body.Close()
 		}
 	}

@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"log"
 )
 
@@ -10,7 +9,7 @@ type MessageRequestWorker struct {
 	ContactRepository ContactRepository
 	MessageRepository MessageRepository
 	Messages          chan<- MessageRequest
-	Campaigns         <-chan Campaign //samo chete
+	Campaigns         <-chan Campaign
 	Workers           int
 	StopChan          chan struct{}
 	FromEmail         string
@@ -45,8 +44,6 @@ func (mrw MessageRequestWorker) create() {
 				log.Print(err)
 			}
 
-			fmt.Printf("%#v\n", contacts)
-			fmt.Println("len", len(contacts))
 			recipients := make([]Email, len(contacts))
 			for i, c := range contacts {
 				e := Email{Email: c.Email, Name: c.Name}
@@ -63,9 +60,9 @@ type MessageRequest struct {
 }
 
 type NewMessage struct {
-	From     Email   //az
-	To       []Email //contacts
-	TextPart string  //slagame content ot messages
+	From     Email
+	To       []Email
+	TextPart string
 }
 
 type Email struct {
