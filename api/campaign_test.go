@@ -16,35 +16,6 @@ import (
 	"time"
 )
 
-type MockCampaignRepository struct {
-	mock.Mock
-}
-
-func (m *MockCampaignRepository) Get(id string, userID string) (web.Campaign, error) {
-	args := m.Called(id, userID)
-	return args.Get(0).(web.Campaign), args.Error(1)
-}
-
-func (m *MockCampaignRepository) Create(cam web.RequestCampaign, userID string) (web.Campaign, error) {
-	args := m.Called(cam, userID)
-	return args.Get(0).(web.Campaign), args.Error(1)
-}
-
-func (m *MockCampaignRepository) Delete(id string, userID string) error {
-	args := m.Called(id, userID)
-	return args.Error(0)
-}
-
-func (m *MockCampaignRepository) Update(id string, cam web.RequestCampaign, userID string) (web.Campaign, error) {
-	args := m.Called(id, cam, userID)
-	return args.Get(0).(web.Campaign), args.Error(1)
-}
-
-func (m *MockCampaignRepository) SentStatus(id string) (web.Campaign, error) {
-	args := m.Called(id)
-	return args.Get(0).(web.Campaign), args.Error(1)
-}
-
 func TestCreateCampaign(t *testing.T) {
 	campaign := `{"name":"Test Campaign","segmentation":{"address":"Sofia 1512","age":12}}`
 	req := httptest.NewRequest("POST", "/campaign", strings.NewReader(campaign))
@@ -338,4 +309,34 @@ func TestGetCampaignReturnError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 
 	testObj.AssertExpectations(t)
+}
+
+
+type MockCampaignRepository struct {
+	mock.Mock
+}
+
+func (m *MockCampaignRepository) Get(id string, userID string) (web.Campaign, error) {
+	args := m.Called(id, userID)
+	return args.Get(0).(web.Campaign), args.Error(1)
+}
+
+func (m *MockCampaignRepository) Create(cam web.RequestCampaign, userID string) (web.Campaign, error) {
+	args := m.Called(cam, userID)
+	return args.Get(0).(web.Campaign), args.Error(1)
+}
+
+func (m *MockCampaignRepository) Delete(id string, userID string) error {
+	args := m.Called(id, userID)
+	return args.Error(0)
+}
+
+func (m *MockCampaignRepository) Update(id string, cam web.RequestCampaign, userID string) (web.Campaign, error) {
+	args := m.Called(id, cam, userID)
+	return args.Get(0).(web.Campaign), args.Error(1)
+}
+
+func (m *MockCampaignRepository) SentStatus(id string) (web.Campaign, error) {
+	args := m.Called(id)
+	return args.Get(0).(web.Campaign), args.Error(1)
 }

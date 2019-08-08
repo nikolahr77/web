@@ -17,35 +17,6 @@ import (
 	"context"
 )
 
-type MockContactRepository struct {
-	mock.Mock
-}
-
-func (m *MockContactRepository) Get(id string, userID string) (web.Contact, error) {
-	args := m.Called(id)
-	return args.Get(0).(web.Contact), args.Error(1)
-}
-
-func (m *MockContactRepository) Create(con web.RequestContact, userID string) (web.Contact, error) {
-	args := m.Called(con)
-	return args.Get(0).(web.Contact), args.Error(1)
-}
-
-func (m *MockContactRepository) Delete(id string, userID string) error {
-	args := m.Called(id)
-	return args.Error(0)
-}
-
-func (m *MockContactRepository) Update(id string, con web.RequestContact, userID string) (web.Contact, error) {
-	args := m.Called(id, con)
-	return args.Get(0).(web.Contact), args.Error(1)
-}
-
-func (m *MockContactRepository) GetAll(camSegmentation web.Segmentation) ([]web.Contact, error) {
-	args := m.Called(camSegmentation)
-	return args.Get(0).([]web.Contact), args.Error(1)
-}
-
 func TestCreateContact(t *testing.T) {
 	contact := `{"name":"Ivan", "address":"Sofia 1612", "age":23, "email":"test@test.com"}`
 	req := httptest.NewRequest("POST", "/contacts", strings.NewReader(contact))
@@ -325,4 +296,33 @@ func TestDeleteContactReturnError(t *testing.T) {
 
 
 	testObj.AssertExpectations(t)
+}
+
+type MockContactRepository struct {
+	mock.Mock
+}
+
+func (m *MockContactRepository) Get(id string, userID string) (web.Contact, error) {
+	args := m.Called(id)
+	return args.Get(0).(web.Contact), args.Error(1)
+}
+
+func (m *MockContactRepository) Create(con web.RequestContact, userID string) (web.Contact, error) {
+	args := m.Called(con)
+	return args.Get(0).(web.Contact), args.Error(1)
+}
+
+func (m *MockContactRepository) Delete(id string, userID string) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
+func (m *MockContactRepository) Update(id string, con web.RequestContact, userID string) (web.Contact, error) {
+	args := m.Called(id, con)
+	return args.Get(0).(web.Contact), args.Error(1)
+}
+
+func (m *MockContactRepository) GetAll(camSegmentation web.Segmentation) ([]web.Contact, error) {
+	args := m.Called(camSegmentation)
+	return args.Get(0).([]web.Contact), args.Error(1)
 }

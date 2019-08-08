@@ -15,36 +15,6 @@ import (
 	"time"
 )
 
-type MockUserRepository struct {
-	mock.Mock
-}
-
-func (m *MockUserRepository) Get(guid string) (web.User, error) {
-	args := m.Called(guid)
-	return args.Get(0).(web.User), args.Error(1)
-}
-
-func (m *MockUserRepository) GetByName(name string) (web.User, error) {
-	args := m.Called(name)
-	return args.Get(0).(web.User), args.Error(1)
-}
-
-func (m *MockUserRepository) Create(usr web.RequestUser) (web.User, error) {
-	args := m.Called(usr)
-	return args.Get(0).(web.User), args.Error(1)
-}
-
-func (m *MockUserRepository) Update(guid string, usr web.RequestUser) (web.User, error) {
-	args := m.Called(guid, usr)
-	return args.Get(0).(web.User), args.Error(1)
-}
-
-func (m *MockUserRepository) Delete(guid string) error {
-	args := m.Called(guid)
-	return args.Error(0)
-
-}
-
 func TestCreateUser(t *testing.T) {
 	user := `{"name":"Toncho Tonchev","age":43,"password":"sss1234","email":"ton@gmail.com"}`
 	req := httptest.NewRequest("POST", "/users", strings.NewReader(user))
@@ -305,4 +275,35 @@ func TestGetUserReturnError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 
 	testObj.AssertExpectations(t)
+}
+
+
+type MockUserRepository struct {
+	mock.Mock
+}
+
+func (m *MockUserRepository) Get(guid string) (web.User, error) {
+	args := m.Called(guid)
+	return args.Get(0).(web.User), args.Error(1)
+}
+
+func (m *MockUserRepository) GetByName(name string) (web.User, error) {
+	args := m.Called(name)
+	return args.Get(0).(web.User), args.Error(1)
+}
+
+func (m *MockUserRepository) Create(usr web.RequestUser) (web.User, error) {
+	args := m.Called(usr)
+	return args.Get(0).(web.User), args.Error(1)
+}
+
+func (m *MockUserRepository) Update(guid string, usr web.RequestUser) (web.User, error) {
+	args := m.Called(guid, usr)
+	return args.Get(0).(web.User), args.Error(1)
+}
+
+func (m *MockUserRepository) Delete(guid string) error {
+	args := m.Called(guid)
+	return args.Error(0)
+
 }
