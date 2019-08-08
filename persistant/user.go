@@ -12,8 +12,7 @@ import (
 //GetByName searches the DB for a user with the specified name
 // and returns this user
 func (u userRepository) GetByName(name string) (web.User, error) {
-	query := `
-		SELECT * FROM users WHERE name = $1`
+	query := `SELECT * FROM users WHERE name = $1`
 
 	rows, err := u.db.Query(query, name)
 
@@ -36,8 +35,7 @@ func (u userRepository) GetByName(name string) (web.User, error) {
 
 //Get is used to return a user from the DB by a given ID.
 func (u userRepository) Get(guid string) (web.User, error) {
-	getUser := `
-	SELECT * FROM users WHERE guid = $1`
+	getUser := `SELECT * FROM users WHERE guid = $1`
 
 	var ue userEntity
 	rows, err := u.db.Query(getUser, guid)
@@ -61,8 +59,10 @@ func (u userRepository) Get(guid string) (web.User, error) {
 //Create adds a new user to the DB
 func (u userRepository) Create(usr web.RequestUser) (web.User, error) {
 	createUser := `
-	INSERT INTO users (guid, name, password, email, created_on, age, updated_on)
-	VALUES ($1, $2, $3, $4, $5, $6, $7)`
+		INSERT INTO users 
+			(guid, name, password, email, created_on, age, updated_on)
+		VALUES 
+			($1, $2, $3, $4, $5, $6, $7)`
 	guid := uuid.New()
 	createdOn := u.clock.Now().UTC()
 
@@ -89,9 +89,11 @@ func (u userRepository) Create(usr web.RequestUser) (web.User, error) {
 // ID and updates the users with the given RequestUser
 func (u userRepository) Update(guid string, usr web.RequestUser) (web.User, error) {
 	updateUser := `
-	UPDATE users
-	SET name=$1, password=$2, email=$3, age=$4, updated_on=$5
-	WHERE guid = $6`
+		UPDATE users
+		SET 
+			name=$1, password=$2, email=$3, age=$4, updated_on=$5
+		WHERE 
+			guid = $6`
 	updatedOn := u.clock.Now().UTC()
 	saltedBytes := []byte(usr.Password)
 	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
@@ -112,8 +114,7 @@ func (u userRepository) Update(guid string, usr web.RequestUser) (web.User, erro
 
 //Delete is used to remove a user from the DB by a given ID.
 func (u userRepository) Delete(guid string) error {
-	deleteUser := `
-	DELETE FROM users WHERE guid = $1`
+	deleteUser := `DELETE FROM users WHERE guid = $1`
 
 	_, err := u.db.Exec(deleteUser, guid)
 	return err

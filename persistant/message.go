@@ -11,8 +11,10 @@ import (
 //Create adds a new message to the DB
 func (m messageRepository) Create(msg web.RequestMessage, userID string) (web.Message, error) {
 	query := `
-	INSERT INTO messages (guid, name, content, created_on, updated_on, userID)
-	VALUES ($1,$2,$3,$4,$5,$6);`
+		INSERT INTO messages 
+			(guid, name, content, created_on, updated_on, userID)
+		VALUES 
+			($1,$2,$3,$4,$5,$6);`
 	uuid := uuid.New()
 	createdOn := m.clock.Now().UTC()
 	_, err := m.db.Exec(query, uuid, msg.Name, msg.Content, createdOn, createdOn, userID)
@@ -28,8 +30,7 @@ func (m messageRepository) Create(msg web.RequestMessage, userID string) (web.Me
 
 //Delete is used to remove a message from the DB by a given ID.
 func (m messageRepository) Delete(id string, userID string) error {
-	query := `
-	DELETE FROM messages WHERE guid=$1 AND userID = $2`
+	query := `DELETE FROM messages WHERE guid=$1 AND userID = $2`
 	_, err := m.db.Exec(query, id, userID)
 	return err
 }
@@ -38,9 +39,11 @@ func (m messageRepository) Delete(id string, userID string) error {
 // ID and updates the message with the given RequestMessage
 func (m messageRepository) Update(id string, msg web.RequestMessage, userID string) (web.Message, error) {
 	query := `
-	UPDATE messages
-	SET name=$1, content=$2, updated_on=$3
-	WHERE guid=$4 AND userID = $5`
+		UPDATE messages
+		SET 
+			name=$1, content=$2, updated_on=$3
+		WHERE 
+			guid=$4 AND userID = $5`
 	updatedOn := m.clock.Now().UTC()
 	_, err := m.db.Exec(query, msg.Name, msg.Content, updatedOn, id, userID)
 	return web.Message{
@@ -53,7 +56,9 @@ func (m messageRepository) Update(id string, msg web.RequestMessage, userID stri
 //Get is used to return a message from the DB by a given ID.
 func (m messageRepository) Get(id string, userID string) (web.Message, error) {
 	query := `
-	SELECT * FROM messages WHERE guid=$1 AND userid=$2`
+		SELECT * FROM messages 
+		WHERE 
+			guid=$1 AND userid=$2`
 
 	var e messageEntity
 	rows, err := m.db.Query(query, id, userID)
