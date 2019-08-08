@@ -2,9 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/web"
-	"net/http"
 )
 
 //StartCampaign decodes JSON from the request and starts a new campaign

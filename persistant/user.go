@@ -2,11 +2,12 @@ package persistant
 
 import (
 	"database/sql"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/web"
 	"github.com/web/convert"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 //GetByName searches the DB for a user with the specified name

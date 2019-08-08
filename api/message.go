@@ -2,12 +2,13 @@ package api
 
 import (
 	"encoding/json"
+	"net/http"
+	"time"
+
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/web"
 	"github.com/web/convert"
-	"net/http"
-	"time"
 )
 
 //CreateMessage decodes JSON from the request and creates a new message based on the POST request
