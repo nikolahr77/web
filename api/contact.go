@@ -2,11 +2,12 @@ package api
 
 import (
 	"encoding/json"
+	"net/http"
+	"time"
+
 	"github.com/gorilla/mux"
 	"github.com/web"
 	"github.com/web/convert"
-	"net/http"
-	"time"
 )
 
 //GetContact is used to get the ID from the GET request, sends a Get request

@@ -1,20 +1,20 @@
 package api_test
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
-	"github.com/gorilla/mux"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/web"
-	"github.com/web/api"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
 
-	"context"
+	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/web"
+	"github.com/web/api"
 )
 
 func TestCreateContact(t *testing.T) {
